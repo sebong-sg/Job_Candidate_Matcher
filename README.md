@@ -103,7 +103,8 @@ git push -u origin dev
 branch 'dev' set up to track 'origin/dev'
 
 
-- This means future git push and git pull commands will automatically sync with origin/dev.
+- Future git push and git pull commands will automatically sync with origin/dev.
+
 🧭 What You Can Do Next🔧 1. Start Working in devMake changes to your code, then:git add .
 git commit -m "Your commit message"
 git push
