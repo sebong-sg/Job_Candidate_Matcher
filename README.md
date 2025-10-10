@@ -115,3 +115,4 @@ git push
 🛡️ 3. Protect main (if not done yet)Set up branch protection rules to prevent direct commits:- Require pull requests
 - Require approvals
 - Restrict force pushes
+

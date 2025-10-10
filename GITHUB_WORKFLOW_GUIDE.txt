@@ -1,0 +1,158 @@
+GitHub Workflow Guide
+
+✅ Branching
+- Create dev branch: git checkout -b dev
+- Push dev branch: git push -u origin dev
+
+✅ Protection Rules
+- Go to Settings → Branches → Add Ruleset
+- Target: main
+- Enable: pull request, approvals, signed commits, linear history, restrict force pushes/deletions
+
+✅ Commit & Push
+- Stage: git add .
+- Commit: git commit -m "Add analytics engine and web interface"
+- Push: git push
+
+✅ Pull Request
+- Compare dev → main
+- Use PR template
+- Merge via squash or rebase
+
+If the new file is untracked—you haven’t staged it yet.
+
+✅ How to Fix It
+🔧 Step 1: Stage the New File
+Run:
+git add GITHUB_WORKFLOW_GUIDE.txt
+
+Or to stage everything (recommended if you're ready):
+git add .
+Step 2: Commit Again
+Now that the file is staged, commit it:
+git commit -m "Add GitHub workflow guide documentation"
+
+🔧 Step 3: Push to GitHub
+git push
+
+
+New file will now appear in the dev branch on GitHub.
+
+
+
+
+🧭 1. Local vs Remote Branches
+You may have created branches locally in Codespaces but haven’t pushed them to GitHub yet.
+✅ Fix:
+In your Codespaces terminal, run:
+git branch         # shows local branches
+git branch -r      # shows remote branches
+
+To push a local branch to GitHub:
+git push -u origin your-branch-name
+
+📁 2. Uncommitted or Unpushed Files
+Files created in Codespaces won’t appear on GitHub unless they’re:
+- Committed to Git
+- Pushed to a remote branch
+✅ Fix:
+git add .
+git commit -m "Add new files"
+git push
+
+🔍 3. Wrong Branch Selected on GitHub
+On GitHub.com, you might be viewing the main branch while your changes are in dev or another branch.
+✅ Fix:
+- Go to your repo
+- Use the branch dropdown (top-left above the file list)
+- Switch to the correct branch (e.g., dev, feature/login-module)
+
+🧼 4. Files Ignored by .gitignore
+Some files (e.g., .env, logs, temp files) may be excluded from Git tracking.
+✅ Fix:
+Check your .gitignore file in Codespaces. If needed, remove the file from .gitignore and re-add it:
+git add yourfile
+git commit -m "Track previously ignored file"
+git push
+
+🧠 5. Detached HEAD or Workspace Misalignment
+If you’re in a detached HEAD state or working outside the repo folder, Git may not track your changes.
+✅ Fix:
+Make sure you’re inside the correct repo folder
+pwd
+git status
+
+If needed, switch to a valid branch:
+git checkout main
+
+🧭 Step-by-Step: Ensure Your Branches and Files Are Visible on GitHub
+✅ 1. Check Remote Branches
+Run:
+git branch -r
+This shows branches that exist on GitHub (remote). You should see:
+origin/main
+origin/dev
+
+If origin/dev is missing, push it:
+git push -u origin dev
+
+✅ 2. Check File Status
+Run:
+git status
+
+git status
+``>
+If you see untracked or modified files, they haven’t been committed yet.
+
+To commit and push:
+```bash
+git add .
+git commit -m "Add files for dev branch"
+git push
+
+Thanks for sharing that, Seb. This confirms you're currently on the dev branch, and you also have a local main branch. However, this only shows local branches—not whether your changes, branches, or files have been pushed to GitHub or are visible there.
+Let’s walk through a quick diagnostic and fix:
+
+🧭 Step-by-Step: Ensure Your Branches and Files Are Visible on GitHub
+✅ 1. Check Remote Branches
+Run:
+git branch -r
+
+
+This shows branches that exist on GitHub (remote). You should see:
+origin/main
+origin/dev
+
+
+If origin/dev is missing, push it:
+git push -u origin dev
+
+
+
+✅ 2. Check File Status
+Run:
+git status
+``>
+If you see untracked or modified files, they haven’t been committed yet.
+
+To commit and push:
+```bash
+git add .
+git commit -m "Add files for dev branch"
+git push
+
+
+
+✅ 3. Confirm on GitHub
+Go to github.com/sebong-sg/Job_Candidate_Matcher
+- Use the branch dropdown (top-left above the file list)
+- Switch to dev or any other branch
+- Confirm your files appear
+
+🧠 Optional: View All Branches and Their Status
+Run:
+git remote show origin
+
+This shows which branches are tracked, pushed, and synced.
+
+
