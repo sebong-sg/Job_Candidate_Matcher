@@ -1,0 +1,98 @@
+{
+  "jobs": [
+    {
+      "id": 1,
+      "title": "Senior Python Developer",
+      "description": "We need a Python developer with Django and Flask experience for web applications. Knowledge of REST APIs and databases required.",
+      "required_skills": [
+        "python",
+        "django",
+        "flask",
+        "rest api",
+        "sql"
+      ],
+      "company": "TechCorp Inc",
+      "location": "Remote"
+    },
+    {
+      "id": 2,
+      "title": "Machine Learning Engineer",
+      "description": "Looking for ML engineer with experience in TensorFlow, PyTorch, and data analysis. Computer vision background preferred.",
+      "required_skills": [
+        "python",
+        "machine learning",
+        "tensorflow",
+        "pytorch",
+        "data analysis"
+      ],
+      "company": "AI Innovations",
+      "location": "New York"
+    },
+    {
+      "id": 3,
+      "title": "Frontend React Developer",
+      "description": "Frontend developer needed for React applications. Experience with JavaScript, HTML, CSS and modern web frameworks required.",
+      "required_skills": [
+        "javascript",
+        "react",
+        "html",
+        "css",
+        "web development"
+      ],
+      "company": "WebSolutions Ltd",
+      "location": "San Francisco"
+    },
+    {
+      "title": "\u001b\u001b\u001b5",
+      "company": "",
+      "location": "",
+      "description": "",
+      "required_skills": [
+        ""
+      ],
+      "id": 4
+    },
+    {
+      "title": "Senior Software Engineer",
+      "description": "Develop and maintain scalable software solutions using modern technologies.",
+      "required_skills": [
+        "python",
+        "java",
+        "aws",
+        "docker",
+        "kubernetes"
+      ],
+      "company": "Tech Giants Inc",
+      "location": "San Francisco",
+      "id": 5
+    },
+    {
+      "title": "Data Analyst",
+      "description": "Analyze complex datasets and provide actionable insights to stakeholders.",
+      "required_skills": [
+        "sql",
+        "python",
+        "excel",
+        "tableau",
+        "statistics"
+      ],
+      "company": "Data Insights Co",
+      "location": "Remote",
+      "id": 6
+    },
+    {
+      "title": "DevOps Engineer",
+      "description": "Manage cloud infrastructure and CI/CD pipelines for development teams.",
+      "required_skills": [
+        "aws",
+        "docker",
+        "jenkins",
+        "terraform",
+        "linux"
+      ],
+      "company": "Cloud Solutions Ltd",
+      "location": "Austin",
+      "id": 7
+    }
+  ]
+}
