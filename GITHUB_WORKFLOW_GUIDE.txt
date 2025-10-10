@@ -156,3 +156,31 @@ git remote show origin
 This shows which branches are tracked, pushed, and synced.
 
 
+If encountering a classic Git sync issue, or a mismatch between your local dev branch and the remote dev branch on GitHub. Here's exactly what's happening and how to fix it safely:
+
+🧠 What the Error Means
+Updates were rejected because the remote contains work that you do not have locally.
+
+This means someone (possibly you from another device or Codespace) pushed new commits to dev on GitHub, and your local copy doesn’t have those changes yet. Git is blocking your push to prevent overwriting them.
+
+✅ How to Fix It Safely
+🔧 Step 1: Pull Remote Changes First
+Run this in your terminal:
+git pull --rebase
+
+
+This pulls the latest commits from GitHub and replays your local commits on top, keeping history clean.
+
+
+🔧 Step 2: Push Again
+Once the rebase completes successfully:
+git push
+
+
+Your new commit (including GITHUB_WORKFLOW_GUIDE.txt) will now be pushed to GitHub.
+
+🧭 Why This Happens
+- You may have made changes in another Codespace or GitHub.com (e.g., editing README.md).
+- Git wants to merge or rebase those changes before allowing your push.
+
+Would you like help visualizing this sync flow in a storyboard or setting up GitHub Actions to auto-check for remote changes before pushing? I can also help you configure git pull --rebase as your default behavior for cleaner workflows.
