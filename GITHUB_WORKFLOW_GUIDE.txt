@@ -1,186 +1,328 @@
-GitHub Workflow Guide
+Title: Git Workflow Guide — Staging and Committing Modified + Untracked Files
+Last Updated: 11 October 2025
+Purpose: This guide outlines a disciplined Git workflow for safely staging and committing both modified (M) and untracked (??) files in GitHub Codespaces or local development environments.
 
-✅ Branching
-- Create dev branch: git checkout -b dev
-- Push dev branch: git push -u origin dev
-
-✅ Protection Rules
-- Go to Settings → Branches → Add Ruleset
-- Target: main
-- Enable: pull request, approvals, signed commits, linear history, restrict force pushes/deletions
-
-✅ Commit & Push
-- Stage: git add .
-- Commit: git commit -m "Add analytics engine and web interface"
-- Push: git push
-
-✅ Pull Request
-- Compare dev → main
-- Use PR template
-- Merge via squash or rebase
-
-If the new file is untracked—you haven’t staged it yet.
-
-✅ How to Fix It
-🔧 Step 1: Stage the New File
+---
+🧭 Step 1: Check File Status
+----------------------------
 Run:
-git add GITHUB_WORKFLOW_GUIDE.txt
+    git status
 
-Or to stage everything (recommended if you're ready):
-git add .
-Step 2: Commit Again
-Now that the file is staged, commit it:
-git commit -m "Add GitHub workflow guide documentation"
+You’ll see:
+- M for modified files (e.g., web_app.py)
+- ?? for untracked files (e.g., new_module.py)
+---
 
-🔧 Step 3: Push to GitHub
-git push
+📦 Step 2: Stage Files for Commit
+---------------------------------
+Option A: Stage Specific Files
+    git add web_app.py new_module.py
 
+Option B: Stage All Changes
+    git add .
+
+Note: This adds all modified and untracked files, excluding those listed in .gitignore.
+
+---
+
+📝 Step 3: Commit with a Clear Message
+-------------------------------------
+    git commit -m "Update web_app.py and add new_module.py"
+
+Tip: Use descriptive, governance-friendly messages. Include module tags or versioning if needed.
+
+---
+
+🚀 Step 4: Push to GitHub
+-------------------------
+    git push
+
+This syncs your committed changes to the remote branch (e.g., dev).
+
+---
+
+🧠 Optional Checks Before Committing
+-----------------------------------
+
+Preview Staged Changes:
+    git diff --staged
+
+Review What’s Being Tracked:
+    git status
+
+---
+
+🛡️ Best Practices
+-----------------
+
+- Use .gitignore to exclude temp files or sensitive assets
+- Always commit before closing Codespaces to avoid data loss
+- Consider aliases for frequent tasks (e.g., git stage-all, git update)
+- Use modular commit messages for traceability (e.g., [frontend] Update web_app.py)
+
+---
 
 New file will now appear in the dev branch on GitHub.
 
+End of Guide  — Staging and Committing Modified + Untracked Files
+
+==========================
+
+Title: GitHub Workflow Guide — Branching, Protection, Commit Discipline, and PR Governance
+Last Updated: 11 October 2025  
+Purpose: This guide outlines a disciplined GitHub workflow for managing branches, enforcing protection rules, committing changes, and executing pull requests with governance best practices.
+
+---
+
+✅ Branching Strategy
+---------------------
+
+Create a feature or development branch from main:
+    git checkout -b dev
+
+Push the new branch to GitHub and set upstream tracking:
+    git push -u origin dev
+
+Tip: Use descriptive branch names for clarity (e.g., dev-frontend-ui or feature/resume-matcher).
+
+---
+
+✅ Protection Rules (Main Branch Governance)
+-------------------------------------------
+
+To enforce governance on the `main` branch:
+
+1. Navigate to:
+    GitHub Repo → Settings → Branches → Add Ruleset
+
+2. Target Branch:
+    main
+
+3. Enable the following rules:
+    - Require pull request before merging
+    - Require approvals (e.g., minimum 1 reviewer)
+    - Require signed commits
+    - Enforce linear history (no merge commits)
+    - Restrict force pushes and branch deletions
+
+Tip: These rules ensure traceability, auditability, and protection of production-grade code.
+
+---
+
+✅ Commit & Push Discipline
+---------------------------
+
+Stage all changes:
+    git add .
+
+Commit with a clear, modular message:
+    git commit -m "Add analytics engine and web interface"
+
+Push to the current branch:
+    git push
+
+Best Practices:
+- Use semantic commit messages (e.g., feat:, fix:, chore:)
+- Include module tags or versioning if applicable
+- Avoid committing sensitive or temporary files—use .gitignore
+
+---
+
+✅ Pull Request Governance
+--------------------------
+
+Create a pull request to merge changes from `dev` into `main`:
+
+1. Navigate to GitHub → Pull Requests → New Pull Request  
+2. Compare:
+    base: main  
+    compare: dev
+
+3. Use the PR template (if available) to document:
+    - Purpose of change  
+    - Scope of impact  
+    - Testing and validation steps
+
+4. Merge Strategy:
+    - Prefer **Squash** or **Rebase** to maintain linear history
+    - Avoid merge commits unless explicitly required
+
+Tip: Tag reviewers and link related issues for traceability.
+
+---
+
+🛡️ Governance Notes
+--------------------
+
+- Always commit before closing Codespaces to avoid data loss
+- Use branch naming conventions for clarity and automation
+- Document major changes in README or CHANGELOG
+- Protect IP and sensitive logic with modular folder structure and access control
+
+---
+
+End of Guide - Branching, Protection, Commit Discipline, and PR Governance
+==========================
 
 
+GITHUB_SYNC_DIAGNOSTIC_GUIDE.txt
+=================================
 
-🧭 1. Local vs Remote Branches
+Title: GitHub Sync Diagnostic & Recovery Guide  
+Last Updated: 11 October 2025  
+Purpose: This guide helps diagnose and resolve common sync issues between your local Codespaces environment and your GitHub repository. It ensures that branches, files, and commits are properly tracked, pushed, and visible on GitHub.
+
+---
+
+🧭 SECTION 1: Local vs Remote Branches
+--------------------------------------
+
+Problem:
 You may have created branches locally in Codespaces but haven’t pushed them to GitHub yet.
-✅ Fix:
-In your Codespaces terminal, run:
-git branch         # shows local branches
-git branch -r      # shows remote branches
 
+Diagnosis:
+Run:
+    git branch         # shows local branches
+    git branch -r      # shows remote branches
+
+Fix:
 To push a local branch to GitHub:
-git push -u origin your-branch-name
+    git push -u origin your-branch-name
 
-📁 2. Uncommitted or Unpushed Files
+---
+
+📁 SECTION 2: Uncommitted or Unpushed Files
+-------------------------------------------
+
+Problem:
 Files created in Codespaces won’t appear on GitHub unless they’re:
 - Committed to Git
 - Pushed to a remote branch
-✅ Fix:
-git add .
-git commit -m "Add new files"
-git push
 
-🔍 3. Wrong Branch Selected on GitHub
-On GitHub.com, you might be viewing the main branch while your changes are in dev or another branch.
-✅ Fix:
-- Go to your repo
+Fix:
+    git add .
+    git commit -m "Add new files"
+    git push
+
+Tip: Always commit before closing Codespaces to avoid data loss.
+
+---
+
+🔍 SECTION 3: Wrong Branch Selected on GitHub
+---------------------------------------------
+
+Problem:
+You’re viewing the `main` branch on GitHub.com, but your changes are in `dev` or another branch.
+
+Fix:
+- Go to your GitHub repo
 - Use the branch dropdown (top-left above the file list)
-- Switch to the correct branch (e.g., dev, feature/login-module)
+- Switch to the correct branch (e.g., `dev`, `feature/login-module`)
 
-🧼 4. Files Ignored by .gitignore
-Some files (e.g., .env, logs, temp files) may be excluded from Git tracking.
-✅ Fix:
-Check your .gitignore file in Codespaces. If needed, remove the file from .gitignore and re-add it:
-git add yourfile
-git commit -m "Track previously ignored file"
-git push
+---
 
-🧠 5. Detached HEAD or Workspace Misalignment
-If you’re in a detached HEAD state or working outside the repo folder, Git may not track your changes.
-✅ Fix:
-Make sure you’re inside the correct repo folder
-pwd
-git status
+🧼 SECTION 4: Files Ignored by .gitignore
+-----------------------------------------
 
-If needed, switch to a valid branch:
-git checkout main
+Problem:
+Some files (e.g., `.env`, logs, temp files) may be excluded from Git tracking.
 
-🧭 Step-by-Step: Ensure Your Branches and Files Are Visible on GitHub
+Fix:
+- Check your `.gitignore` file in Codespaces
+- If needed, remove the file from `.gitignore`
+- Then re-add and commit:
+    git add yourfile
+    git commit -m "Track previously ignored file"
+    git push
+
+---
+
+🧠 SECTION 5: Detached HEAD or Workspace Misalignment
+------------------------------------------------------
+
+Problem:
+You’re in a detached HEAD state or working outside the repo folder, so Git isn’t tracking your changes.
+
+Fix:
+- Confirm your location:
+    pwd
+    git status
+
+- If needed, switch to a valid branch:
+    git checkout main
+
+---
+
+🧭 SECTION 6: Step-by-Step Sync Checklist
+-----------------------------------------
+
 ✅ 1. Check Remote Branches
 Run:
-git branch -r
-This shows branches that exist on GitHub (remote). You should see:
-origin/main
-origin/dev
+    git branch -r
 
-If origin/dev is missing, push it:
-git push -u origin dev
+Expected Output:
+    origin/main  
+    origin/dev
+
+If `origin/dev` is missing:
+    git push -u origin dev
 
 ✅ 2. Check File Status
 Run:
-git status
+    git status
 
-git status
-``>
-If you see untracked or modified files, they haven’t been committed yet.
-
-To commit and push:
-```bash
-git add .
-git commit -m "Add files for dev branch"
-git push
-
-Thanks for sharing that, Seb. This confirms you're currently on the dev branch, and you also have a local main branch. However, this only shows local branches—not whether your changes, branches, or files have been pushed to GitHub or are visible there.
-Let’s walk through a quick diagnostic and fix:
-
-🧭 Step-by-Step: Ensure Your Branches and Files Are Visible on GitHub
-✅ 1. Check Remote Branches
-Run:
-git branch -r
-
-
-This shows branches that exist on GitHub (remote). You should see:
-origin/main
-origin/dev
-
-
-If origin/dev is missing, push it:
-git push -u origin dev
-
-
-
-✅ 2. Check File Status
-Run:
-git status
-``>
-If you see untracked or modified files, they haven’t been committed yet.
-
-To commit and push:
-```bash
-git add .
-git commit -m "Add files for dev branch"
-git push
-
-
+If you see untracked or modified files:
+    git add .
+    git commit -m "Add files for dev branch"
+    git push
 
 ✅ 3. Confirm on GitHub
-Go to github.com/sebong-sg/Job_Candidate_Matcher
-- Use the branch dropdown (top-left above the file list)
-- Switch to dev or any other branch
+- Go to: github.com/sebong-sg/Job_Candidate_Matcher
+- Use the branch dropdown
+- Switch to `dev` or your working branch
 - Confirm your files appear
 
-🧠 Optional: View All Branches and Their Status
+✅ 4. View All Branches and Their Status
 Run:
-git remote show origin
+    git remote show origin
 
 This shows which branches are tracked, pushed, and synced.
 
+---
 
-If encountering a classic Git sync issue, or a mismatch between your local dev branch and the remote dev branch on GitHub. Here's exactly what's happening and how to fix it safely:
+🧠 SECTION 7: Resolving Git Sync Conflicts
+------------------------------------------
 
-🧠 What the Error Means
-Updates were rejected because the remote contains work that you do not have locally.
+Problem:
+You see this error when pushing:
+> Updates were rejected because the remote contains work that you do not have locally.
 
-This means someone (possibly you from another device or Codespace) pushed new commits to dev on GitHub, and your local copy doesn’t have those changes yet. Git is blocking your push to prevent overwriting them.
+Explanation:
+Someone (possibly you from another device or Codespace) pushed new commits to `dev` on GitHub. Your local copy doesn’t have those changes yet. Git blocks your push to prevent overwriting.
 
-✅ How to Fix It Safely
+Fix:
+
 🔧 Step 1: Pull Remote Changes First
-Run this in your terminal:
-git pull --rebase
+    git pull --rebase
 
-
-This pulls the latest commits from GitHub and replays your local commits on top, keeping history clean.
-
+This pulls the latest commits and replays your local commits on top, preserving clean history.
 
 🔧 Step 2: Push Again
-Once the rebase completes successfully:
-git push
+    git push
 
+Your new commit (e.g., `GITHUB_WORKFLOW_GUIDE.txt`) will now be pushed safely.
 
-Your new commit (including GITHUB_WORKFLOW_GUIDE.txt) will now be pushed to GitHub.
+---
 
-🧭 Why This Happens
-- You may have made changes in another Codespace or GitHub.com (e.g., editing README.md).
-- Git wants to merge or rebase those changes before allowing your push.
+🧭 Why This Guide Matters
+--------------------------
 
-Would you like help visualizing this sync flow in a storyboard or setting up GitHub Actions to auto-check for remote changes before pushing? I can also help you configure git pull --rebase as your default behavior for cleaner workflows.
+This workflow ensures:
+- Your branches are properly tracked and visible on GitHub
+- Your files are committed and pushed before Codespaces closes
+- You avoid common Git sync errors and maintain clean commit history
+- You follow governance-friendly practices for traceability and collaboration
+
+---
+
+End of Guide - GITHUB_SYNC_DIAGNOSTIC_GUIDE.txt
