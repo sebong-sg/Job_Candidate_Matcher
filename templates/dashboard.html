@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - AI Job Matcher Pro{% endblock %}
+
+{% block page_title %}Dashboard{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/components/dashboard.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/components/cards.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <!-- Metrics Overview -->
+    <div class="metrics-grid">
+        <div class="metric-card">
+            <div class="metric-card__icon">💼</div>
+            <div class="metric-card__content">
+                <div class="metric-card__value" id="jobs-count">0</div>
+                <div class="metric-card__label">Open Jobs</div>
+            </div>
+        </div>
+        
+        <div class="metric-card">
+            <div class="metric-card__icon">👥</div>
+            <div class="metric-card__content">
+                <div class="metric-card__value" id="candidates-count">0</div>
+                <div class="metric-card__label">Active Candidates</div>
+            </div>
+        </div>
+        
+        <div class="metric-card">
+            <div class="metric-card__icon">🎯</div>
+            <div class="metric-card__content">
+                <div class="metric-card__value" id="matches-count">0</div>
+                <div class="metric-card__label">Total Matches</div>
+            </div>
+        </div>
+        
+        <div class="metric-card">
+            <div class="metric-card__icon">📈</div>
+            <div class="metric-card__content">
+                <div class="metric-card__value" id="success-rate">0%</div>
+                <div class="metric-card__label">Success Rate</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="action-section">
+        <h2 class="section-title">Quick Actions</h2>
+        <div class="action-buttons">
+            <button class="btn btn--primary" onclick="runMatching()">
+                <span class="btn__icon">🤖</span>
+                Run AI Matching
+            </button>
+            <button class="btn btn--secondary" onclick="loadCandidates()">
+                <span class="btn__icon">👥</span>
+                View Candidates
+            </button>
+            <button class="btn btn--secondary" onclick="loadJobs()">
+                <span class="btn__icon">💼</span>
+                View Jobs
+            </button>
+        </div>
+    </div>
+
+    <!-- Recent Matches -->
+    <div class="matches-section">
+        <div class="section-header">
+            <h2 class="section-title">Recent Matches</h2>
+            <button class="btn btn--outline" onclick="runMatching()">Refresh</button>
+        </div>
+        <div id="matches-results" class="matches-container">
+            <div class="loading-state">
+                <div class="loading-spinner"></div>
+                <p>Loading match data...</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/modules/dashboard.js') }}"></script>
+<script>
+    // Initialize dashboard when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+        dashboardModule.init();
+    });
+</script>
+{% endblock %}

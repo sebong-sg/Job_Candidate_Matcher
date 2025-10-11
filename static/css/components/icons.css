@@ -1,0 +1,44 @@
+/* Professional Icon System */
+.icon {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+}
+
+.icon--sm {
+    width: 16px;
+    height: 16px;
+}
+
+.icon--lg {
+    width: 24px;
+    height: 24px;
+}
+
+.icon--xl {
+    width: 32px;
+    height: 32px;
+}
+
+/* Icon colors */
+.icon--primary { stroke: var(--primary-600); }
+.icon--muted { stroke: var(--gray-500); }
+.icon--white { stroke: white; }
+.icon--success { stroke: var(--success); }
+
+/* Metric card icons */
+.metric-card__icon {
+    width: 48px;
+    height: 48px;
+    background: var(--primary-50);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.metric-card__icon .icon {
+    width: 24px;
+    height: 24px;
+    stroke: var(--primary-600);
+}
