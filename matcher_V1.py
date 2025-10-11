@@ -1,27 +1,23 @@
-# 🚀 ENHANCED JOB MATCHING WITH CLEAN ARCHITECTURE
-# TF-IDF for exact skills + Embeddings for semantic understanding
+# 🚀 ENHANCED JOB MATCHING PROGRAM WITH SCORE BREAKDOWN
+# This is the brain of our application
 
 from database import DataManager
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
-
-# Import our new semantic systems
-from semantic_matcher import semantic_matcher
-from profile_analyzer import profile_analyzer
 
 print("=== 🤖 JOB-CANDIDATE MATCHER STARTING ===")
 
 class SimpleMatcher:
     def __init__(self):
         self.db = DataManager()
-        print("✅ Matcher initialized with clean architecture!")
+        print("✅ Matcher initialized with database!")
     
     def calculate_skill_score(self, job_skills, candidate_skills):
-        """Calculate weighted skill match score using TF-IDF principles"""
+        """Calculate weighted skill match score"""
         if not job_skills:
             return 0.0
         
-        # Skill weights for realistic scoring
+        # Skill weights for more realistic scoring
         skill_weights = {
             'python': 0.15, 'javascript': 0.12, 'java': 0.12, 'react': 0.10,
             'django': 0.08, 'flask': 0.08, 'node.js': 0.08, 'sql': 0.10,
@@ -42,9 +38,7 @@ class SimpleMatcher:
             if skill_lower in candidate_skills_lower:
                 matched_weight += weight
         
-        score = matched_weight / total_weight if total_weight > 0 else 0.0
-        print(f"🔧 Skill Score: {matched_weight:.2f}/{total_weight:.2f} = {score:.1%}")
-        return score
+        return matched_weight / total_weight if total_weight > 0 else 0.0
     
     def calculate_experience_score(self, job_title, candidate_experience):
         """Calculate experience suitability score"""
@@ -81,12 +75,35 @@ class SimpleMatcher:
         else:
             return 0.3
     
-    def calculate_semantic_relevance(self, job_description, candidate_profile):
-        """Pure semantic understanding using embeddings"""
-        return profile_analyzer.calculate_semantic_relevance(
-            job_description, 
-            candidate_profile
-        )
+    def calculate_profile_relevance(self, job_description, candidate_profile):
+        """Calculate profile relevance using improved keyword matching"""
+        if not candidate_profile or not job_description:
+            return 0.7  # Reasonable default
+        
+        job_lower = job_description.lower()
+        candidate_lower = candidate_profile.lower()
+        
+        # Count meaningful keyword matches
+        important_keywords = [
+            'python', 'django', 'developer', 'development', 'web', 
+            'applications', 'senior', 'experience', 'cloud', 'technical',
+            'projects', 'lead', 'build', 'create', 'design'
+        ]
+        
+        matches = 0
+        for keyword in important_keywords:
+            if keyword in job_lower and keyword in candidate_lower:
+                matches += 1
+        
+        # Reasonable scoring logic
+        if matches >= 5:
+            return 0.85  # Excellent match
+        elif matches >= 3:
+            return 0.70  # Good match
+        elif matches >= 1:
+            return 0.50  # Basic match
+        else:
+            return 0.30  # Poor match
     
     def get_match_grade(self, total_score):
         """Convert numerical score to letter grade"""
@@ -99,24 +116,22 @@ class SimpleMatcher:
         else: return 'D'
     
     def prepare_text_for_matching(self, jobs, candidates):
-        """Prepare text for basic TF-IDF matching (skills-focused)"""
+        """Prepare text data for semantic matching"""
         job_texts = []
         candidate_texts = []
         
         for job in jobs:
-            # Focus on skills and key technical terms
-            job_text = f"{job['title']} {' '.join(job['required_skills'])}"
+            job_text = f"{job['title']} {job['description']} {' '.join(job['required_skills'])}"
             job_texts.append(job_text)
         
         for candidate in candidates:
-            # Focus on skills and technical background
-            candidate_text = f"{' '.join(candidate['skills'])} {candidate.get('profile', '')}"
+            candidate_text = f"{candidate['name']} {candidate['profile']} {' '.join(candidate['skills'])}"
             candidate_texts.append(candidate_text)
         
         return job_texts, candidate_texts
     
     def find_matches(self, jobs=None, candidates=None):
-        """Enhanced matching with clean architecture"""
+        """Enhanced matching with score breakdown"""
         if jobs is None:
             jobs = self.db.load_jobs()
         if candidates is None:
@@ -124,10 +139,10 @@ class SimpleMatcher:
         
         print(f"🔍 Matching {len(jobs)} jobs with {len(candidates)} candidates...")
         
-        # Prepare text for basic skill-focused matching
+        # Prepare text for semantic matching
         job_texts, candidate_texts = self.prepare_text_for_matching(jobs, candidates)
         
-        # Use TF-IDF for exact skill matching
+        # Use TF-IDF for semantic matching
         vectorizer = TfidfVectorizer(stop_words='english', max_features=1000)
         all_texts = job_texts + candidate_texts
         vectorizer.fit(all_texts)
@@ -142,9 +157,9 @@ class SimpleMatcher:
             matches[job_index] = []
             
             for candidate_index, candidate in enumerate(candidates):
-                skill_similarity = similarity_matrix[job_index, candidate_index]
+                semantic_score = similarity_matrix[job_index, candidate_index]
                 
-                if skill_similarity > 0.1:  # Basic skill overlap threshold
+                if semantic_score > 0.1:
                     # Calculate individual score components
                     skill_score = self.calculate_skill_score(
                         job.get('required_skills', []), 
@@ -161,18 +176,17 @@ class SimpleMatcher:
                         candidate.get('location', '')
                     )
                     
-                    # PURE SEMANTIC RELEVANCE (replaces old profile relevance)
-                    semantic_score = self.calculate_semantic_relevance(
+                    profile_score = self.calculate_profile_relevance(
                         job.get('description', ''), 
                         candidate.get('profile', '')
                     )
                     
-                    # Calculate total weighted score with clean separation
+                    # Calculate total weighted score
                     total_score = (
-                        skill_score * 0.50 +        # Exact skill matching (TF-IDF)
-                        experience_score * 0.25 +   # Experience rules
-                        location_score * 0.15 +     # Location rules  
-                        semantic_score * 0.10       # Pure semantic understanding (Embeddings)
+                        skill_score * 0.50 +
+                        experience_score * 0.25 +  
+                        location_score * 0.15 +
+                        profile_score * 0.10
                     )
                     
                     # Find common skills
@@ -189,7 +203,7 @@ class SimpleMatcher:
                             'skills': int(skill_score * 100),
                             'experience': int(experience_score * 100),
                             'location': int(location_score * 100),
-                            'profile': int(semantic_score * 100)  # Now pure semantic
+                            'profile': int(profile_score * 100)
                         },
                         'match_grade': self.get_match_grade(total_score)
                     })
@@ -198,12 +212,12 @@ class SimpleMatcher:
         
         return matches, jobs, candidates
 
-# Test function
+# Keep your existing main function for testing
 def main():
     matcher = SimpleMatcher()
     results, jobs, candidates = matcher.find_matches()
     
-    print("\n🎯 CLEAN ARCHITECTURE MATCHING RESULTS:")
+    print("\n🎯 ENHANCED MATCHING RESULTS:")
     for job_index, job_matches in results.items():
         job = jobs[job_index]
         print(f"\n🏢 {job['title']}")
@@ -211,7 +225,7 @@ def main():
             candidate = match['candidate']
             breakdown = match.get('score_breakdown', {})
             print(f"   👤 {candidate['name']} - Score: {match['score']:.3f}")
-            print(f"      Skills: {breakdown.get('skills', 0)}% | Exp: {breakdown.get('experience', 0)}% | Location: {breakdown.get('location', 0)}% | Semantic: {breakdown.get('profile', 0)}%")
+            print(f"      Skills: {breakdown.get('skills', 0)}% | Exp: {breakdown.get('experience', 0)}% | Location: {breakdown.get('location', 0)}% | Profile: {breakdown.get('profile', 0)}%")
 
 if __name__ == "__main__":
     main()

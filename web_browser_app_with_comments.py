@@ -49,6 +49,7 @@ except ImportError as e:
                     "description": "Develop web applications with Python and Django", 
                     "required_skills": ["python", "django", "sql"]
                 },
+                # ... more sample jobs
             ]
         
         def load_candidates(self):
@@ -63,6 +64,7 @@ except ImportError as e:
                     "experience_years": 5, 
                     "location": "Remote"
                 },
+                # ... more sample candidates
             ]
         
         def add_job(self, data): 
@@ -777,55 +779,13 @@ HTML_TEMPLATE = '''
                     
                     // Create a card for each match
                     data.matches.forEach(match => {
-                        const breakdown = match.score_breakdown || {};  
                         html += `
                             <div class="match-card">
                                 <div class="match-header">
                                     <h4>${match.job_title} at ${match.company}</h4>
-                                    <div style="display: flex; gap: 10px; align-items: center;">
-                                        <span class="match-grade">${match.match_grade || 'A'}</span>
-                                        <span class="match-score">${(match.top_score * 100).toFixed(1)}% Match</span>
-                                    </div>
+                                    <span class="match-score">${(match.top_score * 100).toFixed(1)}% Match</span>
                                 </div>
                                 <p><strong>👤 Top Candidate:</strong> ${match.top_candidate}</p>
-        
-                                ${breakdown.skills ? `
-                                <div class="score-breakdown">
-                                    <h5>📊 Score Breakdown:</h5>
-                                    <div class="breakdown-item">
-                                        <span>Skills Match:</span>
-                                        <span>${breakdown.skills}%</span>
-                                    </div>
-                                    <div class="breakdown-bar">
-                                        <div class="breakdown-fill" style="width: ${breakdown.skills}%"></div>
-                                    </div>
-            
-                                    <div class="breakdown-item">
-                                        <span>Experience:</span>
-                                        <span>${breakdown.experience || 0}%</span>
-                                    </div>
-                                    <div class="breakdown-bar">
-                                        <div class="breakdown-fill" style="width: ${breakdown.experience || 0}%"></div>
-                                    </div>
-            
-                                    <div class="breakdown-item">
-                                        <span>Location:</span>
-                                        <span>${breakdown.location || 0}%</span>
-                                    </div>
-                                    <div class="breakdown-bar">
-                                        <div class="breakdown-fill" style="width: ${breakdown.location || 0}%"></div>
-                                    </div>
-            
-                                    <div class="breakdown-item">
-                                        <span>Profile Relevance:</span>
-                                        <span>${breakdown.profile || 0}%</span>
-                                    </div>
-                                    <div class="breakdown-bar">
-                                        <div class="breakdown-fill" style="width: ${breakdown.profile || 0}%"></div>
-                                    </div>
-                                </div>
-                                ` : ''}
-        
                                 <p><strong>🔧 Common Skills:</strong> ${match.common_skills && match.common_skills.length > 0 ? match.common_skills.join(', ') : 'No common skills detected'}</p>
                             </div>
                         `;
@@ -1243,9 +1203,7 @@ def run_matching():
                     'candidate_id': candidate['id'],
                     'top_candidate': candidate['name'],
                     'top_score': top_match['score'],
-                    'common_skills': top_match.get('common_skills', [])[:5],
-                    'score_breakdown': top_match.get('score_breakdown', {}),
-                    'match_grade': top_match.get('match_grade', 'A')
+                    'common_skills': top_match.get('common_skills', [])[:5]  # Limit to top 5 skills
                 })
         
         print(f"✅ Found {len(matches)} matches")

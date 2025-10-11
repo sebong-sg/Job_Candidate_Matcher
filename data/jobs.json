@@ -43,16 +43,6 @@
       "location": "San Francisco"
     },
     {
-      "title": "\u001b\u001b\u001b5",
-      "company": "",
-      "location": "",
-      "description": "",
-      "required_skills": [
-        ""
-      ],
-      "id": 4
-    },
-    {
       "title": "Senior Software Engineer",
       "description": "Develop and maintain scalable software solutions using modern technologies.",
       "required_skills": [
