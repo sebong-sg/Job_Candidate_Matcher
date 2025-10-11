@@ -60,22 +60,298 @@ class SimpleMatcher:
         else:
             return 0.1
     
-    def calculate_location_score(self, job_location, candidate_location):
-        """Calculate location compatibility score"""
+    def calculate_global_location_score(self, job_location, candidate_location, candidate_willing_to_relocate=False, company_relocation_support=False):
+        """Enhanced global location compatibility scoring"""
         if not job_location or not candidate_location:
             return 0.5
-            
-        job_loc = job_location.lower()
-        candidate_loc = candidate_location.lower()
         
-        if 'remote' in job_loc:
+        job_loc = job_location.lower().strip()
+        candidate_loc = candidate_location.lower().strip()
+        
+        # Handle remote work scenarios
+        if self._is_remote(job_loc):
             return 1.0
-        elif job_loc == candidate_loc:
+        
+        if self._is_remote(candidate_loc) and not self._is_remote(job_loc):
+            return 0.3  # Candidate wants remote but job requires on-site
+        
+        # Exact match
+        if job_loc == candidate_loc:
             return 1.0
-        elif 'remote' in candidate_loc:
-            return 0.8
-        else:
+        
+        # Calculate base geographic proximity (40% weight)
+        geo_score = self._calculate_geographic_proximity(job_loc, candidate_loc)
+        
+        # Calculate relocation practicality (30% weight)
+        practical_score = self._calculate_relocation_practicality(job_loc, candidate_loc)
+        
+        # Calculate professional context (20% weight)
+        professional_score = self._calculate_professional_context(job_loc, candidate_loc)
+        
+        # Calculate candidate preferences (10% weight)
+        preference_score = self._calculate_preference_score(candidate_willing_to_relocate, company_relocation_support)
+        
+        # Weighted combined score
+        base_score = (geo_score * 0.4) + (practical_score * 0.3) + (professional_score * 0.2) + (preference_score * 0.1)
+        
+        # Apply modifiers
+        final_score = self._apply_location_modifiers(base_score, job_loc, candidate_loc)
+        
+        return max(0.0, min(1.0, final_score))
+    
+    def _is_remote(self, location):
+        """Check if location indicates remote work"""
+        remote_indicators = ['remote', 'anywhere', 'flexible', 'virtual', 'wfh', 'work from home']
+        return any(indicator in location for indicator in remote_indicators)
+    
+    def _calculate_geographic_proximity(self, job_loc, candidate_loc):
+        """Calculate geographic proximity score (40% weight)"""
+        # Major global tech hubs and metro areas
+        tech_hubs = {
+            'north_america': ['san francisco', 'new york', 'seattle', 'toronto', 'chicago','austin', 'boston', 'los angeles'],
+            'europe': ['london', 'berlin', 'paris', 'amsterdam', 'dublin', 'stockholm', 'barcelona'],
+            'asia': ['tokyo', 'singapore', 'bangalore', 'hong kong', 'seoul', 'shanghai', 'shenzhen'],
+            'south_asia': ['mumbai', 'delhi', 'bangalore', 'hyderabad', 'chennai'],
+            'middle_east': ['dubai', 'tel aviv', 'riyadh'],
+            'oceania': ['sydney', 'melbourne', 'auckland']
+        }
+        
+        # Check same city/metro area
+        if self._is_same_metro_area(job_loc, candidate_loc):
+            return 0.9
+        
+        # Check same major hub
+        job_hub = self._identify_tech_hub(job_loc, tech_hubs)
+        candidate_hub = self._identify_tech_hub(candidate_loc, tech_hubs)
+        
+        if job_hub and candidate_hub and job_hub == candidate_hub:
+            return 0.8  # Same hub cluster
+        
+        # Same country
+        if self._is_same_country(job_loc, candidate_loc):
+            return 0.6
+        
+        # Neighboring countries/same region
+        if self._is_same_region(job_loc, candidate_loc):
+            return 0.4
+        
+        # Same continent
+        if self._is_same_continent(job_loc, candidate_loc):
             return 0.3
+        
+        # Global (different continents)
+        return 0.2
+    
+    def _calculate_relocation_practicality(self, job_loc, candidate_loc):
+        """Calculate relocation practicality score (30% weight)"""
+        score = 0.5  # Base neutral score
+        
+        # Visa requirements consideration
+        if self._has_visa_advantages(job_loc, candidate_loc):
+            score += 0.2
+        elif self._has_visa_complexity(job_loc, candidate_loc):
+            score -= 0.2
+        
+        # Language compatibility
+        if self._has_language_compatibility(job_loc, candidate_loc):
+            score += 0.15
+        
+        # Cultural similarity
+        if self._has_cultural_similarity(job_loc, candidate_loc):
+            score += 0.1
+        
+        return max(0.0, min(1.0, score))
+    
+    def _calculate_professional_context(self, job_loc, candidate_loc):
+        """Calculate professional context score (20% weight)"""
+        global_tech_hubs = ['san francisco', 'london', 'tokyo', 'singapore', 'bangalore', 'berlin', 'new york', 'seattle']
+        
+        job_is_hub = any(hub in job_loc for hub in global_tech_hubs)
+        candidate_is_hub = any(hub in candidate_loc for hub in global_tech_hubs)
+        
+        if job_is_hub and candidate_is_hub:
+            return 0.8  # Both global tech hubs
+        elif job_is_hub or candidate_is_hub:
+            return 0.6  # One is a tech hub
+        else:
+            return 0.4  # Neither major hub
+    
+    def _calculate_preference_score(self, willing_to_relocate, company_relocation_support):
+        """Calculate preference score (10% weight)"""
+        score = 0.5  # Base neutral
+        
+        if willing_to_relocate:
+            score += 0.3
+        
+        if company_relocation_support:
+            score += 0.2
+        
+        return max(0.0, min(1.0, score))
+    
+    def _apply_location_modifiers(self, base_score, job_loc, candidate_loc):
+        """Apply final location modifiers"""
+        final_score = base_score
+        
+        # Time zone difference penalty
+        tz_penalty = self._calculate_timezone_penalty(job_loc, candidate_loc)
+        final_score -= tz_penalty
+        
+        # Established business corridor bonus
+        if self._is_established_corridor(job_loc, candidate_loc):
+            final_score += 0.1
+        
+        return max(0.0, min(1.0, final_score))
+    
+    def _is_same_metro_area(self, loc1, loc2):
+        """Check if locations are in same metropolitan area"""
+        metro_areas = {
+            'san francisco': ['oakland', 'san jose', 'berkeley', 'palo alto'],
+            'london': ['greater london', 'london uk'],
+            'tokyo': ['tokyo japan', 'greater tokyo'],
+            'bangalore': ['bengaluru', 'bangalore india']
+        }
+        
+        for city, areas in metro_areas.items():
+            if city in loc1 and any(area in loc2 for area in areas):
+                return True
+            if city in loc2 and any(area in loc1 for area in areas):
+                return True
+        return False
+    
+    def _identify_tech_hub(self, location, tech_hubs):
+        """Identify which tech hub cluster the location belongs to"""
+        for region, hubs in tech_hubs.items():
+            if any(hub in location for hub in hubs):
+                return region
+        return None
+    
+    def _is_same_country(self, loc1, loc2):
+        """Simple same country detection"""
+        country_indicators = {
+            'usa': ['new york', 'san francisco', 'chicago', 'austin', 'boston'],
+            'india': ['bangalore', 'mumbai', 'delhi', 'hyderabad', 'chennai'],
+            'uk': ['london', 'manchester', 'birmingham', 'edinburgh'],
+            'germany': ['berlin', 'munich', 'hamburg', 'frankfurt'],
+            'japan': ['tokyo', 'osaka', 'kyoto', 'yokohama']
+        }
+        
+        for country, cities in country_indicators.items():
+            if any(city in loc1 for city in cities) and any(city in loc2 for city in cities):
+                return True
+        return False
+    
+    def _is_same_region(self, loc1, loc2):
+        """Check if locations are in same geographic region"""
+        regions = {
+            'europe': ['london', 'berlin', 'paris', 'amsterdam', 'dublin'],
+            'south_asia': ['bangalore', 'mumbai', 'delhi', 'chennai'],
+            'east_asia': ['tokyo', 'seoul', 'shanghai', 'hong kong'],
+            'north_america': ['san francisco', 'new york', 'toronto', 'seattle']
+        }
+        
+        loc1_region = None
+        loc2_region = None
+        
+        for region, cities in regions.items():
+            if any(city in loc1 for city in cities):
+                loc1_region = region
+            if any(city in loc2 for city in cities):
+                loc2_region = region
+        
+        return loc1_region and loc2_region and loc1_region == loc2_region
+    
+    def _is_same_continent(self, loc1, loc2):
+        """Simple continent detection"""
+        continents = {
+            'asia': ['tokyo', 'singapore', 'bangalore', 'seoul', 'shanghai'],
+            'europe': ['london', 'berlin', 'paris', 'amsterdam', 'dublin'],
+            'north america': ['san francisco', 'new york', 'toronto', 'chicago'],
+            'south america': ['sao paulo', 'buenos aires', 'bogota']
+        }
+        
+        loc1_continent = None
+        loc2_continent = None
+        
+        for continent, cities in continents.items():
+            if any(city in loc1 for city in cities):
+                loc1_continent = continent
+            if any(city in loc2 for city in cities):
+                loc2_continent = continent
+        
+        return loc1_continent and loc2_continent and loc1_continent == loc2_continent
+    
+    def _has_visa_advantages(self, job_loc, candidate_loc):
+        """Check if visa situation is favorable"""
+        # EU free movement, Commonwealth countries, etc.
+        favorable_pairs = [
+            ('germany', 'france'), ('uk', 'ireland'), 
+            ('australia', 'new zealand'), ('canada', 'usa')
+        ]
+        
+        for country1, country2 in favorable_pairs:
+            if country1 in job_loc and country2 in candidate_loc:
+                return True
+            if country2 in job_loc and country1 in candidate_loc:
+                return True
+        return False
+    
+    def _has_visa_complexity(self, job_loc, candidate_loc):
+        """Check if visa situation is complex"""
+        # Simplified - in reality would need comprehensive visa data
+        complex_pairs = [
+            ('usa', 'china'), ('russia', 'europe'), 
+            ('middle east', 'certain countries')  # Placeholder
+        ]
+        return any(pair[0] in job_loc and pair[1] in candidate_loc for pair in complex_pairs)
+    
+    def _has_language_compatibility(self, job_loc, candidate_loc):
+        """Check language compatibility"""
+        english_speaking = ['usa', 'uk', 'canada', 'australia', 'singapore', 'india']
+        return any(country in job_loc for country in english_speaking) and any(country in candidate_loc for country in english_speaking)
+    
+    def _has_cultural_similarity(self, job_loc, candidate_loc):
+        """Check cultural similarity"""
+        similar_cultures = [
+            ('usa', 'canada'), ('uk', 'australia'), 
+            ('germany', 'france'), ('japan', 'south korea')
+        ]
+        return any(pair[0] in job_loc and pair[1] in candidate_loc for pair in similar_cultures)
+    
+    def _calculate_timezone_penalty(self, job_loc, candidate_loc):
+        """Calculate timezone difference penalty"""
+        # Simplified timezone estimation
+        timezones = {
+            'usa': -5, 'uk': 0, 'germany': 1, 'india': 5.5, 
+            'singapore': 8, 'japan': 9, 'australia': 10
+        }
+        
+        job_tz = next((tz for country, tz in timezones.items() if country in job_loc), 0)
+        candidate_tz = next((tz for country, tz in timezones.items() if country in candidate_loc), 0)
+        
+        difference = abs(job_tz - candidate_tz)
+        
+        if difference <= 2:
+            return 0.0
+        elif difference <= 4:
+            return 0.05
+        elif difference <= 6:
+            return 0.1
+        else:
+            return 0.15
+    
+    def _is_established_corridor(self, job_loc, candidate_loc):
+        """Check if locations have established business corridor"""
+        established_corridors = [
+            ('san francisco', 'bangalore'), ('london', 'new york'),
+            ('singapore', 'hong kong'), ('berlin', 'amsterdam')
+        ]
+        
+        for loc1, loc2 in established_corridors:
+            if loc1 in job_loc and loc2 in candidate_loc:
+                return True
+            if loc2 in job_loc and loc1 in candidate_loc:
+                return True
+        return False
     
     def get_match_grade(self, total_score):
         """Convert numerical score to letter grade"""
@@ -109,7 +385,7 @@ class SimpleMatcher:
             for match in chroma_matches:
                 candidate = match['candidate']
                 
-                # Calculate additional scoring components
+                # Calculate individual score components
                 skill_score = self.calculate_skill_score(
                     job.get('required_skills', []), 
                     candidate.get('skills', [])
@@ -120,7 +396,8 @@ class SimpleMatcher:
                     candidate.get('experience_years', 0)
                 )
                 
-                location_score = self.calculate_location_score(
+                # Use enhanced global location scoring
+                location_score = self.calculate_global_location_score(
                     job.get('location', ''), 
                     candidate.get('location', '')
                 )
@@ -132,7 +409,7 @@ class SimpleMatcher:
                 total_score = (
                     skill_score * 0.40 +           # Skill matching
                     experience_score * 0.25 +      # Experience rules
-                    location_score * 0.15 +        # Location rules  
+                    location_score * 0.15 +        # Global location scoring  
                     semantic_score * 0.20          # Semantic understanding from Chroma
                 )
                 
