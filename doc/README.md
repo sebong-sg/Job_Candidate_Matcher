@@ -131,6 +131,7 @@ GET /api/get-candidates - List all candidates
 POST /api/parse-resume - Process resume text
 
 
+
 Enhance new file structure consideration
 job-matcher-pro/
 ├── app/

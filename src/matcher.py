@@ -1,23 +1,20 @@
-# 🚀 ENHANCED JOB MATCHING WITH CLEAN ARCHITECTURE
-# TF-IDF for exact skills + Embeddings for semantic understanding
+# 🚀 ENHANCED JOB MATCHING WITH CHROMA VECTOR DATABASE
+# Hybrid approach: Chroma for semantic search + traditional scoring
 
-from database import DataManager
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
-
-# Import our new semantic systems
+from chroma_data_manager import ChromaDataManager
+from vector_db import vector_db
 from semantic_matcher import semantic_matcher
 from profile_analyzer import profile_analyzer
 
-print("=== 🤖 JOB-CANDIDATE MATCHER STARTING ===")
+print("=== 🤖 JOB-CANDIDATE MATCHER WITH CHROMA DB ===")
 
 class SimpleMatcher:
     def __init__(self):
-        self.db = DataManager()
-        print("✅ Matcher initialized with clean architecture!")
+        self.db = ChromaDataManager()
+        print("✅ Matcher initialized with Chroma Vector Database!")
     
     def calculate_skill_score(self, job_skills, candidate_skills):
-        """Calculate weighted skill match score using TF-IDF principles"""
+        """Calculate weighted skill match score"""
         if not job_skills:
             return 0.0
         
@@ -43,7 +40,6 @@ class SimpleMatcher:
                 matched_weight += weight
         
         score = matched_weight / total_weight if total_weight > 0 else 0.0
-        print(f"🔧 Skill Score: {matched_weight:.2f}/{total_weight:.2f} = {score:.1%}")
         return score
     
     def calculate_experience_score(self, job_title, candidate_experience):
@@ -81,13 +77,6 @@ class SimpleMatcher:
         else:
             return 0.3
     
-    def calculate_semantic_relevance(self, job_description, candidate_profile):
-        """Pure semantic understanding using embeddings"""
-        return profile_analyzer.calculate_semantic_relevance(
-            job_description, 
-            candidate_profile
-        )
-    
     def get_match_grade(self, total_score):
         """Convert numerical score to letter grade"""
         if total_score >= 0.9: return 'A+'
@@ -98,42 +87,15 @@ class SimpleMatcher:
         elif total_score >= 0.4: return 'C'
         else: return 'D'
     
-    def prepare_text_for_matching(self, jobs, candidates):
-        """Prepare text for basic TF-IDF matching (skills-focused)"""
-        job_texts = []
-        candidate_texts = []
-        
-        for job in jobs:
-            # Focus on skills and key technical terms
-            job_text = f"{job['title']} {' '.join(job['required_skills'])}"
-            job_texts.append(job_text)
-        
-        for candidate in candidates:
-            # Focus on skills and technical background
-            candidate_text = f"{' '.join(candidate['skills'])} {candidate.get('profile', '')}"
-            candidate_texts.append(candidate_text)
-        
-        return job_texts, candidate_texts
-    
     def find_matches(self, jobs=None, candidates=None):
-        """Enhanced matching with clean architecture"""
+        """Enhanced matching using Chroma vector database for semantic search"""
         if jobs is None:
             jobs = self.db.load_jobs()
         if candidates is None:
             candidates = self.db.load_candidates()
         
-        print(f"🔍 Matching {len(jobs)} jobs with {len(candidates)} candidates...")
-        
-        # Prepare text for basic skill-focused matching
-        job_texts, candidate_texts = self.prepare_text_for_matching(jobs, candidates)
-        
-        # Use TF-IDF for exact skill matching
-        vectorizer = TfidfVectorizer(stop_words='english', max_features=1000)
-        all_texts = job_texts + candidate_texts
-        vectorizer.fit(all_texts)
-        job_vectors = vectorizer.transform(job_texts)
-        candidate_vectors = vectorizer.transform(candidate_texts)
-        similarity_matrix = cosine_similarity(job_vectors, candidate_vectors)
+        print(f"🔍 Matching {len(jobs)} jobs using Chroma vector database...")
+        print(f"   Vector DB has {vector_db.get_candidate_count()} candidates indexed")
         
         matches = {}
         
@@ -141,77 +103,95 @@ class SimpleMatcher:
             print(f"\n📋 Processing: {job['title']}")
             matches[job_index] = []
             
-            for candidate_index, candidate in enumerate(candidates):
-                skill_similarity = similarity_matrix[job_index, candidate_index]
-                
-                if skill_similarity > 0.1:  # Basic skill overlap threshold
-                    # Calculate individual score components
-                    skill_score = self.calculate_skill_score(
-                        job.get('required_skills', []), 
-                        candidate.get('skills', [])
-                    )
-                    
-                    experience_score = self.calculate_experience_score(
-                        job.get('title', ''), 
-                        candidate.get('experience_years', 0)
-                    )
-                    
-                    location_score = self.calculate_location_score(
-                        job.get('location', ''), 
-                        candidate.get('location', '')
-                    )
-                    
-                    # PURE SEMANTIC RELEVANCE (replaces old profile relevance)
-                    semantic_score = self.calculate_semantic_relevance(
-                        job.get('description', ''), 
-                        candidate.get('profile', '')
-                    )
-                    
-                    # Calculate total weighted score with clean separation
-                    total_score = (
-                        skill_score * 0.50 +        # Exact skill matching (TF-IDF)
-                        experience_score * 0.25 +   # Experience rules
-                        location_score * 0.15 +     # Location rules  
-                        semantic_score * 0.10       # Pure semantic understanding (Embeddings)
-                    )
-                    
-                    # Find common skills
-                    job_skills_lower = [s.lower() for s in job.get('required_skills', [])]
-                    candidate_skills_lower = [s.lower() for s in candidate.get('skills', [])]
-                    common_skills = list(set(job_skills_lower) & set(candidate_skills_lower))
-                    
-                    matches[job_index].append({
-                        'candidate_index': candidate_index,
-                        'candidate': candidate,
-                        'score': total_score,
-                        'common_skills': common_skills,
-                        'score_breakdown': {
-                            'skills': int(skill_score * 100),
-                            'experience': int(experience_score * 100),
-                            'location': int(location_score * 100),
-                            'profile': int(semantic_score * 100)  # Now pure semantic
-                        },
-                        'match_grade': self.get_match_grade(total_score)
-                    })
+            # Use Chroma for instant semantic search
+            chroma_matches = vector_db.find_matches_for_job(job, top_k=50)
             
+            for match in chroma_matches:
+                candidate = match['candidate']
+                
+                # Calculate additional scoring components
+                skill_score = self.calculate_skill_score(
+                    job.get('required_skills', []), 
+                    candidate.get('skills', [])
+                )
+                
+                experience_score = self.calculate_experience_score(
+                    job.get('title', ''), 
+                    candidate.get('experience_years', 0)
+                )
+                
+                location_score = self.calculate_location_score(
+                    job.get('location', ''), 
+                    candidate.get('location', '')
+                )
+                
+                # Get semantic score from Chroma
+                semantic_score = match['score']
+                
+                # Calculate total weighted score
+                total_score = (
+                    skill_score * 0.40 +           # Skill matching
+                    experience_score * 0.25 +      # Experience rules
+                    location_score * 0.15 +        # Location rules  
+                    semantic_score * 0.20          # Semantic understanding from Chroma
+                )
+                
+                # Update the match with complete scoring
+                match['score'] = total_score
+                match['score_breakdown'] = {
+                    'skills': int(skill_score * 100),
+                    'experience': int(experience_score * 100),
+                    'location': int(location_score * 100),
+                    'semantic': int(semantic_score * 100)
+                }
+                match['match_grade'] = self.get_match_grade(total_score)
+                
+                matches[job_index].append(match)
+            
+            # Sort by final score
             matches[job_index].sort(key=lambda x: x['score'], reverse=True)
+            
+            print(f"   ✅ Found {len(matches[job_index])} matches using vector search")
         
         return matches, jobs, candidates
+    
+    def add_new_candidate(self, candidate_data):
+        """Add a new candidate to both database and vector index"""
+        try:
+            # Add to both databases (ChromaDataManager handles both)
+            candidate_id = self.db.add_candidate(candidate_data)
+            if candidate_id:
+                print(f"✅ Candidate added to both databases (ID: {candidate_id})")
+            return candidate_id
+        except Exception as e:
+            print(f"❌ Error adding candidate: {e}")
+            return None
+    
+    def add_new_job(self, job_data):
+        """Add a new job to the database"""
+        try:
+            job_id = self.db.add_job(job_data)
+            if job_id:
+                print(f"✅ Job added to database (ID: {job_id})")
+            return job_id
+        except Exception as e:
+            print(f"❌ Error adding job: {e}")
+            return None
 
 # Test function
 def main():
     matcher = SimpleMatcher()
     results, jobs, candidates = matcher.find_matches()
     
-    print("\n🎯 CLEAN ARCHITECTURE MATCHING RESULTS:")
+    print("\n🎯 CHROMA VECTOR DATABASE MATCHING RESULTS:")
     for job_index, job_matches in results.items():
         job = jobs[job_index]
         print(f"\n🏢 {job['title']}")
-        for match in job_matches[:3]:
+        for match in job_matches[:3]:  # Show top 3
             candidate = match['candidate']
             breakdown = match.get('score_breakdown', {})
-            print(f"   👤 {candidate['name']} - Score: {match['score']:.3f}")
-            print(f"      Skills: {breakdown.get('skills', 0)}% | Exp: {breakdown.get('experience', 0)}% | Location: {breakdown.get('location', 0)}% | Semantic: {breakdown.get('profile', 0)}%")
+            print(f"   👤 {candidate['name']} - Score: {match['score']:.3f} ({match['match_grade']})")
+            print(f"      Skills: {breakdown.get('skills', 0)}% | Exp: {breakdown.get('experience', 0)}% | Location: {breakdown.get('location', 0)}% | Semantic: {breakdown.get('semantic', 0)}%")
 
 if __name__ == "__main__":
     main()
