@@ -150,6 +150,41 @@ Create a pull request to merge changes from `dev` into `main`:
 Tip: Tag reviewers and link related issues for traceability.
 
 ---
+✅ How to Create a Pull Request from feature/semantic-scoring → dev
+🔹 Step 1: Set the Branches
+At the top of the screen, you’ll see two dropdowns:
+- Base: This should be dev (the branch you want to merge into)
+- Compare: This should be feature/semantic-scoring (your working branch)
+If they’re reversed, click the “swap” icon between them to flip.
+
+
+🔹 Step 2: Review the Diff
+GitHub will show you:
+- All the files changed
+- Line-by-line diffs
+- Additions in green, deletions in red
+This helps you verify what’s being merged.
+
+🔹 Step 3: Click the Green “Create Pull Request” Button
+Once you’re happy with the changes:
+- Click “Create pull request”
+- Add a clear title (e.g., Add semantic scoring engine)
+- Write a description:
+- What was added
+- How it was tested
+- Any known issues or next steps
+
+🔹 Step 4: Choose Merge Strategy (after PR is created)
+Once the PR is open:
+- Scroll to the bottom
+- Click the small dropdown next to the green “Merge pull request” button
+- Choose:
+- ✅ Squash and merge (recommended)
+- 🔄 Rebase and merge
+- 🌳 Merge commit
+
+
+----
 
 🛡️ Governance Notes
 --------------------
