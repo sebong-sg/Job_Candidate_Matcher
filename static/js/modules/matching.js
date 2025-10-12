@@ -114,7 +114,10 @@ class MatchingModule {
         if (!data.matches || data.matches.length === 0) {
             resultsContainer.innerHTML = `
                 <div class="empty-state">
-                    <div>🔍</div>
+                    <svg class="icon" width="48" height="48" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
                     <h3>No Matches Found</h3>
                     <p>Try adding more candidates or jobs to get matches.</p>
                 </div>

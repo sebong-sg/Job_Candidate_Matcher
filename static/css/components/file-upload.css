@@ -29,8 +29,10 @@
 }
 
 .drop-zone-icon {
-    font-size: 3rem;
+    width: 48px;
+    height: 48px;
     margin-bottom: var(--space-4);
+    stroke: var(--gray-500);
 }
 
 .file-drop-zone h4 {

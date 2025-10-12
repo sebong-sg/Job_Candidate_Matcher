@@ -40,7 +40,11 @@ class CandidatesModule {
         } catch (error) {
             container.innerHTML = `
                 <div class="error-state">
-                    <div>❌</div>
+                    <svg class="icon" width="48" height="48" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
                     <h3>Failed to load candidates</h3>
                     <p>Please try again later.</p>
                     <button onclick="candidatesModule.displayCandidates(document.getElementById('candidatesContainer'))" 
@@ -54,7 +58,12 @@ class CandidatesModule {
         if (!candidates || candidates.length === 0) {
             container.innerHTML = `
                 <div class="empty-state">
-                    <div>👥</div>
+                    <svg class="icon" width="48" height="48" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
                     <h3>No Candidates Yet</h3>
                     <p>Get started by adding your first candidate using the "Add Candidate" button above.</p>
                 </div>
@@ -84,8 +93,20 @@ class CandidatesModule {
                     <span class="candidate-card__experience">${this.formatExperience(candidate.experience_years)}</span>
                 </div>
                 <div class="candidate-card__details">
-                    <div class="candidate-card__email">📧 ${candidate.email}</div>
-                    <div class="candidate-card__location">📍 ${candidate.location}</div>
+                    <div class="candidate-card__email">
+                        <svg class="icon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                            <polyline points="22,6 12,13 2,6"></polyline>
+                        </svg>
+                        ${candidate.email}
+                    </div>
+                    <div class="candidate-card__location">
+                        <svg class="icon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                            <circle cx="12" cy="10" r="3"></circle>
+                        </svg>
+                        ${candidate.location}
+                    </div>
                 </div>
                 <div class="candidate-card__skills">
                     ${candidate.skills.slice(0, 4).map(skill => 

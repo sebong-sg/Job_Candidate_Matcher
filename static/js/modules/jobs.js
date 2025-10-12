@@ -40,7 +40,11 @@ class JobsModule {
         } catch (error) {
             container.innerHTML = `
                 <div class="error-state">
-                    <div>❌</div>
+                    <svg class="icon" width="48" height="48" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
                     <h3>Failed to load jobs</h3>
                     <p>Please try again later.</p>
                     <button onclick="jobsModule.displayJobs(document.getElementById('jobsContainer'))" 
@@ -54,7 +58,10 @@ class JobsModule {
         if (!jobs || jobs.length === 0) {
             container.innerHTML = `
                 <div class="empty-state">
-                    <div>💼</div>
+                    <svg class="icon" width="48" height="48" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                        <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                    </svg>
                     <h3>No Jobs Yet</h3>
                     <p>Get started by adding your first job using the "Add Job" button above.</p>
                 </div>
@@ -86,8 +93,20 @@ class JobsModule {
                     </div>
                 </div>
                 <div class="job-card__details">
-                    <div class="job-card__location">📍 ${job.location}</div>
-                    <div class="job-card__experience">⏳ ${job.experience_required || 0}+ years experience</div>
+                    <div class="job-card__location">
+                        <svg class="icon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                            <circle cx="12" cy="10" r="3"></circle>
+                        </svg>
+                        ${job.location}
+                    </div>
+                    <div class="job-card__experience">
+                        <svg class="icon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                        ${job.experience_required || 0}+ years experience
+                    </div>
                 </div>
                 <div class="job-card__skills">
                     ${job.required_skills.slice(0, 5).map(skill => 

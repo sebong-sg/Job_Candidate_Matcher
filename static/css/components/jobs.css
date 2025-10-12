@@ -183,9 +183,11 @@
     color: var(--gray-500);
 }
 
-.empty-state div, .loading-state div {
-    font-size: 3rem;
+.empty-state .icon, .loading-state .icon {
+    width: 48px;
+    height: 48px;
     margin-bottom: var(--space-4);
+    stroke: var(--gray-400);
 }
 
 .empty-state h3, .loading-state h3 {

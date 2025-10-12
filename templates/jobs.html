@@ -24,7 +24,10 @@
         <h1>Job Management</h1>
         <div class="action-buttons">
             <button class="btn btn--primary" id="addJobBtn">
-                <span class="btn__icon">➕</span>
+                <svg class="icon btn__icon" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
                 Add Job
             </button>
         </div>
@@ -52,13 +55,26 @@
             <!-- Input Method Selection Tabs -->
             <div class="input-methods">
                 <button class="input-method-tab active" data-method="upload">
-                    📄 Upload JD
+                    <svg class="icon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                    </svg>
+                    Upload JD
                 </button>
                 <button class="input-method-tab" data-method="paste">
-                    📝 Paste Text
+                    <svg class="icon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M16 4h-2.5a2 2 0 0 0-2 2v2a2 2 0 0 0 2 2H16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"></path>
+                        <path d="M8 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"></path>
+                    </svg>
+                    Paste Text
                 </button>
                 <button class="input-method-tab" data-method="form">
-                    ⚡ Quick Form
+                    <svg class="icon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 3h-2a2 2 0 0 0-2 2v2a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2z"></path>
+                        <path d="M18 9h-2a2 2 0 0 0-2 2v2a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2v-2a2 2 0 0 0-2-2z"></path>
+                        <path d="M6 15h-2a2 2 0 0 0-2 2v2a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2v-2a2 2 0 0 0-2-2z"></path>
+                    </svg>
+                    Quick Form
                 </button>
             </div>
 
@@ -66,7 +82,13 @@
             <div class="input-method-content active" id="uploadMethod">
                 <div class="file-drop-zone" id="jdUploadZone">
                     <div class="drop-zone-content">
-                        <div class="drop-zone-icon">📄</div>
+                        <svg class="drop-zone-icon" width="48" height="48" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                            <polyline points="10 9 9 9 8 9"></polyline>
+                        </svg>
                         <h4>Upload Job Description</h4>
                         <p>Drag & drop a JD file or click to browse</p>
                         <input type="file" class="file-input" accept=".pdf,.doc,.docx,.txt">
@@ -74,7 +96,7 @@
                     </div>
                 </div>
                 <div class="upload-tips">
-                    <p><strong>💡 Tip:</strong> Upload existing job descriptions from your company. 
+                    <p><strong>Tip:</strong> Upload existing job descriptions from your company. 
                     Our AI will extract key details automatically.</p>
                 </div>
             </div>
@@ -98,7 +120,10 @@ Location: Remote | Full-time position"></textarea>
                 </div>
                 <div class="form-actions">
                     <button class="btn btn--primary" id="parseJdText">
-                        <span class="btn__icon">🤖</span>
+                        <svg class="icon btn__icon" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 20h9"></path>
+                            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                        </svg>
                         Parse Job Description
                     </button>
                 </div>
@@ -149,14 +174,23 @@ Location: Remote | Full-time position"></textarea>
                     </div>
                 </form>
                 <div class="form-tips">
-                    <p><strong>⚡ Quick Entry:</strong> Perfect for creating new job postings quickly. 
+                    <p><strong>Quick Entry:</strong> Perfect for creating new job postings quickly. 
                     You can add skills and detailed requirements later.</p>
                 </div>
             </div>
 
             <!-- Parsed Data Review Section -->
             <div class="parsed-review" id="parsedReview">
-                <h4>🎯 Review Parsed Job Details</h4>
+                <h4>
+                    <svg class="icon" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                        <polyline points="10 9 9 9 8 9"></polyline>
+                    </svg>
+                    Review Parsed Job Details
+                </h4>
                 <p class="review-description">Our AI has extracted the following details. 
                 Please review and edit any fields before saving.</p>
                 <div id="parsedFields" class="parsed-fields-container">
@@ -171,7 +205,11 @@ Location: Remote | Full-time position"></textarea>
                 Cancel
             </button>
             <button class="btn btn--primary" id="saveJob">
-                <span class="btn__icon">💾</span>
+                <svg class="icon btn__icon" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                    <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                    <polyline points="7 3 7 8 15 8"></polyline>
+                </svg>
                 Save Job
             </button>
         </div>
