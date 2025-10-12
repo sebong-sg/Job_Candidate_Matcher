@@ -173,31 +173,34 @@ class JobModal {
             <div class="form-grid">
                 <div class="form-group">
                     <label>Job Title</label>
-                    <input type="text" value="${this.parsedData.title || ''}" class="form-input">
-                    <span class="confidence-indicator confidence-high">${Math.round(confidence.title * 100)}%</span>
+                    <input type="text" value="${this.parsedData.title || ''}" class="form-input" data-field="title">
+                    <span class="confidence-indicator ${this.getConfidenceClass(confidence.title)}">${Math.round(confidence.title * 100)}%</span>
                 </div>
                 <div class="form-group">
                     <label>Company</label>
-                    <input type="text" value="${this.parsedData.company || ''}" class="form-input">
-                    <span class="confidence-indicator confidence-medium">${Math.round(confidence.company * 100)}%</span>
+                    <input type="text" value="${this.parsedData.company || ''}" class="form-input" data-field="company">
+                    <span class="confidence-indicator ${this.getConfidenceClass(confidence.company)}">${Math.round(confidence.company * 100)}%</span>
                 </div>
                 <div class="form-group">
                     <label>Location</label>
-                    <input type="text" value="${this.parsedData.location || ''}" class="form-input">
+                    <input type="text" value="${this.parsedData.location || ''}" class="form-input" data-field="location">
+                    <span class="confidence-indicator ${this.getConfidenceClass(confidence.location)}">${Math.round(confidence.location * 100)}%</span>
                 </div>
                 <div class="form-group">
                     <label>Experience Required (years)</label>
-                    <input type="number" value="${this.parsedData.experience_required || 0}" class="form-input" min="0" max="50">
-                    <span class="confidence-indicator confidence-medium">${Math.round(confidence.experience * 100)}%</span>
+                    <input type="number" value="${this.parsedData.experience_required || 0}" class="form-input" min="0" max="50" data-field="experience">
+                    <span class="confidence-indicator ${this.getConfidenceClass(confidence.experience)}">${Math.round(confidence.experience * 100)}%</span>
                 </div>
                 <div class="form-group">
                     <label>Employment Type</label>
-                    <select class="form-select">
+                    <select class="form-select" data-field="employment_type">
                         <option value="Full-time" ${this.parsedData.employment_type === 'Full-time' ? 'selected' : ''}>Full-time</option>
                         <option value="Part-time" ${this.parsedData.employment_type === 'Part-time' ? 'selected' : ''}>Part-time</option>
                         <option value="Contract" ${this.parsedData.employment_type === 'Contract' ? 'selected' : ''}>Contract</option>
                         <option value="Remote" ${this.parsedData.employment_type === 'Remote' ? 'selected' : ''}>Remote</option>
+                        <option value="Hybrid" ${this.parsedData.employment_type === 'Hybrid' ? 'selected' : ''}>Hybrid</option>
                     </select>
+                    <span class="confidence-indicator ${this.getConfidenceClass(confidence.employment_type)}">${Math.round(confidence.employment_type * 100)}%</span>
                 </div>
                 <div class="form-group full-width">
                     <label>Required Skills</label>
@@ -208,14 +211,20 @@ class JobModal {
                         ${(!this.parsedData.required_skills || this.parsedData.required_skills.length === 0) ? 
                             '<span class="text-muted">No skills extracted</span>' : ''}
                     </div>
-                    <span class="confidence-indicator confidence-high">${Math.round(confidence.skills * 100)}%</span>
+                    <span class="confidence-indicator ${this.getConfidenceClass(confidence.skills)}">${Math.round(confidence.skills * 100)}%</span>
                 </div>
                 <div class="form-group full-width">
                     <label>Job Description</label>
-                    <textarea class="form-textarea" rows="4">${this.parsedData.description || ''}</textarea>
+                    <textarea class="form-textarea" rows="4" data-field="description">${this.parsedData.description || ''}</textarea>
                 </div>
             </div>
         `;
+    }
+
+    getConfidenceClass(score) {
+        if (score >= 0.8) return 'confidence-high';
+        if (score >= 0.6) return 'confidence-medium';
+        return 'confidence-low';
     }
 
     hideParsedReview() {
@@ -231,36 +240,53 @@ class JobModal {
             let jobData = {};
             
             if (this.parsedData) {
-                // Use parsed and edited data
-                const fields = document.querySelectorAll('#parsedFields input, #parsedFields select, #parsedFields textarea');
+                // Robust field collection using data attributes
+                const fieldsContainer = document.getElementById('parsedFields');
+                
+                // Get each field by its data-field attribute
+                const titleInput = fieldsContainer.querySelector('[data-field="title"]');
+                const companyInput = fieldsContainer.querySelector('[data-field="company"]');
+                const locationInput = fieldsContainer.querySelector('[data-field="location"]');
+                const experienceInput = fieldsContainer.querySelector('[data-field="experience"]');
+                const employmentSelect = fieldsContainer.querySelector('[data-field="employment_type"]');
+                const descriptionTextarea = fieldsContainer.querySelector('[data-field="description"]');
+                
+                // Validate required fields exist
+                if (!titleInput || !companyInput) {
+                    throw new Error('Required form fields are missing');
+                }
+                
                 jobData = {
-                    title: fields[0].value,
-                    company: fields[1].value,
-                    location: fields[2].value,
-                    experience_required: parseInt(fields[3].value) || 0,
-                    job_type: fields[4].value,
+                    title: titleInput.value.trim(),
+                    company: companyInput.value.trim(),
+                    location: locationInput ? locationInput.value.trim() : this.parsedData.location || '',
+                    experience_required: experienceInput ? parseInt(experienceInput.value) || 0 : this.parsedData.experience_required || 0,
+                    job_type: employmentSelect ? employmentSelect.value : this.parsedData.employment_type || 'Full-time',
                     required_skills: this.parsedData.required_skills || [],
-                    description: fields[6].value
+                    description: descriptionTextarea ? descriptionTextarea.value.trim() : this.parsedData.description || ''
                 };
             } else if (this.currentMethod === 'form') {
                 // Use quick form data
                 const form = document.getElementById('quickJobForm');
                 jobData = {
-                    title: form.title.value,
-                    company: form.company.value,
-                    location: form.location.value,
-                    description: form.description.value,
+                    title: form.title.value.trim(),
+                    company: form.company.value.trim(),
+                    location: form.location.value.trim(),
+                    description: form.description.value.trim(),
                     required_skills: [],
-                    experience_required: 0,
+                    experience_required: parseInt(form.experience_required.value) || 0,
                     job_type: form.job_type.value
                 };
             } else {
-                throw new Error('No job data to save');
+                throw new Error('No job data to save - please parse or enter job information first');
             }
             
             // Validate required fields
-            if (!jobData.title.trim() || !jobData.company.trim()) {
-                throw new Error('Job title and company are required');
+            if (!jobData.title) {
+                throw new Error('Job title is required');
+            }
+            if (!jobData.company) {
+                throw new Error('Company name is required');
             }
             
             const response = await api.post('/api/create-job', { job_data: jobData });
