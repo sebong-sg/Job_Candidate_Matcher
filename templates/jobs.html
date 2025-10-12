@@ -1,3 +1,10 @@
+<!-- 🎯 JOBS MANAGEMENT INTERFACE
+     Professional job management with multiple input methods:
+     - JD File Upload & AI Parsing
+     - Text Paste & Parse
+     - Quick Form Entry
+     Integrated with Chroma Vector DB -->
+
 {% extends "base.html" %}
 
 {% block title %}Jobs - AI Job Matcher Pro{% endblock %}
@@ -7,6 +14,7 @@
 {% block extra_css %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/components/candidates.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/components/jobs.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/components/modals.css') }}">
 {% endblock %}
 
 {% block content %}
@@ -22,7 +30,7 @@
         </div>
     </div>
 
-    <!-- Jobs List -->
+    <!-- Jobs List Container -->
     <div class="candidates-container" id="jobsContainer">
         <div class="loading-state">
             <div class="loading-spinner"></div>
@@ -30,23 +38,167 @@
         </div>
     </div>
 </div>
+
+<!-- Add Job Modal -->
+<div class="modal" id="addJobModal">
+    <div class="modal__overlay"></div>
+    <div class="modal__content">
+        <div class="modal__header">
+            <h3>Add New Job</h3>
+            <button class="modal__close" id="closeJobModal">&times;</button>
+        </div>
+        
+        <div class="modal__body">
+            <!-- Input Method Selection Tabs -->
+            <div class="input-methods">
+                <button class="input-method-tab active" data-method="upload">
+                    📄 Upload JD
+                </button>
+                <button class="input-method-tab" data-method="paste">
+                    📝 Paste Text
+                </button>
+                <button class="input-method-tab" data-method="form">
+                    ⚡ Quick Form
+                </button>
+            </div>
+
+            <!-- Method 1: Upload JD File -->
+            <div class="input-method-content active" id="uploadMethod">
+                <div class="file-drop-zone" id="jdUploadZone">
+                    <div class="drop-zone-content">
+                        <div class="drop-zone-icon">📄</div>
+                        <h4>Upload Job Description</h4>
+                        <p>Drag & drop a JD file or click to browse</p>
+                        <input type="file" class="file-input" accept=".pdf,.doc,.docx,.txt">
+                        <div class="supported-formats">Supported: PDF, DOC, DOCX, TXT</div>
+                    </div>
+                </div>
+                <div class="upload-tips">
+                    <p><strong>💡 Tip:</strong> Upload existing job descriptions from your company. 
+                    Our AI will extract key details automatically.</p>
+                </div>
+            </div>
+
+            <!-- Method 2: Paste JD Text -->
+            <div class="input-method-content" id="pasteMethod">
+                <div class="form-group full-width">
+                    <label for="jdText">Paste Job Description Text</label>
+                    <textarea id="jdText" class="form-textarea" rows="8" 
+                              placeholder="Paste the complete job description here. Our AI will extract:
+• Job Title & Company
+• Required Skills & Experience  
+• Location & Employment Type
+• And more...
+
+Example:
+Senior Python Developer at TechCorp
+We are looking for an experienced Python developer with 5+ years of experience.
+Required skills: Python, Django, PostgreSQL, AWS
+Location: Remote | Full-time position"></textarea>
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn--primary" id="parseJdText">
+                        <span class="btn__icon">🤖</span>
+                        Parse Job Description
+                    </button>
+                </div>
+            </div>
+
+            <!-- Method 3: Quick Form Entry -->
+            <div class="input-method-content" id="formMethod">
+                <form id="quickJobForm" class="form-grid">
+                    <div class="form-group">
+                        <label for="jobTitle">Job Title *</label>
+                        <input type="text" id="jobTitle" name="title" required class="form-input" 
+                               placeholder="e.g., Senior Python Developer">
+                    </div>
+                    <div class="form-group">
+                        <label for="jobCompany">Company *</label>
+                        <input type="text" id="jobCompany" name="company" required class="form-input"
+                               placeholder="e.g., TechCorp Inc">
+                    </div>
+                    <div class="form-group">
+                        <label for="jobLocation">Location</label>
+                        <input type="text" id="jobLocation" name="location" class="form-input"
+                               placeholder="e.g., Remote, New York, etc.">
+                    </div>
+                    <div class="form-group">
+                        <label for="jobType">Employment Type</label>
+                        <select id="jobType" name="job_type" class="form-select">
+                            <option value="Full-time">Full-time</option>
+                            <option value="Part-time">Part-time</option>
+                            <option value="Contract">Contract</option>
+                            <option value="Internship">Internship</option>
+                            <option value="Remote">Remote</option>
+                        </select>
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="jobDescription">Job Description *</label>
+                        <textarea id="jobDescription" name="description" required class="form-textarea" rows="6"
+                                  placeholder="Describe the role, responsibilities, requirements, and what makes this job unique..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="experienceRequired">Experience Required (years)</label>
+                        <input type="number" id="experienceRequired" name="experience_required" 
+                               class="form-input" min="0" max="50" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="salaryRange">Salary Range (optional)</label>
+                        <input type="text" id="salaryRange" name="salary_range" class="form-input"
+                               placeholder="e.g., $80,000 - $120,000">
+                    </div>
+                </form>
+                <div class="form-tips">
+                    <p><strong>⚡ Quick Entry:</strong> Perfect for creating new job postings quickly. 
+                    You can add skills and detailed requirements later.</p>
+                </div>
+            </div>
+
+            <!-- Parsed Data Review Section -->
+            <div class="parsed-review" id="parsedReview">
+                <h4>🎯 Review Parsed Job Details</h4>
+                <p class="review-description">Our AI has extracted the following details. 
+                Please review and edit any fields before saving.</p>
+                <div id="parsedFields" class="parsed-fields-container">
+                    <!-- Dynamically populated with parsed job data -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Footer Actions -->
+        <div class="modal__footer">
+            <button class="btn btn--secondary" id="cancelJob">
+                Cancel
+            </button>
+            <button class="btn btn--primary" id="saveJob">
+                <span class="btn__icon">💾</span>
+                Save Job
+            </button>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block extra_js %}
 <script src="{{ url_for('static', filename='js/modules/jobs.js') }}"></script>
+<script src="{{ url_for('static', filename='js/modules/job-modal.js') }}"></script>
 <script>
+    // 🎯 Jobs Page Initialization
     document.addEventListener('DOMContentLoaded', function() {
+        // Initialize job management modules
         jobsModule.init();
+        jobModal.init();
         
-        // Load initial jobs
+        // Load initial jobs list
         jobsModule.displayJobs(document.getElementById('jobsContainer'));
 
-        // Add job button placeholder
+        // Add Job button opens the modal
         document.getElementById('addJobBtn').addEventListener('click', function() {
-            if (window.UIUtils) {
-                UIUtils.showNotification('Add job feature coming soon!', 'info');
-            }
+            jobModal.open();
         });
+
+        // Success message when jobs load
+        console.log('✅ Jobs management interface ready');
     });
 </script>
 {% endblock %}

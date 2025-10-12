@@ -28,20 +28,35 @@ class ChromaDataManager:
             return []
     
     def add_job(self, job_data):
-        """Add a new job to Chroma DB"""
+        """Add a new job to Chroma DB with complete job structure"""
         try:
-            # Get next ID
+            # Get next ID from existing jobs
             existing_jobs = vector_db.get_all_jobs()
             new_id = max([j['id'] for j in existing_jobs]) + 1 if existing_jobs else 1
-            job_data['id'] = new_id
+            
+            # Create complete job object with defaults
+            complete_job = {
+                'id': new_id,
+                'title': job_data.get('title', ''),
+                'company': job_data.get('company', ''),
+                'location': job_data.get('location', ''),
+                'description': job_data.get('description', ''),
+                'required_skills': job_data.get('required_skills', []),
+                'preferred_skills': job_data.get('preferred_skills', []),
+                'experience_required': job_data.get('experience_required', 0),
+                'salary_range': job_data.get('salary_range', ''),
+                'job_type': job_data.get('job_type', 'Full-time')
+            }
             
             # Add to Chroma DB
-            success = vector_db.add_job(job_data)
+            success = vector_db.add_job(complete_job)
             if success:
-                print(f"✅ Added new job to Chroma DB: {job_data['title']} (ID: {new_id})")
+                print(f"✅ Added new job to Chroma DB: {complete_job['title']} (ID: {new_id})")
                 return new_id
             else:
+                print("❌ Failed to add job to Chroma DB")
                 return None
+                
         except Exception as e:
             print(f"❌ Error adding job: {e}")
             return None
