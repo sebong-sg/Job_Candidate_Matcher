@@ -222,12 +222,113 @@ class ChromaVectorDB:
     def get_all_jobs(self) -> List[Dict]:
         """Retrieve all jobs from Chroma DB in original format"""
         try:
-            # Note: You'll need to add jobs to Chroma DB first
-            # For now, return empty list - we'll implement this after candidate migration
-            return []
+            # Get all jobs from collection
+            results = self.jobs_collection.get(
+                include=['metadatas', 'documents']
+            )
+            
+            jobs = []
+            for i in range(len(results['ids'])):
+                metadata = results['metadatas'][i]
+                jobs.append({
+                    'id': int(results['ids'][i]),
+                    'title': metadata.get('title', 'Unknown'),
+                    'company': metadata.get('company', ''),
+                    'location': metadata.get('location', ''),
+                    'description': metadata.get('description', ''),
+                    'required_skills': json.loads(metadata.get('required_skills', '[]')),
+                    'preferred_skills': json.loads(metadata.get('preferred_skills', '[]')),
+                    'experience_required': metadata.get('experience_required', 0),
+                    'salary_range': metadata.get('salary_range', ''),
+                    'job_type': metadata.get('job_type', '')
+                })
+            
+            print(f"✅ Retrieved {len(jobs)} jobs from Chroma DB")
+            return jobs
         except Exception as e:
             print(f"❌ Error retrieving jobs from Chroma DB: {e}")
             return []
+
+    def add_job(self, job: Dict) -> bool:
+        """Add a single job to the vector database"""
+        if not self.embedding_model:
+            print("❌ Embedding model not available")
+            return False
+            
+        try:
+            # Generate embedding from job description and skills
+            text_to_embed = f"{job.get('description', '')} {' '.join(job.get('required_skills', []))}"
+            if not text_to_embed.strip():
+                return False
+                
+            embedding = self.embedding_model.encode(text_to_embed).tolist()
+            
+            self.jobs_collection.add(
+                ids=[str(job['id'])],
+                embeddings=[embedding],
+                documents=[text_to_embed],
+                metadatas=[{
+                    'title': job.get('title', 'Unknown'),
+                    'company': job.get('company', ''),
+                    'location': job.get('location', ''),
+                    'description': job.get('description', ''),
+                    'required_skills': json.dumps(job.get('required_skills', [])),
+                    'preferred_skills': json.dumps(job.get('preferred_skills', [])),
+                    'experience_required': job.get('experience_required', 0),
+                    'salary_range': job.get('salary_range', ''),
+                    'job_type': job.get('job_type', '')
+                }]
+            )
+            print(f"✅ Job added to vector DB: {job.get('title', 'Unknown')}")
+            return True
+        except Exception as e:
+            print(f"❌ Error adding job to vector DB: {e}")
+            return False
+
+    def add_jobs_batch(self, jobs: List[Dict]) -> bool:
+        """Add multiple jobs to the vector database"""
+        if not self.embedding_model:
+            return False
+            
+        try:
+            ids = []
+            embeddings = []
+            documents = []
+            metadatas = []
+            
+            for job in jobs:
+                text_to_embed = f"{job.get('description', '')} {' '.join(job.get('required_skills', []))}"
+                if text_to_embed.strip():
+                    embedding = self.embedding_model.encode(text_to_embed).tolist()
+                    
+                    ids.append(str(job['id']))
+                    embeddings.append(embedding)
+                    documents.append(text_to_embed)
+                    metadatas.append({
+                        'title': job.get('title', 'Unknown'),
+                        'company': job.get('company', ''),
+                        'location': job.get('location', ''),
+                        'description': job.get('description', ''),
+                        'required_skills': json.dumps(job.get('required_skills', [])),
+                        'preferred_skills': json.dumps(job.get('preferred_skills', [])),
+                        'experience_required': job.get('experience_required', 0),
+                        'salary_range': job.get('salary_range', ''),
+                        'job_type': job.get('job_type', '')
+                    })
+            
+            if ids:
+                self.jobs_collection.add(
+                    ids=ids,
+                    embeddings=embeddings,
+                    documents=documents,
+                    metadatas=metadatas
+                )
+                print(f"✅ Added {len(ids)} jobs to vector database")
+                return True
+            return False
+        except Exception as e:
+            print(f"❌ Error adding jobs batch: {e}")
+            return False
 
 # Global instance
 vector_db = ChromaVectorDB()

@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}Jobs - AI Job Matcher Pro{% endblock %}
+
+{% block page_title %}Jobs{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/components/candidates.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/components/jobs.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="candidates-view">
+    <!-- Header with Actions -->
+    <div class="view-header">
+        <h1>Job Management</h1>
+        <div class="action-buttons">
+            <button class="btn btn--primary" id="addJobBtn">
+                <span class="btn__icon">➕</span>
+                Add Job
+            </button>
+        </div>
+    </div>
+
+    <!-- Jobs List -->
+    <div class="candidates-container" id="jobsContainer">
+        <div class="loading-state">
+            <div class="loading-spinner"></div>
+            <p>Loading jobs...</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/modules/jobs.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        jobsModule.init();
+        
+        // Load initial jobs
+        jobsModule.displayJobs(document.getElementById('jobsContainer'));
+
+        // Add job button placeholder
+        document.getElementById('addJobBtn').addEventListener('click', function() {
+            if (window.UIUtils) {
+                UIUtils.showNotification('Add job feature coming soon!', 'info');
+            }
+        });
+    });
+</script>
+{% endblock %}

@@ -1,7 +1,8 @@
-// Matching Engine Module
+// Advanced Matching Module
 class MatchingModule {
     constructor() {
         this.initialized = false;
+        this.isRunning = false;
     }
 
     init() {
@@ -10,91 +11,175 @@ class MatchingModule {
         this.initialized = true;
     }
 
-    async runMatching() {
-        UIUtils.showNotification('Running AI matching...', 'info');
-        
+    async runAdvancedMatching(algorithm = 'semantic', limit = 5) {
+        // Prevent multiple simultaneous runs
+        if (this.isRunning) {
+            console.log('Matching already in progress...');
+            return;
+        }
+
+        this.isRunning = true;
+        const resultsContainer = document.getElementById('matchingResults');
+        if (!resultsContainer) return;
+
+        // Disable controls during matching
+        this.setControlsLoading(true);
+
+        // Show progress
+        resultsContainer.innerHTML = this.getProgressHTML();
+
         try {
-            const data = await api.post('/run-matching');
+            UIUtils.showNotification(`Running ${algorithm} matching...`, 'info');
+            
+            const data = await api.post('/api/run-matching');
             
             if (data.error) {
                 throw new Error(data.error);
             }
 
-            UIUtils.showNotification(`Found ${data.matches?.length || 0} matches`, 'success');
-            return data;
+            this.displayMatchingResults(data, algorithm, limit);
+            UIUtils.showNotification(`Found ${data.matches?.length || 0} job matches`, 'success');
+            
         } catch (error) {
             console.error('Matching error:', error);
+            resultsContainer.innerHTML = `
+                <div class="error-state">
+                    <div>❌</div>
+                    <h3>Matching Failed</h3>
+                    <p>${error.message}</p>
+                    <button onclick="matchingModule.runAdvancedMatching()" 
+                            class="btn btn--outline">Try Again</button>
+                </div>
+            `;
             UIUtils.showNotification('Failed to run matching', 'error');
-            throw error;
+        } finally {
+            this.isRunning = false;
+            this.setControlsLoading(false);
         }
     }
 
-    displayMatches(matches, container) {
-        if (!container) return;
+    setControlsLoading(isLoading) {
+        const algorithmSelect = document.getElementById('matchAlgorithm');
+        const limitSelect = document.getElementById('resultsLimit');
+        const runButton = document.getElementById('runMatchingBtn');
 
-        if (!matches || matches.length === 0) {
-            container.innerHTML = `
+        if (algorithmSelect && limitSelect && runButton) {
+            if (isLoading) {
+                algorithmSelect.parentElement.classList.add('loading');
+                limitSelect.parentElement.classList.add('loading');
+                runButton.disabled = true;
+                runButton.innerHTML = '<span class="btn__icon">⏳</span> Running...';
+            } else {
+                algorithmSelect.parentElement.classList.remove('loading');
+                limitSelect.parentElement.classList.remove('loading');
+                runButton.disabled = false;
+                runButton.innerHTML = '<span class="btn__icon">🤖</span> Run AI Matching';
+            }
+        }
+    }
+
+    getProgressHTML() {
+        return `
+            <div class="matching-progress">
+                <div class="progress-steps">
+                    <div class="progress-step">
+                        <div class="step-icon active">1</div>
+                        <div class="step-label">Loading Data</div>
+                    </div>
+                    <div class="progress-step">
+                        <div class="step-icon">2</div>
+                        <div class="step-label">Analyzing</div>
+                    </div>
+                    <div class="progress-step">
+                        <div class="step-icon">3</div>
+                        <div class="step-label">Matching</div>
+                    </div>
+                    <div class="progress-step">
+                        <div class="step-icon">4</div>
+                        <div class="step-label">Results</div>
+                    </div>
+                </div>
+                <div class="loading-state">
+                    <div class="loading-spinner"></div>
+                    <p>Running AI matching engine...</p>
+                </div>
+            </div>
+        `;
+    }
+
+    displayMatchingResults(data, algorithm, limit) {
+        const resultsContainer = document.getElementById('matchingResults');
+        if (!resultsContainer) return;
+
+        if (!data.matches || data.matches.length === 0) {
+            resultsContainer.innerHTML = `
                 <div class="empty-state">
                     <div>🔍</div>
                     <h3>No Matches Found</h3>
-                    <p>Try running the AI matching engine or add more candidates/jobs.</p>
+                    <p>Try adding more candidates or jobs to get matches.</p>
                 </div>
             `;
             return;
         }
 
+        // Apply limit to the number of matches displayed
+        const limitedMatches = data.matches.slice(0, limit);
+
         const html = `
-            <div class="matches-list">
-                <div class="list-header">
-                    <h3>Top Matches (${matches.length})</h3>
+            <div class="match-results-grid">
+                <div class="results-header">
+                    <h3>Matching Results (${limitedMatches.length} of ${data.matches.length} jobs shown)</h3>
+                    <div class="results-info">
+                        <span>Algorithm: ${this.formatAlgorithmName(algorithm)}</span>
+                        <span>•</span>
+                        <span>Showing: Top ${limit} per job</span>
+                    </div>
                 </div>
-                ${matches.map(match => this.renderMatchCard(match)).join('')}
+                ${limitedMatches.map(match => this.renderJobMatch(match)).join('')}
             </div>
         `;
 
-        container.innerHTML = html;
+        resultsContainer.innerHTML = html;
     }
 
-    renderMatchCard(match) {
-        const breakdown = match.score_breakdown || {};
+    formatAlgorithmName(algorithm) {
+        const names = {
+            'semantic': 'Semantic + Skills',
+            'skills': 'Skills-Based',
+            'hybrid': 'Hybrid'
+        };
+        return names[algorithm] || algorithm;
+    }
+
+    renderJobMatch(match) {
         return `
-            <div class="match-card">
-                <div class="match-card__header">
-                    <div class="match-card__title">
-                        <h4>${match.job_title}</h4>
-                        <span class="match-card__company">at ${match.company}</span>
+            <div class="job-match-section">
+                <div class="job-match-header">
+                    <div class="job-match-title">
+                        <h3>${match.job_title}</h3>
+                        <div class="company">at ${match.company}</div>
                     </div>
-                    <div class="match-card__score">
-                        <span class="score-badge score-badge--${match.match_grade}">
-                            ${Formatters.formatPercentage(match.top_score)}
-                        </span>
-                        <span class="match-grade">${match.match_grade}</span>
+                    <div class="job-match-stats">
+                        <div class="top-match-score">
+                            <span class="score-value">${Math.round(match.top_score * 100)}%</span>
+                            <div class="score-grade">${match.match_grade} Match</div>
+                        </div>
                     </div>
                 </div>
-                <div class="match-card__details">
-                    <div class="match-card__candidate">
-                        <strong>Top Candidate:</strong> ${match.top_candidate}
-                    </div>
-                    <div class="match-card__breakdown">
-                        <div class="breakdown-item">
-                            <span>Skills:</span>
-                            <span>${match.score_breakdown || 0}%</span>
+                <div class="candidate-matches">
+                    <div class="candidate-match">
+                        <div class="candidate-info">
+                            <div class="candidate-name">${match.top_candidate}</div>
+                            <div class="candidate-skills">
+                                ${match.common_skills.map(skill => 
+                                    `<span class="skill-tag">${skill}</span>`
+                                ).join('')}
+                            </div>
                         </div>
-                        <div class="breakdown-item">
-                            <span>Experience:</span>
-                            <span>${breakdown.experience || 0}%</span>
+                        <div class="match-score">
+                            <div class="score-value">${Math.round(match.top_score * 100)}%</div>
+                            <div class="score-grade">Top Match</div>
                         </div>
-                        <div class="breakdown-item">
-                            <span>Location:</span>
-                            <span>${breakdown.location || 0}%</span>
-                        </div>
-                    </div>
-                    <div class="match-card__skills">
-                        <strong>Common Skills:</strong>
-                        ${match.common_skills && match.common_skills.length > 0 
-                            ? match.common_skills.map(skill => `<span class="skill-tag">${skill}</span>`).join('')
-                            : '<span class="text-muted">No common skills</span>'
-                        }
                     </div>
                 </div>
             </div>

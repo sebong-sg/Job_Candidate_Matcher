@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block title %}AI Matching - AI Job Matcher Pro{% endblock %}
+
+{% block page_title %}AI Matching{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/components/candidates.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/components/matching.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="candidates-view">
+    <!-- Header with Actions -->
+    <div class="view-header">
+        <h1>AI Matching Engine</h1>
+        <div class="action-buttons">
+            <button class="btn btn--primary" id="runMatchingBtn">
+                <span class="btn__icon">🤖</span>
+                Run AI Matching
+            </button>
+            <button class="btn btn--secondary" id="viewAllMatchesBtn">
+                <span class="btn__icon">📊</span>
+                View All Matches
+            </button>
+        </div>
+    </div>
+
+    <!-- Matching Controls -->
+    <div class="matching-controls">
+        <div class="control-group">
+            <label for="matchAlgorithm">Matching Algorithm</label>
+            <select id="matchAlgorithm" class="form-select">
+                <option value="semantic" selected>Semantic + Skills Matching</option>
+                <option value="skills">Skills-Based Only</option>
+                <option value="hybrid">Hybrid Matching</option>
+            </select>
+        </div>
+        <div class="control-group">
+            <label for="resultsLimit">Results per Job</label>
+            <select id="resultsLimit" class="form-select">
+                <option value="3">Top 3 Candidates</option>
+                <option value="5" selected>Top 5 Candidates</option>
+                <option value="10">Top 10 Candidates</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Results Section -->
+    <div class="candidates-container" id="matchingResults">
+        <div class="loading-state">
+            <div class="loading-spinner"></div>
+            <p>Running AI matching engine...</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/modules/matching.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        matchingModule.init();
+
+        // Function to run matching with current settings
+        const runMatchingWithSettings = function() {
+            const algorithm = document.getElementById('matchAlgorithm').value;
+            const limit = parseInt(document.getElementById('resultsLimit').value);
+            matchingModule.runAdvancedMatching(algorithm, limit);
+        };
+
+        // Run matching when selections change
+        document.getElementById('matchAlgorithm').addEventListener('change', runMatchingWithSettings);
+        document.getElementById('resultsLimit').addEventListener('change', runMatchingWithSettings);
+
+        // Run matching button (still available for manual refresh)
+        document.getElementById('runMatchingBtn').addEventListener('click', runMatchingWithSettings);
+
+        // View all matches button
+        document.getElementById('viewAllMatchesBtn').addEventListener('click', function() {
+            window.location.href = '/';
+        });
+
+        // Auto-run on initial page load
+        runMatchingWithSettings();
+    });
+</script>
+{% endblock %}

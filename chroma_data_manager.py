@@ -1,7 +1,6 @@
-# 🗃️ CHROMA DATA MANAGER - Chroma DB Only Version
-# Removed JSON dependencies, uses Chroma Vector DB as single source of truth
+# 🗃️ CHROMA DATA MANAGER - Pure Chroma DB Version
+# Complete removal of JSON dependencies
 
-import os
 from vector_db import vector_db
 
 class ChromaDataManager:
@@ -31,9 +30,18 @@ class ChromaDataManager:
     def add_job(self, job_data):
         """Add a new job to Chroma DB"""
         try:
-            # TODO: Implement job addition to Chroma DB
-            print(f"✅ Would add job to Chroma DB: {job_data['title']}")
-            return 1  # Temporary ID
+            # Get next ID
+            existing_jobs = vector_db.get_all_jobs()
+            new_id = max([j['id'] for j in existing_jobs]) + 1 if existing_jobs else 1
+            job_data['id'] = new_id
+            
+            # Add to Chroma DB
+            success = vector_db.add_job(job_data)
+            if success:
+                print(f"✅ Added new job to Chroma DB: {job_data['title']} (ID: {new_id})")
+                return new_id
+            else:
+                return None
         except Exception as e:
             print(f"❌ Error adding job: {e}")
             return None

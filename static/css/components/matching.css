@@ -1,0 +1,210 @@
+/* Matching View Styles */
+.matching-view {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.matching-controls {
+    background: white;
+    border-radius: var(--border-radius);
+    padding: var(--space-6);
+    margin-bottom: var(--space-6);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--gray-200);
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--space-6);
+}
+
+.control-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.control-group label {
+    font-weight: 600;
+    color: var(--gray-800);
+    font-size: var(--font-size-sm);
+}
+
+.form-select {
+    padding: var(--space-3) var(--space-4);
+    border: 1px solid var(--gray-300);
+    border-radius: var(--border-radius);
+    background: white;
+    font-size: var(--font-size-sm);
+    color: var(--gray-700);
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.form-select:focus {
+    outline: none;
+    border-color: var(--primary-500);
+    box-shadow: 0 0 0 3px var(--primary-100);
+}
+
+.form-select:hover {
+    border-color: var(--gray-400);
+}
+
+.matching-results {
+    background: white;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--gray-200);
+    min-height: 400px;
+}
+
+.match-results-grid {
+    display: grid;
+    gap: var(--space-6);
+    padding: var(--space-6);
+}
+
+.job-match-section {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--border-radius);
+    padding: var(--space-4);
+}
+
+.job-match-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-4);
+    padding-bottom: var(--space-3);
+    border-bottom: 1px solid var(--gray-200);
+}
+
+.job-match-title h3 {
+    margin: 0;
+    color: var(--gray-900);
+}
+
+.job-match-title .company {
+    color: var(--gray-600);
+    font-size: var(--font-size-sm);
+}
+
+.candidate-matches {
+    display: grid;
+    gap: var(--space-4);
+}
+
+.candidate-match {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-3);
+    background: white;
+    border: 1px solid var(--gray-200);
+    border-radius: var(--border-radius);
+    transition: all 0.2s ease;
+}
+
+.candidate-match:hover {
+    border-color: var(--primary-300);
+    box-shadow: var(--shadow-sm);
+}
+
+.candidate-info {
+    flex: 1;
+}
+
+.candidate-name {
+    font-weight: 600;
+    color: var(--gray-900);
+    margin-bottom: var(--space-1);
+}
+
+.candidate-skills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-bottom: var(--space-2);
+}
+
+.match-score {
+    text-align: right;
+}
+
+.score-value {
+    font-size: var(--font-size-xl);
+    font-weight: 700;
+    color: var(--success);
+}
+
+.score-grade {
+    font-size: var(--font-size-sm);
+    color: var(--gray-600);
+    font-weight: 500;
+}
+
+/* Progress indicator */
+.matching-progress {
+    text-align: center;
+    padding: var(--space-8);
+}
+
+.progress-steps {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-8);
+    margin-bottom: var(--space-6);
+}
+
+.progress-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.step-icon {
+    width: 40px;
+    height: 40px;
+    background: var(--gray-200);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+}
+
+.step-icon.active {
+    background: var(--primary-500);
+    color: white;
+}
+
+.step-label {
+    font-size: var(--font-size-sm);
+    color: var(--gray-600);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .matching-controls {
+        grid-template-columns: 1fr;
+        gap: var(--space-4);
+    }
+    
+    .job-match-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--space-3);
+    }
+    
+    .candidate-match {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--space-3);
+    }
+    
+    .match-score {
+        text-align: left;
+        width: 100%;
+    }
+}

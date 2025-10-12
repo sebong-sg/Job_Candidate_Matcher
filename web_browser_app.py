@@ -68,73 +68,20 @@ except ImportError as e:
     print(f"⚠️  Some modules not found: {e}")
     print("💡 Running in demo mode with sample data")
     
-    # Demo classes (same as before for fallback)
+    # Demo classes for fallback (Chroma DB only)
     class ChromaDataManager:
         def load_jobs(self): 
-            """Load ALL jobs from JSON file"""
-            try:
-                file_path = os.path.join("data", "jobs.json")
-                with open(file_path, 'r') as file:
-                    data = json.load(file)
-                    jobs = data.get('jobs', [])
-                    print(f"📁 Loaded {len(jobs)} jobs from database")
-                    return jobs
-            except Exception as e:
-                print(f"❌ Error loading jobs: {e}")
-                return [
-                    {"id": 1, "title": "Python Developer", "company": "TechCorp", "location": "Remote", 
-                     "description": "Develop web applications", "required_skills": ["python", "django", "sql"]}
-                ]
+            return []
         
         def load_candidates(self): 
-            """Load ALL candidates from JSON file"""
-            try:
-                file_path = os.path.join("data", "candidates.json")
-                with open(file_path, 'r') as file:
-                    data = json.load(file)
-                    candidates = data.get('candidates', [])
-                    print(f"📁 Loaded {len(candidates)} candidates from database")
-                    return candidates
-            except Exception as e:
-                print(f"❌ Error loading candidates: {e}")
-                return [
-                    {"id": 1, "name": "John Smith", "email": "john@example.com", "profile": "Python developer", 
-                     "skills": ["python", "django", "flask", "sql"], "experience_years": 5, "location": "Remote"}
-                ]
+            return []
         
-        def add_job(self, data): return len(self.load_jobs()) + 1
-        def add_candidate(self, data): return len(self.load_candidates()) + 1
+        def add_job(self, data): return 1
+        def add_candidate(self, data): return 1
 
     class SimpleMatcher:
         def find_matches(self):
-            jobs = ChromaDataManager().load_jobs()
-            candidates = ChromaDataManager().load_candidates()
-            results = {}
-            
-            print(f"🔍 Matching {len(jobs)} jobs with {len(candidates)} candidates...")
-            
-            for i, job in enumerate(jobs):
-                results[i] = []
-                for candidate in candidates:
-                    common_skills = set(job['required_skills']) & set(candidate['skills'])
-                    if common_skills:
-                        score = len(common_skills) / len(job['required_skills'])
-                        results[i].append({
-                            "candidate": candidate, 
-                            "score": score, 
-                            "common_skills": list(common_skills),
-                            "score_breakdown": {
-                                "skills": int(score * 100), 
-                                "experience": 80, 
-                                "location": 90, 
-                                "semantic": 75
-                            },
-                            "match_grade": "A" if score > 0.7 else "B"
-                        })
-                results[i].sort(key=lambda x: x['score'], reverse=True)
-                print(f"   ✅ Found {len(results[i])} matches for {job['title']}")
-            
-            return results, jobs, candidates
+            return {}, [], []
 
     class EmailService:
         def send_candidate_match_notification(self, *args, **kwargs): 
@@ -151,15 +98,9 @@ except ImportError as e:
             }
 
     class VectorDB:
-        def get_candidate_count(self): 
-            db = ChromaDataManager()
-            return len(db.load_candidates())
-        def clear_candidates(self): 
-            print("🗃️ Vector DB clear called (demo mode)")
-            return True
-        def add_candidates_batch(self, candidates):
-            print(f"🗃️ Would add {len(candidates)} candidates to Vector DB (demo mode)")
-            return True
+        def get_candidate_count(self): return 0
+        def clear_candidates(self): return True
+        def add_candidates_batch(self, candidates): return True
 
     vector_db = VectorDB()
 
@@ -227,6 +168,16 @@ def parse_resume_file():
 def candidates():
     """Candidates management view"""
     return render_template('candidates.html')
+
+@app.route('/jobs')
+def jobs():
+    """Jobs management view"""
+    return render_template('jobs.html')
+
+@app.route('/matching')
+def matching():
+    """AI Matching view"""
+    return render_template('matching.html')
 
 
 """
@@ -326,7 +277,7 @@ def get_vector_db_stats():
         stats = db.get_vector_db_stats()
         return jsonify({
             'candidates_in_vector_db': stats['candidates_in_vector_db'],
-            'candidates_in_json': stats['candidates_in_json'],
+            'candidates_in_json': 0,  # Removed JSON dependency
             'jobs_count': stats['jobs_count'],
             'status': 'active'
         })

@@ -18,13 +18,13 @@
             </a>
         </li>
         <li class="sidebar__item">
-            <a href="#jobs" class="sidebar__link">
+            <a href="{{ url_for('jobs') }}" class="sidebar__link {% if request.endpoint == 'jobs' %}sidebar__link--active{% endif %}">
                 <span class="sidebar__icon">💼</span>
                 <span class="sidebar__text">Jobs</span>
             </a>
         </li>
         <li class="sidebar__item">
-            <a href="#matching" class="sidebar__link">
+            <a href="{{ url_for('matching') }}" class="sidebar__link {% if request.endpoint == 'matching' %}sidebar__link--active{% endif %}">
                 <span class="sidebar__icon">🤖</span>
                 <span class="sidebar__text">AI Matching</span>
             </a>
@@ -47,3 +47,4 @@
         </div>
     </div>
 </div>
+
