@@ -73,6 +73,7 @@ class DashboardModule {
         let html = `<div class="matches-list"><h3>Recent Matches (${data.matches.length})</h3>`;
         
         data.matches.forEach(match => {
+            const breakdown = match.score_breakdown || {};
             html += `
                 <div class="match-card">
                     <div class="match-card__header">
@@ -81,11 +82,31 @@ class DashboardModule {
                     </div>
                     <div class="match-card__body">
                         <p><strong>Top Candidate:</strong> ${match.top_candidate}</p>
+                        <div class="score-breakdown">
+                            <h5>Score Breakdown:</h5>
+                            <div class="breakdown-item">
+                                <span>Skills Match:</span>
+                                <span>${breakdown.skills || 0}%</span>
+                            </div>
+                            <div class="breakdown-item">
+                                <span>Location:</span>
+                                <span>${breakdown.location || 0}%</span>
+                            </div>
+                            <div class="breakdown-item">
+                                <span>Experience:</span>
+                                <span>${breakdown.experience || 0}%</span>
+                            </div>
+                            <div class="breakdown-item">
+                                <span>Profile Relevance:</span>
+                                <span>${breakdown.semantic || 0}%</span>
+                            </div>
+                        </div>
                         <p><strong>Common Skills:</strong> ${match.common_skills ? match.common_skills.join(', ') : 'None'}</p>
                     </div>
                 </div>
             `;
         });
+
         
         html += '</div>';
         container.innerHTML = html;

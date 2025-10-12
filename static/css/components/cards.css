@@ -87,3 +87,38 @@
     font-size: var(--font-size-xs);
     font-weight: 500;
 }
+
+.score-breakdown {
+    background: var(--gray-50);
+    padding: var(--space-4);
+    border-radius: var(--border-radius);
+    margin: var(--space-4) 0;
+}
+
+.score-breakdown h5 {
+    margin: 0 0 var(--space-2) 0;
+    color: var(--gray-700);
+    font-size: var(--font-size-sm);
+}
+
+.breakdown-item {
+    display: flex;
+    justify-content: space-between;
+    margin: var(--space-2) 0;
+    font-size: var(--font-size-sm);
+}
+
+.breakdown-bar {
+    background: var(--gray-200);
+    height: 6px;
+    border-radius: 3px;
+    margin: var(--space-1) 0 var(--space-2) 0;
+    overflow: hidden;
+}
+
+.breakdown-fill {
+    background: var(--success);
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.3s ease;
+}

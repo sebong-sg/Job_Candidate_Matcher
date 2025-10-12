@@ -78,7 +78,7 @@ class MatchingModule {
                     <div class="match-card__breakdown">
                         <div class="breakdown-item">
                             <span>Skills:</span>
-                            <span>${breakdown.skills || 0}%</span>
+                            <span>${match.score_breakdown || 0}%</span>
                         </div>
                         <div class="breakdown-item">
                             <span>Experience:</span>
