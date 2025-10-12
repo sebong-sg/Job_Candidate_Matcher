@@ -6,13 +6,13 @@
 <nav class="sidebar__nav">
     <ul class="sidebar__menu">
         <li class="sidebar__item">
-            <a href="{{ url_for('home') }}" class="sidebar__link sidebar__link--active">
+            <a href="{{ url_for('home') }}" class="sidebar__link {% if request.endpoint == 'home' %}sidebar__link--active{% endif %}">
                 <span class="sidebar__icon">📊</span>
                 <span class="sidebar__text">Dashboard</span>
             </a>
         </li>
         <li class="sidebar__item">
-            <a href="#candidates" class="sidebar__link">
+            <a href="{{ url_for('candidates') }}" class="sidebar__link {% if request.endpoint == 'candidates' %}sidebar__link--active{% endif %}">
                 <span class="sidebar__icon">👥</span>
                 <span class="sidebar__text">Candidates</span>
             </a>

@@ -148,7 +148,8 @@ async function runMatching() {
 }
 
 function loadCandidates() {
-    alert('Candidates view coming soon');
+    // Redirect to candidates page instead of alert
+    window.location.href = '/candidates';
 }
 
 function loadJobs() {

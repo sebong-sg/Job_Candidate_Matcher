@@ -9,7 +9,8 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/components/navigation.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/utils.css') }}">
-    
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/components/file-upload.css') }}">
+
     <!-- Block for page-specific CSS -->
     {% block extra_css %}{% endblock %}
 </head>
@@ -29,6 +30,7 @@
 
             <!-- Page Content -->
             <div class="content-area">
+                <h1 class="page-title">{% block page_title %}{% endblock %}</h1>
                 {% block content %}
                 <!-- Page-specific content goes here -->
                 {% endblock %}
@@ -36,6 +38,11 @@
         </main>
     </div>
 
+    <!-- Utility JavaScript -->
+    <script src="{{ url_for('static', filename='js/utils/api.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/utils/ui.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/utils/formatters.js') }}"></script>
+    
     <!-- Main JavaScript -->
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>
     

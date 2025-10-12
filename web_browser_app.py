@@ -196,6 +196,39 @@ def old_ui():
     from flask import render_template_string
     return render_template_string(HTML_TEMPLATE)
 
+@app.route('/api/parse-resume-file', methods=['POST'])
+def parse_resume_file():
+    try:
+        if 'resume' not in request.files:
+            return jsonify({'success': False, 'error': 'No file provided'}), 400
+        
+        file = request.files['resume']
+        if file.filename == '':
+            return jsonify({'success': False, 'error': 'No file selected'}), 400
+        
+        # Read file content
+        if file.filename.endswith('.pdf'):
+            # For PDF files, you'd need PyPDF2 or similar
+            content = "PDF content extraction not implemented yet"
+        else:
+            content = file.read().decode('utf-8')
+        
+        # Parse the content
+        candidate_data = resume_parser.parse_resume_to_candidate(content)
+        print(f"✅ Resume parsed: {candidate_data['name']}")
+        
+        return jsonify({'success': True, 'candidate_data': candidate_data})
+        
+    except Exception as e:
+        print(f"❌ Resume file parse error: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/candidates')
+def candidates():
+    """Candidates management view"""
+    return render_template('candidates.html')
+
+
 """
 EXISTING API ROUTES - UNCHANGED
 """

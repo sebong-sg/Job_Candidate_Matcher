@@ -1,14 +1,12 @@
-// API Utility Functions
-class API {
-    constructor(baseURL = '') {
-        this.baseURL = baseURL;
+// API Utility Module
+class ApiClient {
+    constructor() {
+        this.baseURL = '';
     }
 
     async request(endpoint, options = {}) {
-        const url = `${this.baseURL}${endpoint}`;
-        
         try {
-            const response = await fetch(url, {
+            const response = await fetch(endpoint, {
                 headers: {
                     'Content-Type': 'application/json',
                     ...options.headers
@@ -22,7 +20,7 @@ class API {
 
             return await response.json();
         } catch (error) {
-            console.error(`API request failed for ${url}:`, error);
+            console.error('API request failed:', error);
             throw error;
         }
     }
@@ -31,14 +29,14 @@ class API {
         return this.request(endpoint);
     }
 
-    async post(endpoint, data) {
+    async post(endpoint, data = {}) {
         return this.request(endpoint, {
             method: 'POST',
             body: JSON.stringify(data)
         });
     }
 
-    async put(endpoint, data) {
+    async put(endpoint, data = {}) {
         return this.request(endpoint, {
             method: 'PUT',
             body: JSON.stringify(data)
@@ -52,5 +50,5 @@ class API {
     }
 }
 
-// Global API instance
-window.api = new API('/api');
+// Global instance
+window.api = new ApiClient();

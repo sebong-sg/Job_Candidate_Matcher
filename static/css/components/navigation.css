@@ -189,3 +189,11 @@
     font-weight: 500;
     color: var(--gray-700);
 }
+
+/* Add to the end of the file */
+.page-title {
+    font-size: var(--font-size-2xl);
+    font-weight: 700;
+    color: var(--gray-900);
+    margin-bottom: var(--space-6);
+}

@@ -190,6 +190,45 @@ class ChromaVectorDB:
             print(f"❌ Error clearing vector database: {e}")
             return False
 
+    def get_all_candidates(self) -> List[Dict]:
+        """Retrieve all candidates from Chroma DB in original format"""
+        try:
+            # Get all candidates from collection
+            results = self.candidates_collection.get(
+                include=['metadatas', 'documents']
+            )
+            
+            candidates = []
+            for i in range(len(results['ids'])):
+                metadata = results['metadatas'][i]
+                candidates.append({
+                    'id': int(results['ids'][i]),
+                    'name': metadata.get('name', 'Unknown'),
+                    'email': metadata.get('email', ''),
+                    'phone': metadata.get('phone', ''),
+                    'location': metadata.get('location', ''),
+                    'experience_years': metadata.get('experience_years', 0),
+                    'skills': json.loads(metadata.get('skills', '[]')),  # Parse JSON string back to list
+                    'profile': metadata.get('profile', ''),
+                    'education': metadata.get('education', '')
+                })
+            
+            print(f"✅ Retrieved {len(candidates)} candidates from Chroma DB")
+            return candidates
+        except Exception as e:
+            print(f"❌ Error retrieving candidates from Chroma DB: {e}")
+            return []
+
+    def get_all_jobs(self) -> List[Dict]:
+        """Retrieve all jobs from Chroma DB in original format"""
+        try:
+            # Note: You'll need to add jobs to Chroma DB first
+            # For now, return empty list - we'll implement this after candidate migration
+            return []
+        except Exception as e:
+            print(f"❌ Error retrieving jobs from Chroma DB: {e}")
+            return []
+
 # Global instance
 vector_db = ChromaVectorDB()
 

@@ -1,51 +1,23 @@
-// Data Formatting Utilities
+// Formatters Utility Module
 class Formatters {
-    static formatPercentage(value, decimals = 1) {
-        if (value === null || value === undefined) return '0%';
-        return `${(value * 100).toFixed(decimals)}%`;
-    }
-
-    static formatScore(score) {
-        if (score >= 0.9) return 'A+';
-        if (score >= 0.8) return 'A';
-        if (score >= 0.7) return 'B+';
-        if (score >= 0.6) return 'B';
-        if (score >= 0.5) return 'C+';
-        return 'C';
-    }
-
     static formatExperience(years) {
-        if (years === 1) return '1 year';
-        if (years > 1) return `${years} years`;
-        return 'Less than 1 year';
+        if (!years && years !== 0) return 'No exp';
+        return `${years} ${years === 1 ? 'year' : 'years'}`;
     }
 
-    static formatDate(dateString) {
-        if (!dateString) return 'N/A';
-        const date = new Date(dateString);
-        return date.toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric'
-        });
+    static truncateText(text, length) {
+        if (!text) return 'No profile available';
+        return text.length > length ? text.substring(0, length) + '...' : text;
     }
 
-    static formatSkills(skills, max = 5) {
-        if (!skills || !Array.isArray(skills)) return [];
-        return skills.slice(0, max);
-    }
-
-    static truncateText(text, maxLength = 100) {
-        if (!text) return '';
-        if (text.length <= maxLength) return text;
-        return text.substring(0, maxLength) + '...';
+    static formatPercentage(decimal) {
+        return `${Math.round(decimal * 100)}%`;
     }
 
     static capitalizeWords(str) {
-        if (!str) return '';
-        return str.replace(/\b\w/g, char => char.toUpperCase());
+        return str.replace(/\b\w/g, l => l.toUpperCase());
     }
 }
 
-// Make available globally
+// Global instance
 window.Formatters = Formatters;
