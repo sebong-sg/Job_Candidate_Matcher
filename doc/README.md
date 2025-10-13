@@ -42,6 +42,7 @@ job-matcher-pro/
 │   ├── matching.html                # 🤖 AI MATCHING INTERFACE
 │   └── 📁 partials/
 │       ├── sidebar.html             # 🧭 NAVIGATION
+│       ├── icons.html             
 │       └── header.html              # 🔝 HEADER
 │
 ├── 📁 static/                       # CLIENT-SIDE ASSETS
@@ -52,7 +53,9 @@ job-matcher-pro/
 │   │       ├── navigation.css       # 🧭 SIDEBAR/HEADER
 │   │       ├── dashboard.css        # 📊 DASHBOARD
 │   │       ├── cards.css            # 🃏 CARDS
+│   │       ├── icons.css       
 │   │       ├── candidates.css       # 👥 CANDIDATES
+│   │       ├── tables.css       
 │   │       ├── jobs.css             # 💼 JOBS
 │   │       ├── matching.css         # 🤖 MATCHING
 │   │       ├── file-upload.css      # 📁 UPLOAD
@@ -65,6 +68,7 @@ job-matcher-pro/
 │       │   ├── candidates.js        # 👥 CANDIDATES
 │       │   ├── jobs.js              # 💼 JOBS
 │       │   ├── matching.js          # 🤖 MATCHING
+│       │   ├── charts.js          
 │       │   ├── file-upload.js       # 📁 UPLOAD
 │       │   └── job-modal.js         # 🪟 JOB MODAL
 │       │
@@ -72,6 +76,7 @@ job-matcher-pro/
 │           ├── api.js               # 🌐 API CLIENT
 │           ├── ui.js                # 🎨 UI NOTIFICATIONS
 │           └── formatters.js        # 📝 DATA FORMATTING
+│       └── app.js
 │
 ├── 📁 chroma_db/                    # VECTOR DATABASE (Auto-generated)
 ├── requirements.txt                 # PYTHON DEPENDENCIES

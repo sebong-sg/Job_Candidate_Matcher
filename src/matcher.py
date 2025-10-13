@@ -6,26 +6,42 @@ from vector_db import vector_db
 from semantic_matcher import semantic_matcher
 from profile_analyzer import profile_analyzer
 
+# 🆕 ADD THIS LINE after the existing imports:
+from database_scoring import DatabaseScoringConfig
+
 print("=== 🤖 JOB-CANDIDATE MATCHER WITH CHROMA DB ===")
 
 class SimpleMatcher:
     def __init__(self):
         self.db = ChromaDataManager()
-        print("✅ Matcher initialized with Chroma Vector Database!")
+        self.scoring_mode = "hardcoded"  # 🆕 ADD THIS LINE - DEFAULT TO HARCODED
+        self.database_config = DatabaseScoringConfig()  # 🆕 ADD THIS LINE
+        print("✅ Matcher initialized with dual scoring modes!")  # 🆕 UPDATE MESSAGE
+#        print("✅ Matcher initialized with Chroma Vector Database!")
     
     def calculate_skill_score(self, job_skills, candidate_skills):
-        """Calculate weighted skill match score"""
+        """Calculate skill score using current mode"""
+        if self.scoring_mode == "database":
+            skill_weights = self.database_config.get_skill_weights()
+            source = "DATABASE"
+        else:  # hardcoded (default)
+            skill_weights = self._get_hardcoded_skill_weights()
+            source = "HARDCODED"
+        
+        print(f"🔧 [{source}] Calculating skill score...")  # 🆕 ADD LOGGING
+
+        """Below is orignal working code - Calculate weighted skill match score"""
         if not job_skills:
             return 0.0
         
         # Skill weights for realistic scoring
-        skill_weights = {
-            'python': 0.15, 'javascript': 0.12, 'java': 0.12, 'react': 0.10,
-            'django': 0.08, 'flask': 0.08, 'node.js': 0.08, 'sql': 0.10,
-            'mongodb': 0.07, 'docker': 0.06, 'aws': 0.06, 'machine learning': 0.12,
-            'tensorflow': 0.08, 'pytorch': 0.08, 'statistics': 0.09, 'data analysis': 0.08,
-            'css': 0.05, 'html': 0.05, 'git': 0.04, 'rest api': 0.06
-        }
+        # skill_weights = {
+        #    'python': 0.15, 'javascript': 0.12, 'java': 0.12, 'react': 0.10,
+        #    'django': 0.08, 'flask': 0.08, 'node.js': 0.08, 'sql': 0.10,
+        #    'mongodb': 0.07, 'docker': 0.06, 'aws': 0.06, 'machine learning': 0.12,
+        #    'tensorflow': 0.08, 'pytorch': 0.08, 'statistics': 0.09, 'data analysis': 0.08,
+        #    'css': 0.05, 'html': 0.05, 'git': 0.04, 'rest api': 0.06
+        #}
         
         total_weight = 0
         matched_weight = 0
@@ -42,6 +58,17 @@ class SimpleMatcher:
         score = matched_weight / total_weight if total_weight > 0 else 0.0
         return score
     
+    # 🆕 ADD THE NEW METHOD RIGHT HERE - AFTER calculate_skill_score
+    def _get_hardcoded_skill_weights(self):
+        """Your original hard-coded weights"""
+        return {
+            'python': 0.15, 'javascript': 0.12, 'java': 0.12, 'react': 0.10,
+            'django': 0.08, 'flask': 0.08, 'node.js': 0.08, 'sql': 0.10,
+            'mongodb': 0.07, 'docker': 0.06, 'aws': 0.06, 'machine learning': 0.12,
+            'tensorflow': 0.08, 'pytorch': 0.08, 'statistics': 0.09, 'data analysis': 0.08,
+            'css': 0.05, 'html': 0.05, 'git': 0.04, 'rest api': 0.06
+        }
+
     def calculate_experience_score(self, job_title, candidate_experience):
         """Calculate experience suitability score"""
         job_lower = job_title.lower()
@@ -454,6 +481,24 @@ class SimpleMatcher:
         except Exception as e:
             print(f"❌ Error adding job: {e}")
             return None
+
+    # 🆕 ADD THESE METHODS AT THE END OF THE CLASS (before main() function)
+
+    def set_scoring_mode(self, mode):
+        """Switch between hardcoded and database scoring"""
+        valid_modes = ["hardcoded", "database"]
+        if mode in valid_modes:
+            old_mode = self.scoring_mode
+            self.scoring_mode = mode
+            print(f"🎯 Scoring mode changed: {old_mode.upper()} → {mode.upper()}")
+            return True
+        else:
+            print(f"❌ Invalid scoring mode: {mode}")
+            return False
+    
+    def get_scoring_mode(self):
+        """Get current scoring mode"""
+        return self.scoring_mode
 
 # Test function
 def main():

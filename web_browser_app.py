@@ -61,6 +61,8 @@ try:
     from resume_parser import ResumeParser
     from vector_db import vector_db
     from job_parser import JobDescriptionParser
+    # 🆕 ADD THIS LINE:
+    from database_scoring import DatabaseScoringConfig
     
     print("✅ All AI modules loaded successfully!")
     print("🎯 Chroma Vector Database: ACTIVE")
@@ -329,13 +331,48 @@ def run_matching():
                     'score_breakdown': top_match.get('score_breakdown', {}),
                     'match_grade': top_match.get('match_grade', 'A')
                 })
-        
+
         print(f"✅ Found {len(matches)} matches using Chroma DB")
         return jsonify({'matches': matches})
         
     except Exception as e:
         print(f"❌ Matching error: {e}")
         return jsonify({'error': str(e)}), 500
+
+# 🆕 ADD THESE ENDPOINTS AFTER EXISTING ONES
+
+@app.route('/api/scoring-mode', methods=['GET', 'POST'])
+def scoring_mode():
+    """Get or set the current scoring mode"""
+    if request.method == 'POST':
+        mode = request.json.get('mode', 'hardcoded')
+        success = matcher.set_scoring_mode(mode)
+        return jsonify({
+            'success': success,
+            'current_mode': matcher.scoring_mode,
+            'message': f'Scoring mode set to: {matcher.scoring_mode.upper()}'
+        })
+    else:
+        return jsonify({
+            'current_mode': matcher.scoring_mode,
+            'available_modes': ['hardcoded', 'database']
+        })
+
+@app.route('/api/scoring-weights')
+def get_scoring_weights():
+    """Get current scoring weights for inspection"""
+    if matcher.scoring_mode == "database":
+        weights = matcher.database_config.get_skill_weights()
+        source = "database"
+    else:
+        weights = matcher._get_hardcoded_skill_weights()
+        source = "hardcoded"
+    
+    return jsonify({
+        'skill_weights': weights,
+        'source': source,
+        'scoring_mode': matcher.scoring_mode
+    })
 
 @app.route('/api/get-candidates')
 def get_candidates():

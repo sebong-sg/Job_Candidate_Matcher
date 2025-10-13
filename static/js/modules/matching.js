@@ -68,12 +68,12 @@ class MatchingModule {
                 algorithmSelect.parentElement.classList.add('loading');
                 limitSelect.parentElement.classList.add('loading');
                 runButton.disabled = true;
-                runButton.innerHTML = '<span class="btn__icon">⏳</span> Running...';
+                runButton.innerHTML = '<svg class="icon btn__icon" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path></svg> Running...';
             } else {
                 algorithmSelect.parentElement.classList.remove('loading');
                 limitSelect.parentElement.classList.remove('loading');
                 runButton.disabled = false;
-                runButton.innerHTML = '<span class="btn__icon">🤖</span> Run AI Matching';
+                runButton.innerHTML = '<svg class="icon btn__icon" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path></svg> Run AI Matching';
             }
         }
     }

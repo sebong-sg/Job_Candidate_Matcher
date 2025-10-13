@@ -51,6 +51,43 @@
             </select>
         </div>
     </div>
+  
+    <!-- 🆕 ADD THIS SECTION AFTER THE MATCHING CONTROLS -->
+    <div class="scoring-mode-selector card" style="margin-bottom: var(--space-6);">
+        <div class="card__header">
+            <h4>Scoring Engine</h4>
+        </div>
+        <div class="card__body">
+            <div class="mode-buttons" style="display: flex; gap: var(--space-4); margin-bottom: var(--space-4);">
+                <button class="btn btn--primary" id="hardcodedModeBtn" onclick="setScoringMode('hardcoded')">
+                    <svg class="icon btn__icon" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 12l2 2 4-4"></path>
+                        <path d="M7 12l-2 2-4-4"></path>
+                    </svg>
+                    Hardcoded Mode
+                </button>
+                <button class="btn btn--secondary" id="databaseModeBtn" onclick="setScoringMode('database')">
+                    <svg class="icon btn__icon" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                    </svg>
+                    Database Mode
+                </button>
+            </div>
+            <div class="mode-status" style="display: flex; align-items: center; gap: var(--space-3);">
+                <span class="status-badge" id="scoringModeStatus" 
+                      style="background: var(--primary-100); color: var(--primary-700); padding: var(--space-1) var(--space-3); border-radius: 12px; font-size: var(--font-size-sm); font-weight: 600;">
+                    Hardcoded
+                </span>
+                <span class="status-description" id="scoringModeDescription" style="color: var(--gray-600); font-size: var(--font-size-sm);">
+                    Using proven hardcoded scoring algorithm
+                </span>
+            </div>
+        </div>
+    </div>
+
 
     <!-- Results Section -->
     <div class="candidates-container" id="matchingResults">
@@ -65,8 +102,66 @@
 {% block extra_js %}
 <script src="{{ url_for('static', filename='js/modules/matching.js') }}"></script>
 <script>
+    // 🆕 ADD THESE FUNCTIONS RIGHT HERE - AFTER <script> BUT BEFORE DOMContentLoaded
+    
+    async function setScoringMode(mode) {
+        try {
+            const response = await fetch('/api/scoring-mode', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ mode: mode })
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                updateScoringModeUI(mode);
+                UIUtils.showNotification(`Switched to ${mode} scoring mode`, 'success');
+                
+                // Auto-refresh matches when mode changes
+                matchingModule.runAdvancedMatching();
+            } else {
+                UIUtils.showNotification('Failed to change scoring mode', 'error');
+            }
+        } catch (error) {
+            console.error('Mode change error:', error);
+            UIUtils.showNotification('Failed to change scoring mode', 'error');
+        }
+    }
+    
+    function updateScoringModeUI(mode) {
+        const hardcodedBtn = document.getElementById('hardcodedModeBtn');
+        const databaseBtn = document.getElementById('databaseModeBtn');
+        const statusBadge = document.getElementById('scoringModeStatus');
+        const description = document.getElementById('scoringModeDescription');
+    
+        // Update button states
+        if (mode === 'hardcoded') {
+            hardcodedBtn.className = 'btn btn--primary';
+            databaseBtn.className = 'btn btn--secondary';  // ✅ FIXED
+            statusBadge.textContent = 'Hardcoded';
+            statusBadge.style.background = 'var(--primary-100)';
+            statusBadge.style.color = 'var(--primary-700)';
+            description.textContent = 'Using proven hardcoded scoring algorithm';
+        } else {
+            hardcodedBtn.className = 'btn btn--secondary';  // ✅ FIXED
+            databaseBtn.className = 'btn btn--primary';
+            statusBadge.textContent = 'Database';
+            statusBadge.style.background = 'var(--success)';
+            statusBadge.style.color = 'white';
+            description.textContent = 'Using database-driven scoring weights';
+        }
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
         matchingModule.init();
+
+        // 🆕 ADD: Load current scoring mode on page load
+        fetch('/api/scoring-mode')
+            .then(response => response.json())
+            .then(data => {
+                updateScoringModeUI(data.current_mode);
+            });
 
         // Function to run matching with current settings
         const runMatchingWithSettings = function() {
