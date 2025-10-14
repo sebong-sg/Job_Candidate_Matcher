@@ -430,14 +430,47 @@ class SimpleMatcher:
                 )
                 
                 # Get semantic score from Chroma
+#                semantic_score = match['score']
+#                
+#                
+#               total_score = (
+#                    skill_score * 0.40 +           # Skill matching
+#                    experience_score * 0.25 +      # Experience rules
+#                    location_score * 0.15 +        # Global location scoring  
+#                    semantic_score * 0.20          # Semantic understanding from Chroma
+#                )
+#                
+#                # Update the match with complete scoring
+#                match['score'] = total_score
+#                match['score_breakdown'] = {
+#                    'skills': int(skill_score * 100),
+#                    'experience': int(experience_score * 100),
+#                    'location': int(location_score * 100),
+#                    'semantic': int(semantic_score * 100)
+#                }
+
+                # Get semantic score from Chroma
                 semantic_score = match['score']
                 
-                # Calculate total weighted score
+                # 🆕 ENHANCED SCORING WITH CULTURAL FIT & GROWTH POTENTIAL
+                cultural_fit = semantic_matcher.calculate_cultural_fit(
+                    job.get('description', ''), 
+                    candidate.get('profile', '')
+                )
+                
+                career_growth = profile_analyzer.analyze_career_trajectory(
+                    candidate.get('profile', ''),
+                    candidate.get('experience_years', 0)
+                )
+                
+                # Enhanced scoring with new components
                 total_score = (
-                    skill_score * 0.40 +           # Skill matching
-                    experience_score * 0.25 +      # Experience rules
-                    location_score * 0.15 +        # Global location scoring  
-                    semantic_score * 0.20          # Semantic understanding from Chroma
+                    skill_score * 0.35 +           # Slightly reduced from 0.40
+                    experience_score * 0.20 +      # Reduced from 0.25
+                    location_score * 0.15 +        # Same
+                    semantic_score * 0.15 +        # Reduced from 0.20
+                    cultural_fit * 0.10 +          # NEW: Cultural fit
+                    career_growth * 0.05           # NEW: Growth potential
                 )
                 
                 # Update the match with complete scoring
@@ -446,8 +479,11 @@ class SimpleMatcher:
                     'skills': int(skill_score * 100),
                     'experience': int(experience_score * 100),
                     'location': int(location_score * 100),
-                    'semantic': int(semantic_score * 100)
+                    'semantic': int(semantic_score * 100),
+                    'cultural_fit': int(cultural_fit * 100),      # 🆕 NEW
+                    'growth_potential': int(career_growth * 100)  # 🆕 NEW
                 }
+
                 match['match_grade'] = self.get_match_grade(total_score)
                 
                 matches[job_index].append(match)

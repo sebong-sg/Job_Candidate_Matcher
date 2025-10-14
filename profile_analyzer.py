@@ -29,5 +29,33 @@ class ProfileRelevanceAnalyzer:
         
         return semantic_score
 
+    # 🆕 CAREER TRAJECTORY ANALYSIS
+    def analyze_career_trajectory(self, candidate_profile, candidate_experience):
+        """Evaluate career growth potential"""
+        profile_text = candidate_profile.lower()
+        
+        growth_score = 0.5  # Base score
+        
+        # Promotion indicators
+        promotion_indicators = ['promoted', 'advanced to', 'grown into', 'progressed to']
+        if any(indicator in profile_text for indicator in promotion_indicators):
+            growth_score += 0.2
+        
+        # Leadership indicators (even in non-manager roles)
+        leadership_indicators = ['led', 'mentored', 'guided', 'coordinated', 'spearheaded']
+        leadership_count = sum(1 for indicator in leadership_indicators if indicator in profile_text)
+        growth_score += leadership_count * 0.05
+        
+        # Skill expansion indicators
+        skill_verbs = ['learned', 'mastered', 'developed skills in', 'expanded into']
+        if any(verb in profile_text for verb in skill_verbs):
+            growth_score += 0.15
+        
+        # Experience quality weighting
+        if candidate_experience >= 8:
+            growth_score += 0.1  # Senior candidates expected to show growth
+        
+        return min(1.0, growth_score)
+
 # Global instance for reuse
 profile_analyzer = ProfileRelevanceAnalyzer()

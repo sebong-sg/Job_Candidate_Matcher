@@ -122,3 +122,18 @@
     border-radius: 3px;
     transition: width 0.3s ease;
 }
+
+/* Highlight new scoring criteria */
+.breakdown-item:nth-last-child(-n+2) {
+    border-left: 3px solid var(--primary-300);
+    padding-left: 8px;
+    font-weight: 600;
+}
+
+.breakdown-item:nth-last-child(2) {
+    color: var(--primary-700);
+}
+
+.breakdown-item:nth-last-child(1) {
+    color: var(--success);
+}

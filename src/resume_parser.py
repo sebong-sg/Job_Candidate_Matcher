@@ -29,7 +29,15 @@ class ResumeParser:
             'data_science': ['machine learning', 'deep learning', 'tensorflow', 'pytorch', 'pandas', 'numpy', 'statistics'],
             'soft_skills': ['leadership', 'communication', 'teamwork', 'problem solving', 'analytical', 'agile', 'scrum']
         }
-        print("✅ Resume parser initialized!")
+#  ADD SKILL RELATIONSHIP MAPPING
+        self.skill_relationships = {
+            'python': ['django', 'flask', 'pandas', 'numpy', 'data science', 'machine learning'],
+            'react': ['vue', 'angular', 'frontend', 'javascript', 'typescript', 'ui/ux'],
+            'aws': ['cloud', 'devops', 'azure', 'gcp', 'infrastructure', 'kubernetes'],
+            'sql': ['database', 'postgresql', 'mysql', 'mongodb', 'data modeling']
+        }
+
+        print("✅ Resume parser initialized with enhanced skill detection!")
     
     def parse_resume_text(self, resume_text):
         """Parse resume text and extract structured information"""
@@ -85,10 +93,28 @@ class ResumeParser:
             for skill in skills:
                 if skill in text_lower:
                     found_skills.append(skill)
-        
+
+        # 🆕 ENHANCED SKILL DETECTION
+        enhanced_skills = self.enhance_skill_detection(found_skills, text_lower)
+
         # Remove duplicates and return
-        return list(set(found_skills))
-    
+        # return list(set(found_skills))
+        return list(set(enhanced_skills))
+
+    # 🆕 ADD ENHANCED SKILL DETECTION METHOD
+    def enhance_skill_detection(self, base_skills, text_lower):
+        """Find related skills beyond exact matches"""
+        enhanced_skills = set(base_skills)
+        
+        # Find related skills for each base skill
+        for skill in base_skills:
+            if skill in self.skill_relationships:
+                for related_skill in self.skill_relationships[skill]:
+                    if related_skill in text_lower and related_skill not in enhanced_skills:
+                        enhanced_skills.add(related_skill)
+        
+        return list(enhanced_skills)
+
     def extract_experience(self, text):
         """Extract years of experience (simple heuristic)"""
         # Look for patterns like "5 years", "3+ years", etc.

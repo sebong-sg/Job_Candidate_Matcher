@@ -159,6 +159,34 @@ class SemanticMatcher:
             
         return explanation
 
+    # 🆕 ENHANCED CULTURAL FIT ANALYSIS
+    def calculate_cultural_fit(self, job_description, candidate_profile):
+        """Enhanced cultural fit scoring"""
+        CULTURAL_INDICATORS = {
+            'collaborative': ['team player', 'cross-functional', 'collaborate', 'partner with'],
+            'fast_paced': ['fast-paced', 'dynamic', 'agile', 'adaptable', 'startup environment'],
+            'autonomous': ['self-starter', 'independent', 'autonomous', 'self-directed'],
+            'structured': ['process-driven', 'methodical', 'structured', 'organized environment']
+        }
+        
+        job_text = job_description.lower()
+        candidate_text = candidate_profile.lower()
+        
+        cultural_score = 0.5  # Base neutral score
+        matches_found = 0
+        
+        for culture_type, indicators in CULTURAL_INDICATORS.items():
+            job_has_culture = any(indicator in job_text for indicator in indicators)
+            candidate_has_culture = any(indicator in candidate_text for indicator in indicators)
+            
+            if job_has_culture and candidate_has_culture:
+                cultural_score += 0.15  # Strong match bonus
+                matches_found += 1
+            elif job_has_culture != candidate_has_culture:
+                cultural_score -= 0.10  # Mismatch penalty
+        
+        return max(0.1, min(1.0, cultural_score))
+
 # Global instance for reuse
 semantic_matcher = SemanticMatcher()
 

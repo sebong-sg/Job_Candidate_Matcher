@@ -1,5 +1,5 @@
-// Advanced Matching Module
-class MatchingModule {
+    // Advanced Matching Module
+    class MatchingModule {
     constructor() {
         this.initialized = false;
         this.isRunning = false;
@@ -155,6 +155,7 @@ class MatchingModule {
     }
 
     renderJobMatch(match) {
+        const breakdown = match.score_breakdown || {};
         return `
             <div class="job-match-section">
                 <div class="job-match-header">
@@ -177,6 +178,33 @@ class MatchingModule {
                                 ${match.common_skills.map(skill => 
                                     `<span class="skill-tag">${skill}</span>`
                                 ).join('')}
+                            </div>
+                            <div class="score-breakdown">
+                                <h5>Score Breakdown:</h5>
+                                <div class="breakdown-item">
+                                    <span>Skills Match:</span>
+                                    <span>${breakdown.skills || 0}%</span>
+                                </div>
+                                <div class="breakdown-item">
+                                    <span>Experience:</span>
+                                    <span>${breakdown.experience || 0}%</span>
+                                </div>
+                                <div class="breakdown-item">
+                                    <span>Location:</span>
+                                    <span>${breakdown.location || 0}%</span>
+                                </div>
+                                <div class="breakdown-item">
+                                    <span>Profile Relevance:</span>
+                                    <span>${breakdown.semantic || 0}%</span>
+                                </div>
+                                <div class="breakdown-item">
+                                    <span>Cultural Fit:</span>
+                                    <span>${breakdown.cultural_fit || 0}%</span>
+                                </div>
+                                <div class="breakdown-item">
+                                    <span>Growth Potential:</span>
+                                    <span>${breakdown.growth_potential || 0}%</span>
+                                </div>
                             </div>
                         </div>
                         <div class="match-score">

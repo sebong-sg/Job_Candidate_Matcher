@@ -103,6 +103,14 @@ class DashboardModule {
                                 <span>Profile Relevance:</span>
                                 <span>${breakdown.semantic || 0}%</span>
                             </div>
+                            <div class="breakdown-item">
+                                <span>Cultural Fit:</span>
+                                <span>${breakdown.cultural_fit || 0}%</span>
+                            </div>
+                            <div class="breakdown-item">
+                                <span>Growth Potential:</span>
+                                <span>${breakdown.growth_potential || 0}%</span>
+                            </div>                            
                         </div>
                         <p><strong>Common Skills:</strong> ${match.common_skills ? match.common_skills.join(', ') : 'None'}</p>
                     </div>
