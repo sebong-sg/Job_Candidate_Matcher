@@ -1,0 +1,12 @@
+# ignores all Python bytecode caches and ignores compiled Python files.
+__pycache__/
+*.pyc
+
+# SQLite databases and binary artifacts - ignores SQLite database files
+*.sqlite3
+*.bin
+chroma_db/
+
+# OS / editor junk -  ignores binary blobs.
+.DS_Store
+*.swp
