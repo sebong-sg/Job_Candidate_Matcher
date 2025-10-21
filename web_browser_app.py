@@ -63,7 +63,13 @@ try:
     from job_parser import JobDescriptionParser
     # 🆕 ADD THIS LINE:
     from database_scoring import DatabaseScoringConfig
-    
+
+    # 🆕 ADD THESE LINES - Initialize SQLite at startup
+    print("🗃️ Initializing SQLite database...")
+    from database_scoring import ScoringDB
+    scoring_db = ScoringDB()
+    print("✅ SQLite database initialized with scoring tables")
+
     print("✅ All AI modules loaded successfully!")
     print("🎯 Chroma Vector Database: ACTIVE")
     print("📄 Job Description Parser: ACTIVE")
@@ -264,8 +270,7 @@ def parse_resume():
     """Parse resume text and extract candidate data"""
     try:
         resume_text = request.json.get('resume_text', '')
-        print(f"📄 Parsing resume text ({len(resume_text)} characters)...")
-        
+        print(f"📄 Parsing resume text ({len(resume_text)} characters)...") 
         candidate_data = resume_parser.parse_resume_to_candidate(resume_text)
         print(f"✅ Resume parsed: {candidate_data['name']}")
         

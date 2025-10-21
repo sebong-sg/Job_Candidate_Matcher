@@ -1,8 +1,114 @@
 # 🗃️ DATABASE MANAGER
 # Handles loading and saving job and candidate data
 
+import sqlite3
 import json
 import os
+
+class Database:
+    def __init__(self, db_path='job_matcher.db'):
+        self.db_path = db_path
+        self.conn = sqlite3.connect(db_path)
+        self.create_tables()
+        self.create_scoring_tables()
+    
+    def create_tables(self):
+        """Create main tables for jobs and candidates"""
+        tables = [
+            '''CREATE TABLE IF NOT EXISTS jobs (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                title TEXT NOT NULL,
+                company TEXT,
+                location TEXT,
+                description TEXT,
+                required_skills TEXT,
+                preferred_skills TEXT,
+                experience_required INTEGER,
+                salary_range TEXT,
+                job_type TEXT,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            )''',
+            '''CREATE TABLE IF NOT EXISTS candidates (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL,
+                email TEXT,
+                skills TEXT,
+                experience INTEGER,
+                education TEXT,
+                location TEXT,
+                resume_text TEXT,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            )'''
+        ]
+        
+        for table in tables:
+            self.conn.execute(table)
+        self.conn.commit()
+        print("✅ Main database tables created")
+    
+    def create_scoring_tables(self):
+        """Create tables for user-based scoring profiles"""
+        tables = [
+            '''CREATE TABLE IF NOT EXISTS companies (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            )''',
+            '''CREATE TABLE IF NOT EXISTS users (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                company_id INTEGER,
+                username TEXT UNIQUE NOT NULL,
+                email TEXT UNIQUE NOT NULL,
+                role TEXT,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (company_id) REFERENCES companies(id)
+            )''',
+            '''CREATE TABLE IF NOT EXISTS scoring_profiles (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER NOT NULL,
+                profile_name TEXT NOT NULL,
+                is_default BOOLEAN DEFAULT FALSE,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (user_id) REFERENCES users(id)
+            )''',
+            '''CREATE TABLE IF NOT EXISTS scoring_criteria (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                profile_id INTEGER NOT NULL,
+                name TEXT NOT NULL,
+                weight DECIMAL(3,2) NOT NULL,
+                is_active BOOLEAN DEFAULT TRUE,
+                FOREIGN KEY (profile_id) REFERENCES scoring_profiles(id)
+            )''',
+            '''CREATE TABLE IF NOT EXISTS scoring_thresholds (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                profile_id INTEGER NOT NULL,
+                name TEXT NOT NULL,
+                value DECIMAL(5,2) NOT NULL,
+                FOREIGN KEY (profile_id) REFERENCES scoring_profiles(id)
+            )''',
+            '''CREATE TABLE IF NOT EXISTS scoring_mappings (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                profile_id INTEGER NOT NULL,
+                type TEXT NOT NULL,
+                key TEXT NOT NULL,
+                value INTEGER NOT NULL,
+                FOREIGN KEY (profile_id) REFERENCES scoring_profiles(id)
+            )''',
+            '''CREATE TABLE IF NOT EXISTS job_level_keywords (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                profile_id INTEGER NOT NULL,
+                level TEXT NOT NULL,
+                keywords TEXT NOT NULL,
+                FOREIGN KEY (profile_id) REFERENCES scoring_profiles(id)
+            )'''
+        ]
+        
+        for table in tables:
+            self.conn.execute(table)
+        self.conn.commit()
+        print("✅ Scoring database tables created")
+
+# Temporary compatibility layer - will be removed later
 
 class DataManager:
     def __init__(self, data_folder="data"):

@@ -462,16 +462,43 @@ class SimpleMatcher:
                     candidate.get('profile', ''),
                     candidate.get('experience_years', 0)
                 )
-                
-                # Enhanced scoring with new components
+
+            # Final score calculation based on current mode
+            if self.scoring_mode == "database":
+                # Use SQLite criteria weights for final score composition
+                weights = self.database_config.get_scoring_weights()
+                print(f"🎯 Using SQLite criteria weights for final score: {weights}")
+    
                 total_score = (
-                    skill_score * 0.35 +           # Slightly reduced from 0.40
-                    experience_score * 0.20 +      # Reduced from 0.25
-                    location_score * 0.15 +        # Same
-                    semantic_score * 0.15 +        # Reduced from 0.20
-                    cultural_fit * 0.10 +          # NEW: Cultural fit
-                    career_growth * 0.05           # NEW: Growth potential
+
+                    skill_score * weights['skills'] +
+                    experience_score * weights['experience'] +
+                    location_score * weights['location'] +
+                    semantic_score * weights['semantic'] +
+                    cultural_fit * weights['cultural_fit'] +
+                    career_growth * weights['growth_potential']
                 )
+            else:
+                # Use existing hardcoded weights (EXACTLY AS BEFORE)
+                total_score = (
+                    skill_score * 0.35 +
+                    experience_score * 0.20 +
+                    location_score * 0.15 +
+                    semantic_score * 0.15 +
+                    cultural_fit * 0.10 +
+                    career_growth * 0.05
+                )
+################# Original working code replaced by above block on final score calculation
+                # Enhanced scoring with new components
+#                total_score = (
+#                    skill_score * 0.35 +           # Slightly reduced from 0.40
+#                    experience_score * 0.20 +      # Reduced from 0.25
+#                    location_score * 0.15 +        # Same
+#                    semantic_score * 0.15 +        # Reduced from 0.20
+#                    cultural_fit * 0.10 +          # NEW: Cultural fit
+#                    career_growth * 0.05           # NEW: Growth potential
+#                )
+################
                 
                 # Update the match with complete scoring
                 match['score'] = total_score
