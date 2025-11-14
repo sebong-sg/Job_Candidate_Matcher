@@ -79,6 +79,14 @@
                                 candidatesModule.displayCandidates(
                                     document.getElementById('candidatesContainer')
                                 );
+
+                                   
+                                // ADD THESE LINES TO REFRESH DASHBOARD:
+                                if (window.dashboardModule) {
+                                    dashboardModule.loadStats();
+                                    dashboardModule.loadMatches();
+                                }
+
                                 // Show success message
                                 if (window.UIUtils) {
                                     UIUtils.showNotification('Candidate added successfully!', 'success');

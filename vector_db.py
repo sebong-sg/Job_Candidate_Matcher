@@ -65,7 +65,8 @@ class ChromaVectorDB:
                     'experience_years': candidate.get('experience_years', 0),
                     'location': candidate.get('location', ''),
                     'email': candidate.get('email', ''),
-                    'profile': candidate.get('profile', '')
+                    'profile': candidate.get('profile', ''),
+                    'cultural_attributes': json.dumps(candidate.get('cultural_attributes', {}))  # ADD THIS LINE
                 }]
             )
             print(f"✅ Candidate added to vector DB: {candidate.get('name', 'Unknown')}")
@@ -100,7 +101,8 @@ class ChromaVectorDB:
                         'experience_years': candidate.get('experience_years', 0),
                         'location': candidate.get('location', ''),
                         'email': candidate.get('email', ''),
-                        'profile': candidate.get('profile', '')
+                        'profile': candidate.get('profile', ''),
+                        'cultural_attributes': json.dumps(candidate.get('cultural_attributes', {}))  # ADD THIS LINE
                     })
             
             if ids:
@@ -159,7 +161,8 @@ class ChromaVectorDB:
                             'skills': candidate_skills,  # Use parsed list
                             'experience_years': metadata.get('experience_years', 0),
                             'location': metadata.get('location', ''),
-                            'profile': metadata.get('profile', '')
+                            'profile': metadata.get('profile', ''),
+                            'cultural_attributes': json.loads(metadata.get('cultural_attributes', '{}'))  # ADD THIS LINE
                         },
                         'score': similarity_score,
                         'common_skills': list(job_skills.intersection(candidate_skills_set)),
@@ -210,7 +213,8 @@ class ChromaVectorDB:
                     'experience_years': metadata.get('experience_years', 0),
                     'skills': json.loads(metadata.get('skills', '[]')),  # Parse JSON string back to list
                     'profile': metadata.get('profile', ''),
-                    'education': metadata.get('education', '')
+                    'education': metadata.get('education', ''),
+                    'cultural_attributes': json.loads(metadata.get('cultural_attributes', '{}'))  # ADD THIS LINE
                 })
             
             print(f"✅ Retrieved {len(candidates)} candidates from Chroma DB")
@@ -240,7 +244,8 @@ class ChromaVectorDB:
                     'preferred_skills': json.loads(metadata.get('preferred_skills', '[]')),
                     'experience_required': metadata.get('experience_required', 0),
                     'salary_range': metadata.get('salary_range', ''),
-                    'job_type': metadata.get('job_type', '')
+                    'job_type': metadata.get('job_type', ''),
+                    'cultural_attributes': json.loads(metadata.get('cultural_attributes', '{}'))  # ADD THIS LINE
                 })
             
             print(f"✅ Retrieved {len(jobs)} jobs from Chroma DB")
@@ -276,7 +281,8 @@ class ChromaVectorDB:
                     'preferred_skills': json.dumps(job.get('preferred_skills', [])),
                     'experience_required': job.get('experience_required', 0),
                     'salary_range': job.get('salary_range', ''),
-                    'job_type': job.get('job_type', '')
+                    'job_type': job.get('job_type', ''),
+                    'cultural_attributes': json.dumps(job.get('cultural_attributes', {}))  # ADD THIS LINE
                 }]
             )
             print(f"✅ Job added to vector DB: {job.get('title', 'Unknown')}")
@@ -313,7 +319,8 @@ class ChromaVectorDB:
                         'preferred_skills': json.dumps(job.get('preferred_skills', [])),
                         'experience_required': job.get('experience_required', 0),
                         'salary_range': job.get('salary_range', ''),
-                        'job_type': job.get('job_type', '')
+                        'job_type': job.get('job_type', ''),
+                        'cultural_attributes': json.dumps(job.get('cultural_attributes', {}))  # ADD THIS LINE
                     })
             
             if ids:

@@ -404,14 +404,27 @@ class SimpleMatcher:
                 
                 # Get semantic score from Chroma
                 semantic_score = match['score']
-                
-                # Calculate total weighted score
+
+                # Calculate cultural fit
+                cultural_fit = self._calculate_cultural_fit(job, candidate)
+
+                # Calculate total weighted score with cultural fit
                 total_score = (
-                    skill_score * 0.40 +           # Skill matching
+                    skill_score * 0.35 +           # Skill matching (reduced from 0.40)
                     experience_score * 0.25 +      # Experience rules
                     location_score * 0.15 +        # Global location scoring  
-                    semantic_score * 0.20          # Semantic understanding from Chroma
+                    semantic_score * 0.20 +        # Semantic understanding from Chroma
+                    cultural_fit * 0.05            # NEW: Cultural fit (5% weight)
                 )
+
+# Below OLD code replace by above                
+                # Calculate total weighted score
+#                total_score = (
+#                    skill_score * 0.40 +           # Skill matching
+#                    experience_score * 0.25 +      # Experience rules
+#                    location_score * 0.15 +        # Global location scoring  
+#                    semantic_score * 0.20          # Semantic understanding from Chroma
+#                )
                 
                 # Update the match with complete scoring
                 match['score'] = total_score
@@ -419,7 +432,8 @@ class SimpleMatcher:
                     'skills': int(skill_score * 100),
                     'experience': int(experience_score * 100),
                     'location': int(location_score * 100),
-                    'semantic': int(semantic_score * 100)
+                    'semantic': int(semantic_score * 100),
+                    'cultural_fit': int(cultural_fit * 100)  # NEW: Add cultural fit to breakdown
                 }
                 match['match_grade'] = self.get_match_grade(total_score)
                 
@@ -454,6 +468,48 @@ class SimpleMatcher:
         except Exception as e:
             print(f"❌ Error adding job: {e}")
             return None
+    # New Cultural Attribute method
+
+    def _calculate_cultural_fit(self, job_data, candidate):
+        """Calculate cultural fit between job and candidate"""
+        job_cultural = job_data.get('cultural_attributes', {})
+        candidate_cultural = candidate.get('cultural_attributes', {})
+    
+        if not job_cultural or not candidate_cultural:
+            return 0.5
+    
+        total_score = 0
+        count = 0
+    
+        for attr in ['teamwork', 'innovation', 'work_environment', 'work_pace', 'customer_focus']:
+            job_score_raw = job_cultural.get(attr, 0.5)
+            candidate_score_raw = candidate_cultural.get(attr, 0.5)
+
+            # Handle case where scores are stored as tuples/lists (score, confidence)
+            if isinstance(job_score_raw, (list, tuple)) and len(job_score_raw) > 0:
+                job_score = job_score_raw[0]  # Take the first element (score)
+            else:
+                job_score = job_score_raw
+            
+            if isinstance(candidate_score_raw, (list, tuple)) and len(candidate_score_raw) > 0:
+                candidate_score = candidate_score_raw[0]  # Take the first element (score)
+            else:
+                candidate_score = candidate_score_raw
+        
+            # Ensure scores are numbers
+            try:
+                job_score = float(job_score)
+                candidate_score = float(candidate_score)
+            except (ValueError, TypeError):
+                job_score = 0.5
+                candidate_score = 0.5    
+
+            # Compatibility: 1 - absolute difference
+            compatibility = 1 - abs(job_score - candidate_score)
+            total_score += compatibility
+            count += 1
+    
+        return total_score / count if count > 0 else 0.5
 
 # Test function
 def main():

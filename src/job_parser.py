@@ -22,6 +22,9 @@ class JobDescriptionParser:
         location, location_confidence = self._extract_location(text)
         experience, exp_confidence = self._extract_experience(text)
         employment_type, type_confidence = self._extract_employment_type(text)
+
+        # NEW: Extract cultural attributes
+        cultural_attributes, cultural_confidence = self.extract_cultural_attributes(text)
         
         job_data = {
             'title': title,
@@ -32,13 +35,17 @@ class JobDescriptionParser:
             'preferred_skills': [],
             'experience_required': experience,
             'employment_type': employment_type,
+            # NEW: cultural attributes
+            'cultural_attributes': cultural_attributes,  # The actual cultural data
             'confidence_scores': {
                 'title': title_confidence,
                 'company': company_confidence,
                 'location': location_confidence,
                 'experience': exp_confidence,
                 'skills': 0.80,  # Based on resume parser performance
-                'employment_type': type_confidence
+                'employment_type': type_confidence,
+                # NEW: cultural attributes
+               'cultural_fit': cultural_confidence  # NEW: Overall reliability of cultural extraction
             }
         }
         return job_data
@@ -185,3 +192,74 @@ class JobDescriptionParser:
                 return employment_type, confidence
                 
         return "Full-time", 0.60  # Default assumption
+
+    def extract_cultural_attributes(self, text):
+        """Extract cultural fit attributes from job description with confidence scores"""
+        text_lower = text.lower()
+    
+        cultural_attributes = {
+            'teamwork': (0.5, 0.3),
+            'innovation': (0.5, 0.3),
+            'work_environment': (0.5, 0.3),
+            'work_pace': (0.5, 0.3),
+            'customer_focus': (0.5, 0.3)
+        }
+    
+        # Teamwork indicators
+        teamwork_terms = ['team', 'collaborat', 'partner', 'work together', 'group project', 'cross-functional']
+        cultural_attributes['teamwork'] = self._calculate_cultural_score(text_lower, teamwork_terms)
+    
+        # Innovation indicators  
+        innovation_terms = ['innovati', 'creativ', 'initiative', 'think outside', 'new ideas', 'problem solv']
+        cultural_attributes['innovation'] = self._calculate_cultural_score(text_lower, innovation_terms)
+    
+        # Work environment preferences
+        remote_terms = ['remote', 'work from home', 'wfh', 'virtual office']
+        office_terms = ['office', 'on-site', 'in-person', 'physical workspace']
+        hybrid_terms = ['hybrid', 'flexible work', 'partial remote']
+    
+        env_scores = [
+            self._calculate_cultural_score(text_lower, remote_terms),
+            self._calculate_cultural_score(text_lower, office_terms), 
+            self._calculate_cultural_score(text_lower, hybrid_terms)
+        ]
+        best_env_score = max(env_scores)
+        cultural_attributes['work_environment'] = best_env_score if best_env_score[1] > 0.3 else (0.5, 0.3)
+    
+        # Work pace indicators
+        fast_pace_terms = ['fast-paced', 'dynamic', 'rapid', 'startup', 'agile', 'high-growth']
+        methodical_terms = ['stable', 'methodical', 'structured', 'process-driven', 'established']
+    
+        pace_scores = [
+          self._calculate_cultural_score(text_lower, fast_pace_terms),
+          self._calculate_cultural_score(text_lower, methodical_terms)
+        ]
+        best_pace_score = max(pace_scores)
+        cultural_attributes['work_pace'] = best_pace_score if best_pace_score[1] > 0.3 else (0.5, 0.3)
+    
+        # Customer focus indicators
+        customer_terms = ['customer', 'client focus', 'user experience', 'stakeholder', 'end user']
+        cultural_attributes['customer_focus'] = self._calculate_cultural_score(text_lower, customer_terms)
+    
+        # Calculate overall cultural fit confidence
+        total_confidence = sum(attr[1] for attr in cultural_attributes.values())
+        overall_confidence = total_confidence / len(cultural_attributes)
+    
+        # DEFAULT ASSUMPTION - if no strong cultural signals detected
+        if overall_confidence < 0.4:  # If low confidence across all attributes
+            overall_confidence = 0.30  # Set to default low confidence
+
+        return cultural_attributes, overall_confidence  # Default return
+    
+    def _calculate_cultural_score(self, text, terms):
+        """Calculate cultural attribute presence score with confidence"""
+        matches = sum(1 for term in terms if term in text)
+        max_possible = len(terms)
+    
+        if matches == 0:
+            return (0.5, 0.3)  # Default neutral with low confidence
+    
+        score = matches / max(1, max_possible)
+        confidence = min(0.3 + (matches * 0.15), 0.9)  # Confidence based on number of matches
+    
+        return (score, confidence)

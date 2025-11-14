@@ -250,6 +250,13 @@ def parse_resume_file():
         # Parse the content
         candidate_data = resume_parser.parse_resume_to_candidate(content)
         print(f"✅ Resume parsed: {candidate_data['name']}")
+             
+        # ADD THESE LINES TO SAVE TO DATABASE:
+        candidate_id = db.add_candidate(candidate_data)
+        if candidate_id:
+            print(f"✅ Candidate saved to DB with ID: {candidate_id}")
+        else:
+            print("❌ Failed to save candidate to database")
         
         return jsonify({'success': True, 'candidate_data': candidate_data})
         

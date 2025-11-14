@@ -263,7 +263,8 @@ class JobModal {
                     experience_required: experienceInput ? parseInt(experienceInput.value) || 0 : this.parsedData.experience_required || 0,
                     job_type: employmentSelect ? employmentSelect.value : this.parsedData.employment_type || 'Full-time',
                     required_skills: this.parsedData.required_skills || [],
-                    description: descriptionTextarea ? descriptionTextarea.value.trim() : this.parsedData.description || ''
+                    description: descriptionTextarea ? descriptionTextarea.value.trim() : this.parsedData.description || '',
+                    cultural_attributes: this.parsedData.cultural_attributes || {}  // ADD THIS LINE    
                 };
             } else if (this.currentMethod === 'form') {
                 // Use quick form data
@@ -275,7 +276,8 @@ class JobModal {
                     description: form.description.value.trim(),
                     required_skills: [],
                     experience_required: parseInt(form.experience_required.value) || 0,
-                    job_type: form.job_type.value
+                    job_type: form.job_type.value,
+                    cultural_attributes: {}  // ADD THIS LINE - empty cultural attributes for manual form entrie
                 };
             } else {
                 throw new Error('No job data to save - please parse or enter job information first');

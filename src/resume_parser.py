@@ -29,6 +29,15 @@ class ResumeParser:
             'data_science': ['machine learning', 'deep learning', 'tensorflow', 'pytorch', 'pandas', 'numpy', 'statistics'],
             'soft_skills': ['leadership', 'communication', 'teamwork', 'problem solving', 'analytical', 'agile', 'scrum']
         }
+            # NEW: Cultural attribute keywords
+        self.cultural_keywords = {
+            'teamwork': ['team', 'collaborat', 'partner', 'work together', 'group project', 'cross-functional'],
+            'innovation': ['innovati', 'creativ', 'initiative', 'think outside', 'new ideas', 'problem solv'],
+            'work_environment': ['remote', 'work from home', 'wfh', 'office', 'on-site', 'hybrid', 'flexible work'],
+            'work_pace': ['fast-paced', 'dynamic', 'rapid', 'startup', 'agile', 'stable', 'methodical', 'structured'],
+            'customer_focus': ['customer', 'client focus', 'user experience', 'stakeholder', 'end user']
+        }
+
         print("✅ Resume parser initialized!")
     
     def parse_resume_text(self, resume_text):
@@ -43,7 +52,9 @@ class ResumeParser:
             'skills': self.extract_skills(resume_text),
             'experience': self.extract_experience(resume_text),
             'education': self.extract_education(resume_text),
-            'summary': self.generate_summary(resume_text)
+            'summary': self.generate_summary(resume_text),
+                   # NEW: Add cultural attributes
+            'cultural_attributes': self.extract_cultural_attributes(resume_text)            
         }
         
         print(f"✅ Extracted: {extracted_info['name']} | {len(extracted_info['skills'])} skills | {extracted_info['experience']} years experience")
@@ -128,7 +139,30 @@ class ResumeParser:
             summary = f"Experienced professional with {experience} years in the industry."
         
         return summary
+
+    # New extract cultural attributes
+    def extract_cultural_attributes(self, text):
+        """Extract cultural fit attributes from resume text"""
+        text_lower = text.lower()
+        cultural_attributes = {}
     
+        # Check each cultural category
+        for attribute, keywords in self.cultural_keywords.items():
+            matches = []
+            for keyword in keywords:
+                if keyword in text_lower:
+                    matches.append(keyword)
+        
+            # Calculate score based on percentage of keywords found
+            if matches:
+                score = len(matches) / len(keywords)
+            else:
+                score = 0.0  # No matches found
+            
+            cultural_attributes[attribute] = score
+
+        return cultural_attributes
+
     def parse_resume_to_candidate(self, resume_text, candidate_name=None):
         """Convert parsed resume into candidate format for database"""
         parsed_data = self.parse_resume_text(resume_text)
@@ -141,9 +175,9 @@ class ResumeParser:
             "location": "Location not specified",  # Could extract from text
             "email": parsed_data['email'],
             "phone": parsed_data['phone'],
-            "education": parsed_data['education']
+            "education": parsed_data['education'],
+            "cultural_attributes": parsed_data['cultural_attributes']  # NEW       }
         }
-        
         return candidate_data
 
 def main():

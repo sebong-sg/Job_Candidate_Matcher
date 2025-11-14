@@ -45,7 +45,8 @@ class ChromaDataManager:
                 'preferred_skills': job_data.get('preferred_skills', []),
                 'experience_required': job_data.get('experience_required', 0),
                 'salary_range': job_data.get('salary_range', ''),
-                'job_type': job_data.get('job_type', 'Full-time')
+                'job_type': job_data.get('job_type', 'Full-time'),
+                'cultural_attributes': job_data.get('cultural_attributes', {})  # ADD THIS LINE
             }
             
             # Add to Chroma DB
@@ -68,7 +69,11 @@ class ChromaDataManager:
             existing_candidates = vector_db.get_all_candidates()
             new_id = max([c['id'] for c in existing_candidates]) + 1 if existing_candidates else 1
             candidate_data['id'] = new_id
-            
+                   
+            # Ensure cultural_attributes are included
+            if 'cultural_attributes' not in candidate_data:
+                candidate_data['cultural_attributes'] = {}  # ADD THIS LINE
+
             # Add to Chroma DB
             success = vector_db.add_candidate(candidate_data)
             if success:
