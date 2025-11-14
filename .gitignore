@@ -1,1 +1,9 @@
 Job_Candidate_Matcher/
+# Python cache
+__pycache__/
+*.pyc
+
+# Chroma DB artifacts
+chroma_db/
+*.sqlite3
+length.bin
