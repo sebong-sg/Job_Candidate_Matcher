@@ -4,9 +4,25 @@
 from resume_parser import ResumeParser
 import re
 
+# ADD THESE IMPORTS:
+try:
+    from enhanced_cultural_extractor import EnhancedCulturalExtractor
+    ENHANCED_CULTURAL_AVAILABLE = True
+except ImportError:
+    ENHANCED_CULTURAL_AVAILABLE = False
+    print("⚠️ Enhanced cultural extractor not available, using basic method")
+
+
 class JobDescriptionParser:
     def __init__(self):
         self.resume_parser = ResumeParser()
+
+        # ADD THIS: Initialize enhanced cultural extractor
+        if ENHANCED_CULTURAL_AVAILABLE:
+            self.enhanced_extractor = EnhancedCulturalExtractor()
+        else:
+            self.enhanced_extractor = None            
+
         print("✅ Job Description Parser initialized")
     
     def parse_job_description(self, text):
@@ -194,7 +210,43 @@ class JobDescriptionParser:
         return "Full-time", 0.60  # Default assumption
 
     def extract_cultural_attributes(self, text):
-        """Extract cultural fit attributes from job description with confidence scores"""
+
+        """Extract cultural fit attributes from job description with enhanced semantic analysis"""
+        
+        # Use enhanced extraction if available
+        if self.enhanced_extractor and self.enhanced_extractor.semantic_enabled:
+            print("   🎯 Using enhanced cultural extraction with semantic analysis")
+            cultural_attributes, overall_confidence = self._extract_cultural_enhanced(text)
+        else:
+            print("   🔧 Using basic cultural keyword extraction")
+            cultural_attributes, overall_confidence = self._extract_cultural_basic(text)
+        
+        return cultural_attributes, overall_confidence
+    
+    def _extract_cultural_enhanced(self, text):
+        """Enhanced cultural extraction with semantic analysis"""
+        try:
+            enhanced_result = self.enhanced_extractor.extract_cultural_attributes_enhanced(text)
+            
+            # Convert enhanced format to match existing format
+            cultural_attributes = {}
+            total_confidence = 0
+            
+            for attr, (score, confidence) in enhanced_result.items():
+                cultural_attributes[attr] = (score, confidence)
+                total_confidence += confidence
+            
+            overall_confidence = total_confidence / len(cultural_attributes) if cultural_attributes else 0.3
+            
+            return cultural_attributes, overall_confidence
+            
+        except Exception as e:
+            print(f"⚠️ Enhanced cultural extraction failed: {e}")
+            # Fallback to basic extraction
+            return self._extract_cultural_basic(text)
+    
+    def _extract_cultural_basic(self, text):
+        """Original basic cultural extraction (keep your existing code)"""
         text_lower = text.lower()
     
         cultural_attributes = {
@@ -204,6 +256,19 @@ class JobDescriptionParser:
             'work_pace': (0.5, 0.3),
             'customer_focus': (0.5, 0.3)
         }
+    
+
+
+#        """Extract cultural fit attributes from job description with confidence scores"""
+#        text_lower = text.lower()
+    
+#        cultural_attributes = {
+#            'teamwork': (0.5, 0.3),
+#            'innovation': (0.5, 0.3),
+#            'work_environment': (0.5, 0.3),
+#            'work_pace': (0.5, 0.3),
+#            'customer_focus': (0.5, 0.3)
+#        }
     
         # Teamwork indicators
         teamwork_terms = ['team', 'collaborat', 'partner', 'work together', 'group project', 'cross-functional']

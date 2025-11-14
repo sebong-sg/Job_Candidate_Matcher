@@ -71,8 +71,12 @@ class ChromaDataManager:
             candidate_data['id'] = new_id
                    
             # Ensure cultural_attributes are included
-            if 'cultural_attributes' not in candidate_data:
-                candidate_data['cultural_attributes'] = {}  # ADD THIS LINE
+            if not candidate_data.get('cultural_attributes'):
+                candidate_data['cultural_attributes'] = {}  # Only set if truly missing/empty
+            
+            # Buggy code below replace by above
+#            if 'cultural_attributes' not in candidate_data:
+#                candidate_data['cultural_attributes'] = {}  # ADD THIS LINE
 
             # Add to Chroma DB
             success = vector_db.add_candidate(candidate_data)

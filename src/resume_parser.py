@@ -18,6 +18,14 @@ try:
 except LookupError:
     nltk.download('stopwords')
 
+# Add after existing imports
+try:
+    from enhanced_cultural_extractor import EnhancedCulturalExtractor
+    ENHANCED_CULTURAL_AVAILABLE = True
+except ImportError:
+    ENHANCED_CULTURAL_AVAILABLE = False
+    print("⚠️ Enhanced cultural extractor not available, using basic method")
+
 class ResumeParser:
     def __init__(self):
         self.stop_words = set(stopwords.words('english'))
@@ -37,6 +45,12 @@ class ResumeParser:
             'work_pace': ['fast-paced', 'dynamic', 'rapid', 'startup', 'agile', 'stable', 'methodical', 'structured'],
             'customer_focus': ['customer', 'client focus', 'user experience', 'stakeholder', 'end user']
         }
+
+        # ADD THIS: Initialize enhanced cultural extractor
+        if ENHANCED_CULTURAL_AVAILABLE:
+            self.enhanced_extractor = EnhancedCulturalExtractor()
+        else:
+            self.enhanced_extractor = None
 
         print("✅ Resume parser initialized!")
     
@@ -140,13 +154,18 @@ class ResumeParser:
         
         return summary
 
-    # New extract cultural attributes
     def extract_cultural_attributes(self, text):
-        """Extract cultural fit attributes from resume text"""
+        """Extract cultural fit attributes with enhanced semantic analysis"""
+    
+        # Use enhanced extraction if available
+        if self.enhanced_extractor and self.enhanced_extractor.semantic_enabled:
+            return self.enhanced_extractor.extract_cultural_attributes_enhanced(text)
+    
+        # Fallback to original basic extraction
         text_lower = text.lower()
         cultural_attributes = {}
     
-        # Check each cultural category
+        # ... keep your original keyword extraction code here ...
         for attribute, keywords in self.cultural_keywords.items():
             matches = []
             for keyword in keywords:
@@ -160,8 +179,31 @@ class ResumeParser:
                 score = 0.0  # No matches found
             
             cultural_attributes[attribute] = score
-
+   
         return cultural_attributes
+
+    # Old - New extract cultural attributes
+#    def extract_cultural_attributes(self, text):
+#        """Extract cultural fit attributes from resume text"""
+#        text_lower = text.lower()
+#        cultural_attributes = {}
+#    
+#        # Check each cultural category
+#        for attribute, keywords in self.cultural_keywords.items():
+#            matches = []
+#            for keyword in keywords:
+#                if keyword in text_lower:
+#                    matches.append(keyword)
+#        
+#            # Calculate score based on percentage of keywords found
+#            if matches:
+#                score = len(matches) / len(keywords)
+#            else:
+#                score = 0.0  # No matches found
+#            
+#            cultural_attributes[attribute] = score
+#
+#        return cultural_attributes
 
     def parse_resume_to_candidate(self, resume_text, candidate_name=None):
         """Convert parsed resume into candidate format for database"""

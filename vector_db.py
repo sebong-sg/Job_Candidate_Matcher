@@ -143,6 +143,10 @@ class ChromaVectorDB:
             if results['ids'] and len(results['ids'][0]) > 0:
                 for i in range(len(results['ids'][0])):
                     metadata = results['metadatas'][0][i]
+                    # ADD NULL CHECK HERE
+                    if not metadata:
+                        continue  # Skip this candidate if metadata is None
+
                     distance = results['distances'][0][i]
                     similarity_score = max(0, 1 - distance)  # Convert distance to similarity
                     

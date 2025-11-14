@@ -1,0 +1,164 @@
+✅ Chroma Vector DB initialized with embedding model!
+✅ Chroma collections ready!
+✅ Sentence Transformers loaded - using advanced semantic matching!
+🎯 Semantic matcher ready with all-MiniLM-L6-v2 model!
+✅ Profile Relevance Analyzer initialized with semantic matching!
+=== 🤖 JOB-CANDIDATE MATCHER WITH CHROMA DB ===
+📊 DETAILED SCORE BREAKDOWN FOR ALL MATCHES
+====================================================================================================
+✅ Chroma Data Manager initialized!
+✅ Matcher initialized with Chroma Vector Database!
+✅ Chroma Data Manager initialized!
+✅ Retrieved 11 jobs from Chroma DB
+📁 Loaded 11 jobs from Chroma DB
+✅ Retrieved 6 candidates from Chroma DB
+📁 Loaded 6 candidates from Chroma DB
+✅ Retrieved 11 jobs from Chroma DB
+📁 Loaded 11 jobs from Chroma DB
+✅ Retrieved 6 candidates from Chroma DB
+📁 Loaded 6 candidates from Chroma DB
+🔍 Matching 11 jobs using Chroma vector database...
+   Vector DB has 6 candidates indexed
+
+📋 Processing: Senior Python Developer
+   ✅ Found 6 matches using vector search
+
+📋 Processing: Machine Learning Engineer
+   ✅ Found 6 matches using vector search
+
+📋 Processing: Frontend React Developer
+   ✅ Found 6 matches using vector search
+
+📋 Processing: Senior Software Engineer
+   ✅ Found 6 matches using vector search
+
+📋 Processing: Data Analyst
+   ✅ Found 6 matches using vector search
+
+📋 Processing: DevOps Engineer
+   ✅ Found 6 matches using vector search
+
+📋 Processing: Senior Python Developer
+   ✅ Found 6 matches using vector search
+
+📋 Processing: Python Developer
+   ✅ Found 6 matches using vector search
+
+📋 Processing: Senior Python Developer
+   ✅ Found 6 matches using vector search
+
+📋 Processing: Senior Python Code Developer
+   ✅ Found 6 matches using vector search
+
+📋 Processing: Senior II Python Code Developer - SebCorp Inc
+   ✅ Found 6 matches using vector search
+
+💼 Senior Python Developer at TechCorp Inc
+   Skills: python, django, flask, rest api, sql
+----------------------------------------------------------------------------------------------------
+👤 John Smith      | Total: 84.6% | Skills:  78% | Exp: 100% | Location: 100% | Semantic:  72% | Cultural:  50% | Common: flask, rest api, python, django
+👤 Peter Tan       | Total: 72.9% | Skills:  65% | Exp: 100% | Location: 100% | Semantic:  36% | Cultural:  50% | Common: flask, python, django
+👤 Alex Chen       | Total: 53.4% | Skills:  48% | Exp:  60% | Location: 100% | Semantic:  18% | Cultural:  50% | Common: python, django
+👤 Sarah Johnson   | Total: 48.7% | Skills:  31% | Exp:  80% | Location: 100% | Semantic:   0% | Cultural:  50% | Common: python
+👤 Emily Davis     | Total: 46.1% | Skills:  53% | Exp:  40% | Location: 100% | Semantic:   0% | Cultural:  50% | Common: python, sql
+👤 Mike Chen       | Total: 45.0% | Skills:  31% | Exp:  60% | Location: 100% | Semantic:   6% | Cultural:  50% | Common: python
+
+💼 Machine Learning Engineer at AI Innovations
+   Skills: python, machine learning, tensorflow, pytorch, data analysis
+----------------------------------------------------------------------------------------------------
+👤 Sarah Johnson   | Total: 84.4% | Skills:  84% | Exp: 100% | Location: 100% | Semantic:  61% | Cultural:  50% | Common: pytorch, python, machine learning, tensorflow
+👤 Emily Davis     | Total: 48.9% | Skills:  68% | Exp:  66% | Location:  30% | Semantic:   6% | Cultural:  50% | Common: data analysis, python, machine learning
+👤 Mike Chen       | Total: 47.4% | Skills:  29% | Exp: 100% | Location:  64% | Semantic:   0% | Cultural:  50% | Common: python
+👤 Alex Chen       | Total: 43.8% | Skills:  29% | Exp: 100% | Location:  40% | Semantic:   0% | Cultural:  50% | Common: python
+👤 Peter Tan       | Total: 43.8% | Skills:  29% | Exp: 100% | Location:  40% | Semantic:   0% | Cultural:  50% | Common: python
+👤 John Smith      | Total: 42.3% | Skills:  29% | Exp: 100% | Location:  30% | Semantic:   0% | Cultural:  50% | Common: python
+
+💼 Frontend React Developer at WebSolutions Ltd
+   Skills: javascript, react, html, css, web development
+----------------------------------------------------------------------------------------------------
+👤 Mike Chen       | Total: 66.6% | Skills:  59% | Exp: 100% | Location:  64% | Semantic:  43% | Cultural:  50% | Common: react, javascript
+👤 Peter Tan       | Total: 46.0% | Skills:  32% | Exp: 100% | Location:  40% | Semantic:   5% | Cultural:  50% | Common: javascript
+👤 Alex Chen       | Total: 44.9% | Skills:  32% | Exp: 100% | Location:  40% | Semantic:   0% | Cultural:  50% | Common: javascript
+👤 Sarah Johnson   | Total: 37.7% | Skills:   0% | Exp: 100% | Location:  68% | Semantic:   0% | Cultural:  50% | Common: 
+👤 John Smith      | Total: 36.7% | Skills:  13% | Exp: 100% | Location:  30% | Semantic:   0% | Cultural:  50% | Common: web development
+👤 Emily Davis     | Total: 23.7% | Skills:   0% | Exp:  66% | Location:  30% | Semantic:   0% | Cultural:  50% | Common: 
+
+💼 Senior Software Engineer at Tech Giants Inc
+   Skills: python, java, aws, docker, kubernetes
+----------------------------------------------------------------------------------------------------
+👤 Peter Tan       | Total: 55.0% | Skills:  61% | Exp: 100% | Location:  40% | Semantic:   0% | Cultural:  50% | Common: java, python
+👤 Alex Chen       | Total: 45.0% | Skills:  61% | Exp:  60% | Location:  40% | Semantic:   0% | Cultural:  50% | Common: java, python
+👤 Sarah Johnson   | Total: 44.6% | Skills:  34% | Exp:  80% | Location:  68% | Semantic:   0% | Cultural:  50% | Common: python
+👤 John Smith      | Total: 43.9% | Skills:  34% | Exp: 100% | Location:  30% | Semantic:   0% | Cultural:  50% | Common: python
+👤 Mike Chen       | Total: 43.8% | Skills:  47% | Exp:  60% | Location:  64% | Semantic:   0% | Cultural:  50% | Common: python, aws
+👤 Emily Davis     | Total: 28.9% | Skills:  34% | Exp:  40% | Location:  30% | Semantic:   0% | Cultural:  50% | Common: python
+
+💼 Data Analyst at Data Insights Co
+   Skills: sql, python, excel, tableau, statistics
+----------------------------------------------------------------------------------------------------
+👤 Emily Davis     | Total: 55.1% | Skills:  56% | Exp:  66% | Location: 100% | Semantic:   5% | Cultural:  50% | Common: python, sql
+👤 John Smith      | Total: 54.4% | Skills:  34% | Exp: 100% | Location: 100% | Semantic:   0% | Cultural:  50% | Common: python
+👤 Peter Tan       | Total: 54.4% | Skills:  34% | Exp: 100% | Location: 100% | Semantic:   0% | Cultural:  50% | Common: python
+👤 Alex Chen       | Total: 54.4% | Skills:  34% | Exp: 100% | Location: 100% | Semantic:   0% | Cultural:  50% | Common: python
+👤 Sarah Johnson   | Total: 54.4% | Skills:  34% | Exp: 100% | Location: 100% | Semantic:   0% | Cultural:  50% | Common: python
+👤 Mike Chen       | Total: 54.4% | Skills:  34% | Exp: 100% | Location: 100% | Semantic:   0% | Cultural:  50% | Common: python
+
+💼 DevOps Engineer at Cloud Solutions Ltd
+   Skills: aws, docker, jenkins, terraform, linux
+----------------------------------------------------------------------------------------------------
+👤 Mike Chen       | Total: 44.3% | Skills:  22% | Exp: 100% | Location:  60% | Semantic:   0% | Cultural:  50% | Common: aws
+👤 Sarah Johnson   | Total: 37.1% | Skills:   0% | Exp: 100% | Location:  64% | Semantic:   0% | Cultural:  50% | Common: 
+👤 Peter Tan       | Total: 32.9% | Skills:   0% | Exp: 100% | Location:  36% | Semantic:   0% | Cultural:  50% | Common: 
+👤 Alex Chen       | Total: 32.9% | Skills:   0% | Exp: 100% | Location:  36% | Semantic:   0% | Cultural:  50% | Common: 
+👤 John Smith      | Total: 32.0% | Skills:   0% | Exp: 100% | Location:  30% | Semantic:   0% | Cultural:  50% | Common: 
+👤 Emily Davis     | Total: 23.7% | Skills:   0% | Exp:  66% | Location:  30% | Semantic:   0% | Cultural:  50% | Common: 
+
+💼 Senior Python Developer at TechCorp
+   Skills: postgresql, sql, aws, go, django, python
+----------------------------------------------------------------------------------------------------
+👤 John Smith      | Total: 73.1% | Skills:  57% | Exp: 100% | Location: 100% | Semantic:  52% | Cultural:  50% | Common: python, django, postgresql
+👤 Peter Tan       | Total: 70.5% | Skills:  57% | Exp: 100% | Location: 100% | Semantic:  40% | Cultural:  50% | Common: python, django, go
+👤 Alex Chen       | Total: 59.8% | Skills:  57% | Exp:  60% | Location: 100% | Semantic:  36% | Cultural:  50% | Common: python, django, go
+👤 Mike Chen       | Total: 49.3% | Skills:  42% | Exp:  60% | Location: 100% | Semantic:   9% | Cultural:  50% | Common: python, aws
+👤 Sarah Johnson   | Total: 48.2% | Skills:  30% | Exp:  80% | Location: 100% | Semantic:   0% | Cultural:  50% | Common: python
+👤 Emily Davis     | Total: 45.4% | Skills:  51% | Exp:  40% | Location: 100% | Semantic:   0% | Cultural:  50% | Common: python, sql
+
+💼 Python Developer at Python
+   Skills: sql, javascript, go, django, java, python
+----------------------------------------------------------------------------------------------------
+👤 Peter Tan       | Total: 80.7% | Skills:  83% | Exp: 100% | Location: 100% | Semantic:  44% | Cultural:  50% | Common: python, javascript, django, go, java
+👤 Alex Chen       | Total: 80.4% | Skills:  83% | Exp: 100% | Location: 100% | Semantic:  42% | Cultural:  50% | Common: python, javascript, django, go, java
+👤 John Smith      | Total: 54.2% | Skills:  37% | Exp: 100% | Location:  30% | Semantic:  45% | Cultural:  50% | Common: python, django
+👤 Mike Chen       | Total: 51.6% | Skills:  43% | Exp: 100% | Location:  36% | Semantic:  17% | Cultural:  50% | Common: python, javascript
+👤 Sarah Johnson   | Total: 42.0% | Skills:  24% | Exp: 100% | Location:  40% | Semantic:   0% | Cultural:  50% | Common: python
+👤 Emily Davis     | Total: 41.0% | Skills:  40% | Exp:  66% | Location:  30% | Semantic:  16% | Cultural:  50% | Common: python, sql
+
+💼 Senior Python Developer at TechCorp
+   Skills: postgresql, sql, aws, go, django, python
+----------------------------------------------------------------------------------------------------
+👤 John Smith      | Total: 74.8% | Skills:  57% | Exp: 100% | Location: 100% | Semantic:  61% | Cultural:  50% | Common: python, django, postgresql
+👤 Peter Tan       | Total: 73.3% | Skills:  57% | Exp: 100% | Location: 100% | Semantic:  54% | Cultural:  50% | Common: python, django, go
+👤 Alex Chen       | Total: 62.2% | Skills:  57% | Exp:  60% | Location: 100% | Semantic:  48% | Cultural:  50% | Common: python, django, go
+👤 Mike Chen       | Total: 51.3% | Skills:  42% | Exp:  60% | Location: 100% | Semantic:  19% | Cultural:  50% | Common: python, aws
+👤 Sarah Johnson   | Total: 48.2% | Skills:  30% | Exp:  80% | Location: 100% | Semantic:   0% | Cultural:  50% | Common: python
+👤 Emily Davis     | Total: 47.2% | Skills:  51% | Exp:  40% | Location: 100% | Semantic:   9% | Cultural:  50% | Common: python, sql
+
+💼 Senior Python Code Developer at Senior
+   Skills: python, javascript, agile, java, django, go, teamwork
+----------------------------------------------------------------------------------------------------
+👤 Peter Tan       | Total: 75.5% | Skills:  91% | Exp: 100% | Location:  40% | Semantic:  41% | Cultural:  81% | Common: agile, python, javascript, django, go, java
+👤 Alex Chen       | Total: 64.9% | Skills:  91% | Exp:  60% | Location:  40% | Semantic:  37% | Cultural:  82% | Common: agile, python, javascript, django, go, java
+👤 John Smith      | Total: 52.0% | Skills:  37% | Exp: 100% | Location:  30% | Semantic:  35% | Cultural:  50% | Common: python, django
+👤 Mike Chen       | Total: 43.3% | Skills:  43% | Exp:  60% | Location:  64% | Semantic:   4% | Cultural:  50% | Common: python, javascript
+👤 Sarah Johnson   | Total: 41.2% | Skills:  24% | Exp:  80% | Location:  68% | Semantic:   0% | Cultural:  50% | Common: python
+👤 Emily Davis     | Total: 25.5% | Skills:  24% | Exp:  40% | Location:  30% | Semantic:   0% | Cultural:  50% | Common: python
+
+💼 Senior II Python Code Developer - SebCorp Inc at Senior
+   Skills: java, python, teamwork, agile, django, go, javascript
+----------------------------------------------------------------------------------------------------
+👤 Peter Tan       | Total: 75.5% | Skills:  91% | Exp: 100% | Location:  40% | Semantic:  40% | Cultural:  81% | Common: agile, python, javascript, django, go, java
+👤 Alex Chen       | Total: 64.8% | Skills:  91% | Exp:  60% | Location:  40% | Semantic:  37% | Cultural:  82% | Common: agile, python, javascript, django, go, java
+👤 John Smith      | Total: 52.0% | Skills:  37% | Exp: 100% | Location:  30% | Semantic:  34% | Cultural:  50% | Common: python, django
+👤 Mike Chen       | Total: 43.6% | Skills:  43% | Exp:  60% | Location:  64% | Semantic:   6% | Cultural:  50% | Common: python, javascript
+👤 Sarah Johnson   | Total: 41.2% | Skills:  24% | Exp:  80% | Location:  68% | Semantic:   0% | Cultural:  50% | Common: python
+👤 Emily Davis     | Total: 25.5% | Skills:  24% | Exp:  40% | Location:  30% | Semantic:   0% | Cultural:  50% | Common: python
