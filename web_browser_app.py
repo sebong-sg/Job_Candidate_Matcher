@@ -334,6 +334,7 @@ def run_matching():
                     'top_score': top_match['score'],
                     'common_skills': top_match.get('common_skills', [])[:5],
                     'score_breakdown': top_match.get('score_breakdown', {}),
+                    'cultural_breakdown': top_match.get('cultural_breakdown', {}),  # ADD THIS LINE
                     'match_grade': top_match.get('match_grade', 'A')
                 })
         

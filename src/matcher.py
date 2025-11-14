@@ -6,11 +6,20 @@ from vector_db import vector_db
 from semantic_matcher import semantic_matcher
 from profile_analyzer import profile_analyzer
 
+# New imports to support the hybrid cultuiral score calc.  
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from semantic_matcher import semantic_matcher
+
+
 print("=== 🤖 JOB-CANDIDATE MATCHER WITH CHROMA DB ===")
 
 class SimpleMatcher:
     def __init__(self):
         self.db = ChromaDataManager()
+        self.semantic_matcher = semantic_matcher  # ADD THIS LINE
         print("✅ Matcher initialized with Chroma Vector Database!")
     
     def calculate_skill_score(self, job_skills, candidate_skills):
@@ -414,7 +423,8 @@ class SimpleMatcher:
                     experience_score * 0.25 +      # Experience rules
                     location_score * 0.15 +        # Global location scoring  
                     semantic_score * 0.20 +        # Semantic understanding from Chroma
-                    cultural_fit * 0.05            # NEW: Cultural fit (5% weight)
+#                    cultural_fit * 0.05            # NEW: Cultural fit (5% weight)
+                    cultural_fit['final_score'] * 0.05
                 )
 
 # Below OLD code replace by above                
@@ -433,8 +443,18 @@ class SimpleMatcher:
                     'experience': int(experience_score * 100),
                     'location': int(location_score * 100),
                     'semantic': int(semantic_score * 100),
-                    'cultural_fit': int(cultural_fit * 100)  # NEW: Add cultural fit to breakdown
+#                    'cultural_fit': int(cultural_fit * 100)  # NEW: Add cultural fit to breakdown
+                    'cultural_fit': int(cultural_fit['final_score'] * 100)  # CHANGE HERE
                 }
+
+                # ADD THIS SECTION for cultural fit breakdown
+                match['cultural_breakdown'] = {
+                    'keyword_score': int(cultural_fit['keyword_score'] * 100),
+                    'semantic_score': int(cultural_fit['semantic_score'] * 100),  
+                    'final_score': int(cultural_fit['final_score'] * 100)    
+#                    'final_score': int(cultural_fit * 100)
+                }
+
                 match['match_grade'] = self.get_match_grade(total_score)
                 
                 matches[job_index].append(match)
@@ -476,7 +496,12 @@ class SimpleMatcher:
         candidate_cultural = candidate.get('cultural_attributes', {})
     
         if not job_cultural or not candidate_cultural:
-            return 0.5
+            return {
+                'keyword_score': 0.5,
+                'semantic_score': 0.5,
+                'final_score': 0.5
+            }     
+#            return 0.5
     
         total_score = 0
         count = 0
@@ -508,8 +533,63 @@ class SimpleMatcher:
             compatibility = 1 - abs(job_score - candidate_score)
             total_score += compatibility
             count += 1
+            
+        # Calculate keyword score (existing logic)
+        keyword_score = total_score / count if count > 0 else 0.5
+        
+        # Calculate semantic score (new addition)
+        semantic_score = self._calculate_semantic_cultural_fit(job_data, candidate)
+        
+        # Combine with 70/30 weighting (keyword emphasized)
+        final_score = (0.7 * keyword_score) + (0.3 * semantic_score)
+                
+        return {
+            'keyword_score': keyword_score,
+            'semantic_score': semantic_score,
+            'final_score': final_score
+        }
+       
+#        return final_score
+
+    def _calculate_semantic_cultural_fit(self, job_data, candidate):
+        """Calculate cultural fit using semantic similarity of cultural context"""
+        # Extract cultural-relevant text from job and candidate
+        job_text = self._extract_cultural_context(job_data)
+        candidate_text = self._extract_cultural_context(candidate)
+        
+        if not job_text or not candidate_text:
+            return 0.5
+            
+        # Calculate semantic similarity
+        semantic_score = self.semantic_matcher.calculate_similarity(job_text, candidate_text)
+        return semantic_score
     
-        return total_score / count if count > 0 else 0.5
+    def _extract_cultural_context(self, data):
+        """Extract cultural-relevant text from job or candidate data"""
+        cultural_text_parts = []
+    
+        cultural_attrs = data.get('cultural_attributes', {})
+        # Extract from cultural attributes if available
+        if cultural_attrs:
+            # Convert numerical scores to descriptive text for semantic analysis
+            for attr, value in cultural_attrs.items():
+                if isinstance(value, (list, tuple)) and len(value) > 0:
+                    score = value[0]
+                    if score >= 0.7:
+                        cultural_text_parts.append(f"strong {attr}")
+                    elif score >= 0.6:
+                        cultural_text_parts.append(f"moderate {attr}")
+                    elif score <= 0.4:
+                        cultural_text_parts.append(f"low {attr}")
+        
+        # Add general description for broader context
+        description = data.get('description', '') or data.get('summary', '') or data.get('role', '')
+        if description:
+            cultural_text_parts.append(description)
+            
+        return " ".join(cultural_text_parts) if cultural_text_parts else ""
+
+#        return total_score / count if count > 0 else 0.5
 
 # Test function
 def main():

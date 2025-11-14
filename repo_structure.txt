@@ -1,0 +1,420 @@
+.
+├── .git
+│   ├── COMMIT_EDITMSG
+│   ├── FETCH_HEAD
+│   ├── HEAD
+│   ├── ORIG_HEAD
+│   ├── config
+│   ├── description
+│   ├── hooks
+│   │   ├── applypatch-msg.sample
+│   │   ├── commit-msg.sample
+│   │   ├── fsmonitor-watchman.sample
+│   │   ├── post-checkout
+│   │   ├── post-commit
+│   │   ├── post-merge
+│   │   ├── post-update.sample
+│   │   ├── pre-applypatch.sample
+│   │   ├── pre-commit.sample
+│   │   ├── pre-merge-commit.sample
+│   │   ├── pre-push
+│   │   ├── pre-push.sample
+│   │   ├── pre-rebase.sample
+│   │   ├── pre-receive.sample
+│   │   ├── prepare-commit-msg.sample
+│   │   ├── push-to-checkout.sample
+│   │   ├── sendemail-validate.sample
+│   │   └── update.sample
+│   ├── index
+│   ├── info
+│   │   └── exclude
+│   ├── lfs
+│   │   ├── cache
+│   │   │   └── locks
+│   │   │       └── refs
+│   │   │           └── heads
+│   │   │               └── feature
+│   │   │                   └── agentic-model-job-profile
+│   │   │                       └── verifiable
+│   │   └── tmp
+│   ├── logs
+│   │   ├── HEAD
+│   │   └── refs
+│   │       ├── heads
+│   │       │   ├── feature
+│   │       │   │   ├── agentic-model-job-profile
+│   │       │   │   └── score-algo
+│   │       │   └── main
+│   │       ├── remotes
+│   │       │   └── origin
+│   │       │       ├── HEAD
+│   │       │       ├── dev
+│   │       │       ├── feature
+│   │       │       │   ├── agentic-model-job-profile
+│   │       │       │   ├── db-enhancements
+│   │       │       │   ├── professional-ui-redesign
+│   │       │       │   ├── score-algo
+│   │       │       │   ├── score-algo-enhancement
+│   │       │       │   └── semantic-scoring
+│   │       │       └── main
+│   │       └── stash
+│   ├── objects
+│   │   ├── 02
+│   │   │   └── e5c85b070961f9e4a622e26d751a37f25b8a2e
+│   │   ├── 05
+│   │   │   └── 25275f5b2570e9572b62b6ba89e9a1d92c20fc
+│   │   ├── 07
+│   │   │   └── a5467cba737fda80b93b08e750fc58da7315aa
+│   │   ├── 0e
+│   │   │   ├── 25a6e796ec2a51bb521fad97daa792c12b5846
+│   │   │   └── 675e794767a4ef4fd64f093df6d52b82d74dfc
+│   │   ├── 10
+│   │   │   └── 2654112f399e06b78ee61fc3c3dbb314f5e454
+│   │   ├── 11
+│   │   │   └── e9dd9f25bb0de2fd9d14d6a923fea714d6f62a
+│   │   ├── 19
+│   │   │   ├── 03115dbcebd37315c5579bcae878b1e24c042f
+│   │   │   ├── 150b41446e520b3167ad9bbfcf5277bc78a4ba
+│   │   │   └── ae79f93e23d23a30ca0189ee73ba21ffc41de7
+│   │   ├── 1a
+│   │   │   └── 52473c84b10495a9bd00ef466c419ad07f450d
+│   │   ├── 1f
+│   │   │   ├── 329647decee6ee4a8796272d9b90631d0fc031
+│   │   │   └── 9b323f829d2a6f69cad3452f12986ad3417086
+│   │   ├── 25
+│   │   │   └── e6b9c9d50aa6d11f164ef41e48ff56519563ed
+│   │   ├── 26
+│   │   │   └── 0f51ad4ab36736ee365dbcb8ec85d137235ead
+│   │   ├── 28
+│   │   │   └── 90c6be2988473881ea4a65cdae24c93a5108d7
+│   │   ├── 2a
+│   │   │   ├── 39172e09c2d96c7af7d51aa11bbcb6e351d42e
+│   │   │   └── 47c6636f903ae22c326f0b89b6eae2e4420b3d
+│   │   ├── 2c
+│   │   │   ├── 368a05eb74855beb5702f7cda6f6a894a7f196
+│   │   │   └── 85f4a5eddb690b8cc19637e06e8805a74d7a9b
+│   │   ├── 2e
+│   │   │   ├── 01177a5a6b5ece8d5e7786e8d12f355568d8ba
+│   │   │   └── 60aaf9fe89bf3eec172ffb0bd1550a43377567
+│   │   ├── 32
+│   │   │   ├── 29d94c8e92a07c5ecc896c3d42f0dd115dc5eb
+│   │   │   └── 77acee774554a4dc8b144a102b574cd72d500c
+│   │   ├── 36
+│   │   │   └── 13271b732c4c961228a543bba5a295d834b256
+│   │   ├── 37
+│   │   │   ├── a2bec4ae92ecb5cb1d5789fc6d989939435967
+│   │   │   └── ba659a5be863f01f9b699e759895e8335df7ac
+│   │   ├── 38
+│   │   │   └── 1eded677eae8d0f234fee0b0bcee18e942341a
+│   │   ├── 3f
+│   │   │   └── 2c064e14361b17dc35ce15b480d171b4b1ed3d
+│   │   ├── 45
+│   │   │   └── ebd999eb7fc5656ab95a2e8212fb93a58ea326
+│   │   ├── 47
+│   │   │   └── f4479495f8d1b1e72e526c6a8403b14f8676b4
+│   │   ├── 48
+│   │   │   └── 5eb452a5d3f3656d879ac81912522bdb45751d
+│   │   ├── 49
+│   │   │   ├── 550fc04811d8a69dc5fc7952523046704e5255
+│   │   │   ├── 8af545b309035691eaee30c8f9f020f315e9a1
+│   │   │   └── f79bd7e3869e675199abe1800501490e9c8561
+│   │   ├── 4b
+│   │   │   ├── 7dc75c4c51dd61a7a1bdc86471d9d08ebbb714
+│   │   │   └── 825dc642cb6eb9a060e54bf8d69288fbee4904
+│   │   ├── 4e
+│   │   │   └── 00807c334c18cb18f95a1953d89d1548eaaba4
+│   │   ├── 4f
+│   │   │   └── 87a378968cfdb604c61e41093a8d5ddd552ab5
+│   │   ├── 55
+│   │   │   └── bd56c84e468e4af81ce39340861a4f2bce318d
+│   │   ├── 57
+│   │   │   └── 11796f86169b903c20f76dfabe0997fdc6aaaa
+│   │   ├── 59
+│   │   │   └── fd8b2b3a105d08d2cb368152a3c8352a574a7c
+│   │   ├── 5a
+│   │   │   └── 21cd9912b7aa76a1cd34446f9e9536c6aeae48
+│   │   ├── 5b
+│   │   │   ├── 2b119ee9ddf9c13b053ffea686592654a704b4
+│   │   │   └── 3b54b0c100d6b9a00490db230ceac399efa8b8
+│   │   ├── 5c
+│   │   │   └── 7f8b0b6a1b1efc2e1b61d983e7c58e723f48f3
+│   │   ├── 5d
+│   │   │   └── f1936f1103b2dbf81145f9b4248d5e79cf0e06
+│   │   ├── 60
+│   │   │   ├── 757ac67b5874b276b1597825e63da6c3a01d93
+│   │   │   └── a344b5f388e213756532566e28f43001c06b9b
+│   │   ├── 61
+│   │   │   └── d720233f0644f61390b3d0870e0e9b8b864eba
+│   │   ├── 64
+│   │   │   └── 0e59c8aa09c2943cf90c4d06bd816864b43b43
+│   │   ├── 66
+│   │   │   ├── 08ca713ca21575b7fb0ac2f238694e2b6d0ec7
+│   │   │   ├── 84b17faa62bb98e9366d60f5732b037bfd6025
+│   │   │   └── ff873238909fa378cb3d6c103d11e14ea251ae
+│   │   ├── 68
+│   │   │   └── 5e33b86c28e0e5ebe0eb1e0eee16ac459d4918
+│   │   ├── 6b
+│   │   │   └── 6c7e32679b848eccbd0b321e37118e054bf164
+│   │   ├── 6c
+│   │   │   └── 56954e63145c604e843e0cae8f7bee68f4ff14
+│   │   ├── 6f
+│   │   │   ├── 10a7f0ffb6470cb1ee85e29af33337da134360
+│   │   │   └── 3d7c3802b0689fbf044880903c8cc339bafd60
+│   │   ├── 71
+│   │   │   └── 15afd3455b973aaa811bde476e5f8a86d929fa
+│   │   ├── 73
+│   │   │   └── 110608e3784aee0f1e5e8ba418e2d4f6293da7
+│   │   ├── 74
+│   │   │   └── 96fe3050cc54b9a292bcf5a89cc0447c2f601e
+│   │   ├── 76
+│   │   │   ├── 57eae4626373f41114af897967b6e7cd26e587
+│   │   │   ├── 70f2a46d65a15a6b8ccab7b57e7b1335f7a4f5
+│   │   │   └── e9299d3b92acdb84b2bcaa1e11b035ddfd721b
+│   │   ├── 7e
+│   │   │   └── 78834e77a58d20e0f66b35f8a20a04f005e002
+│   │   ├── 7f
+│   │   │   └── 039feda62b0ee7309730efc5d268d01c964b0c
+│   │   ├── 88
+│   │   │   └── fd17b2725261f91122d6e76011e27a5edd4df7
+│   │   ├── 8a
+│   │   │   └── 4621e4f011ec07886641d9c80179f86c09d679
+│   │   ├── 8b
+│   │   │   └── ee23ed4c83af6c848c067ae9308784dbde2fbc
+│   │   ├── 8d
+│   │   │   ├── 66c29880b85fe707bcfed540713607506c5503
+│   │   │   └── fecb3070e4501ab8201f9289710416e5377608
+│   │   ├── 95
+│   │   │   ├── 023f6c63d2e915d018568438be205ca62f9c9a
+│   │   │   └── 803ddb7fd7fcac0a276dbc583f9b6e4fa2f7e2
+│   │   ├── 98
+│   │   │   └── 8b3f9ad22f3f9d4492e6242280a04cdf45fe76
+│   │   ├── 9d
+│   │   │   └── d7483bb5a0196897e1e383a20d4e3d8178ee1a
+│   │   ├── 9f
+│   │   │   ├── 295466143cb78d8a2cee8818c8cd6725599215
+│   │   │   ├── 6377d600a1c9d2aaf15568accb5ed72cc99950
+│   │   │   └── f5644e862bfab89d1a8452b21f01af248ecc2d
+│   │   ├── a2
+│   │   │   └── e37237c3f5b129a987471db44610a20aea047a
+│   │   ├── a4
+│   │   │   └── 7ed4126df77665a8d2c428c72677f9069a8c64
+│   │   ├── a7
+│   │   │   └── 67cf63f0dcb6e2637264533a57ff88786491c0
+│   │   ├── a9
+│   │   │   └── 99d59238f7b442f1312e5b8d4407d9c65d755a
+│   │   ├── ab
+│   │   │   └── eceea3d3dad1dc7b728e174c147e4579deea49
+│   │   ├── ac
+│   │   │   └── 938c411d2f717d1b788ad5ec98695d82228e4b
+│   │   ├── ad
+│   │   │   ├── 323ed468a9ac3a0bc19e189d3bb11810e62415
+│   │   │   ├── 4a25f4987f87f281d88aa32b82f04530476545
+│   │   │   └── d7ec58b6c87fab889c5dc522829a00707b869b
+│   │   ├── af
+│   │   │   └── 23e2ece69af3388b9227504cc514b8d46bc9cf
+│   │   ├── b5
+│   │   │   ├── 8b7f8ebb136eddc1f9188db3b7b0221f081b35
+│   │   │   └── 9f9eb47765f819ac57d50f1efa18d1ed45ef10
+│   │   ├── b6
+│   │   │   └── b424eb8094a618003da8bbe01c8f66358c6ed8
+│   │   ├── b7
+│   │   │   ├── 680a9c25bd5a0a4c37f743fc08208ab8afd52e
+│   │   │   ├── be5d272c6233fd16077175b824c4080252db30
+│   │   │   └── c51b33ac6f252bb92cf40ba4cf96a33c3d6d16
+│   │   ├── ba
+│   │   │   └── b055497483ea9580b5a3d95da446a549fb9e65
+│   │   ├── bb
+│   │   │   └── e59640e19d4dc4b7751e6afbbf4f54d7cf9579
+│   │   ├── bc
+│   │   │   └── 94f506ee6774fc3cf7ccd1f967e41268d33149
+│   │   ├── c0
+│   │   │   └── f264dab08d7458f4bc78a6ce17d03d4df3eaa2
+│   │   ├── c1
+│   │   │   └── 5c92d453431fd1da927af8263e3cf377e965f4
+│   │   ├── c2
+│   │   │   └── eb75a8e45013ec5976c1c6cea4a3d5ebfe352d
+│   │   ├── cc
+│   │   │   └── ca52d6d908abf9d8a6a323b4b6816f21936a3f
+│   │   ├── cd
+│   │   │   ├── 4e457d5907be4a820310cdf80364289a2d7c3f
+│   │   │   └── 5368d48c21b49389a7c041b54b7bd3cb5d256f
+│   │   ├── cf
+│   │   │   ├── 0f9ad37098266656be14652f87502b103e7dbe
+│   │   │   └── bde2b12577c2abc84f055375859bf3f295b92d
+│   │   ├── d1
+│   │   │   ├── 500ffd84079e18a139bfb1d0b152e71663bc1b
+│   │   │   └── d0590eea1a8731a8b16aaa408978c162be7959
+│   │   ├── d3
+│   │   │   └── 210653a7199769e173eadf90a9e2febc6acfa1
+│   │   ├── d4
+│   │   │   └── daf88ebef904de03fe97d646374331b0ce2a4b
+│   │   ├── d8
+│   │   │   ├── 4b85ea405ec1fbdc999d159137d2655a636c3d
+│   │   │   └── eef2ca59228a7a5acc5b99d4c0914cb75b0436
+│   │   ├── d9
+│   │   │   └── 52c35bebd9fc4672a1fbb8f44f0ec458a2e2f8
+│   │   ├── db
+│   │   │   └── 66d5b9162da37a29b5a2ed36a9c61d00a8f638
+│   │   ├── dd
+│   │   │   └── bea5a9fbd8c20c42f06381d02b4bd8835854ca
+│   │   ├── de
+│   │   │   └── 3094e6d444bdc168c5784bda880cc064dbe853
+│   │   ├── df
+│   │   │   └── 89dd3deb2c1cb4daf3d21345279943ef5cf374
+│   │   ├── e8
+│   │   │   └── 6170547d57af8a34d0aa2b0feb84aac97bb5f1
+│   │   ├── ea
+│   │   │   ├── 1e32fe27381aa2eaab9937a9ad368bb2f81668
+│   │   │   └── 5b076c18d3d4617101b68c3c9de89547eaac24
+│   │   ├── eb
+│   │   │   └── f7f5119a342ac60cd815417ea2d0705ce6acd5
+│   │   ├── ec
+│   │   │   └── a9429e87c3a9de7548c13a6b9de1ffa863b60c
+│   │   ├── f0
+│   │   │   ├── 492394a1d00012c6813bbab8b32eb764e0d31f
+│   │   │   └── c0954b6c2456590d9c9a39a07bc73a2d7a678c
+│   │   ├── f2
+│   │   │   └── b46a63c41a417d761395d6ea6eaee6550122c0
+│   │   ├── f4
+│   │   │   └── 8559f112fbd654aea4d0d55f17142439f65811
+│   │   ├── f6
+│   │   │   └── c2ea589d093444ea72b175ebc47f4b95700b9a
+│   │   ├── fa
+│   │   │   └── 00f9f032fd4a6c022ae9974864dadce736f4bd
+│   │   ├── fd
+│   │   │   └── 08d90a3d5eb331d305f0b97dcd67a7f01a93bd
+│   │   ├── fe
+│   │   │   └── fffebdf10298d1c5e67fb9fae6f43d85850ea8
+│   │   ├── info
+│   │   └── pack
+│   │       ├── pack-48ed3b9df3d3bc4b375ac74cc72e621d138cc546.idx
+│   │       ├── pack-48ed3b9df3d3bc4b375ac74cc72e621d138cc546.pack
+│   │       ├── pack-48ed3b9df3d3bc4b375ac74cc72e621d138cc546.rev
+│   │       ├── pack-e4c71a753173129dcce00e0db747ca6cd91c6edb.idx
+│   │       ├── pack-e4c71a753173129dcce00e0db747ca6cd91c6edb.pack
+│   │       └── pack-e4c71a753173129dcce00e0db747ca6cd91c6edb.rev
+│   ├── packed-refs
+│   └── refs
+│       ├── heads
+│       │   ├── feature
+│       │   │   ├── agentic-model-job-profile
+│       │   │   └── score-algo
+│       │   └── main
+│       ├── remotes
+│       │   └── origin
+│       │       ├── HEAD
+│       │       ├── dev
+│       │       ├── feature
+│       │       │   ├── agentic-model-job-profile
+│       │       │   ├── db-enhancements
+│       │       │   ├── professional-ui-redesign
+│       │       │   ├── score-algo
+│       │       │   ├── score-algo-enhancement
+│       │       │   └── semantic-scoring
+│       │       └── main
+│       ├── stash
+│       └── tags
+│           ├── feature
+│           │   └── score-algo_v1_stable
+│           ├── score-algo-stable
+│           └── score_algo_v1_stable
+├── .gitignore
+├── .vscode
+│   └── settings.json
+├── Troubleshoot Kits
+│   ├── calculate_all_matches.py
+│   ├── calculate_all_scores.py
+│   ├── calculate_cultural_fit.py
+│   ├── calculate_real_fit.py
+│   ├── check_all_candidates.py
+│   ├── check_candidate_exist.py
+│   ├── check_db_health.py
+│   ├── check_job_exist.py
+│   ├── check_peter_18.py
+│   ├── check_vector_data.py
+│   ├── cultural_fit_calculation.py
+│   ├── debug_candidate_score.py
+│   ├── debug_cultural.py
+│   ├── debug_job_loading.py
+│   ├── debug_load_jobs_detailed.py
+│   ├── debug_peter_7.py
+│   ├── debug_saving_process.py
+│   ├── delete_candidate.py
+│   ├── detailed_breakdown.txt
+│   ├── examine_peter_tan.py
+│   ├── find_real_peter.py
+│   ├── reload_peter_tan.py
+│   ├── restore_jobs_with_cultural.py
+│   ├── show_all_scores.py
+│   ├── show_detailed_breakdown.py
+│   ├── test_cultural_extraction.py
+│   ├── test_fix.py
+│   ├── test_job_loading.py
+│   ├── trace_cultural_scores.py
+│   └── verify_fix.py
+├── analytics_report.py
+├── chroma_data_manager.py
+├── demo.py
+├── doc
+│   ├── Chroma Vector Database.txt
+│   ├── GITHUB_WORKFLOW_GUIDE.txt
+│   ├── README.md
+│   ├── Score Calculation Check.txt
+│   └── trasformer_ model.txt
+├── preview_delete_candidates.py
+├── preview_delete_jobs.py
+├── profile_analyzer.py
+├── repo_structure.txt
+├── requirements.txt
+├── semantic_matcher.py
+├── src
+│   ├── database.py
+│   ├── email_service.py
+│   ├── enhanced_cultural_extractor.py
+│   ├── job_parser.py
+│   ├── matcher.py
+│   ├── resume_parser.py
+│   └── sample_data.py
+├── static
+│   ├── css
+│   │   ├── components
+│   │   │   ├── candidates.css
+│   │   │   ├── cards.css
+│   │   │   ├── dashboard.css
+│   │   │   ├── file-upload.css
+│   │   │   ├── icons.css
+│   │   │   ├── jobs.css
+│   │   │   ├── matching.css
+│   │   │   ├── modals.css
+│   │   │   ├── navigation.css
+│   │   │   └── tables.css
+│   │   ├── main.css
+│   │   └── utils.css
+│   └── js
+│       ├── app.js
+│       ├── modules
+│       │   ├── candidates.js
+│       │   ├── charts.js
+│       │   ├── dashboard.js
+│       │   ├── file-upload.js
+│       │   ├── job-modal.js
+│       │   ├── jobs.js
+│       │   └── matching.js
+│       └── utils
+│           ├── api.js
+│           ├── formatters.js
+│           └── ui.js
+├── templates
+│   ├── base.html
+│   ├── candidates.html
+│   ├── dashboard.html
+│   ├── jobs.html
+│   ├── matching.html
+│   └── partials
+│       ├── header.html
+│       ├── icons.html
+│       └── sidebar.html
+├── vector_db.py
+└── web_browser_app.py
+
+138 directories, 280 files

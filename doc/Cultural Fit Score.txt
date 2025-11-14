@@ -1,0 +1,129 @@
+current cultural attribute extraction and embedding pipeline.
+
+Current Flow:
+
+Parsing & Initial Extraction:
+
+resume_parser.py and job_parser.py use enhanced_cultural_extractor.py as a central service.
+
+They pass raw text (resume or job description) to CulturalAttributeExtractor.extract_cultural_attributes().
+
+Cultural Attribute Extraction (enhanced_cultural_extractor.py):
+
+Uses a predefined taxonomy of cultural attributes: work_style, values, environment, management, communication.
+
+For each category, it performs keyword matching against the text using _extract_attributes_by_keywords().
+
+It also uses a local SentenceTransformer model (all-MiniLM-L6-v2) to generate an embedding of the entire input text.
+
+Output: A dictionary containing:
+
+structured_attributes: The keyword-matched attributes for each category.
+
+cultural_embedding: The 384-dimensional vector from the SentenceTransformer model.
+
+Storage in ChromaDB (vector_db.py & chroma_data_manager.py):
+
+VectorDBManager (in vector_db.py) is the primary interface.
+
+It uses ChromaDataManager (in chroma_data_manager.py) for low-level operations.
+
+For Jobs:
+
+add_job() in vector_db.py calls job_parser.parse_job_description().
+
+This returns a ParsedJob object containing the cultural_attributes dictionary from the extractor.
+
+The cultural_embedding vector is stored directly in the job_collection in ChromaDB.
+
+For Candidates:
+
+add_candidate() in vector_db.py calls resume_parser.parse_resume().
+
+This returns a ParsedResume object containing the cultural_attributes dictionary.
+
+The cultural_embedding vector is stored directly in the candidate_collection in ChromaDB.
+
+Metadata: The structured attributes (structured_attributes) are stored as metadata in ChromaDB alongside their respective embeddings.
+
+Matching (semantic_matcher.py):
+
+get_matches() retrieves a job's cultural embedding from ChromaDB.
+
+It queries the candidate collection using this job embedding as the query vector.
+
+ChromaDB performs a cosine similarity search and returns the top N candidate matches based on cultural fit.
+
+The system relies on a general-purpose text embedding model for cultural matching, supplemented by explicit keyword extraction for structured metadata.
+
+Based on my analysis of the code, here is how the Cultural Fit Score is calculated for display in the match results:
+
+Current Calculation Method:
+
+Source: The calculation occurs in semantic_matcher.py within the get_matches() function.
+
+Data Used: It uses only the cultural_embedding vectors. The structured_attributes dictionary from the cultural extractor is not used in the score calculation.
+
+Process:
+
+The job's cultural_embedding vector is used as the query input for ChromaDB.
+
+ChromaDB performs a similarity search (cosine similarity) against all candidate cultural_embedding vectors in the collection.
+
+The raw similarity score returned by ChromaDB for each candidate is a float between 0 and 1.
+
+Score Transformation:
+
+This raw similarity score is then passed through a scaling function: score = (raw_similarity ** 2) * 100.
+
+This non-linear transformation (squaring the score) emphasizes higher similarity matches.
+
+The result is a "Cultural Fit Score" between 0 and 100, displayed as a percentage on the frontend.
+
+Conclusion: The displayed Cultural Fit Score is purely based on the semantic similarity of the general text embeddings related to culture. The explicitly extracted keyword attributes (structured_attributes) are stored in metadata but are not factored into the numerical score calculation for matching.
+
+The Chroma DB does not create the cultural embedding. It only stores and queries pre-computed vectors.
+
+How the cultural_embedding is created:
+
+Source: In enhanced_cultural_extractor.py, the CulturalAttributeExtractor class generates the embedding.
+
+Method: The _get_cultural_embedding() function uses a SentenceTransformer model (all-MiniLM-L6-v2) to create an embedding from the entire input text (full job description or full resume text).
+
+Key Point: This embedding is not based on the predefined cultural attributes or keyword matches. It is a general semantic representation of the entire document's content.
+
+Storage: This pre-computed 384-dimensional vector is then stored in ChromaDB as the cultural_embedding for that job or candidate.
+
+The Disconnect:
+
+The keyword matching for cultural attributes (structured_attributes) and the embedding generation are two separate, parallel processes.
+
+The embedding captures broad semantic meaning from the entire text, while the keyword matching extracts specific predefined attributes.
+
+During matching, only the general semantic embedding is used for similarity calculations, not the structured keyword data.
+
+The predefined cultural attributes are stored as metadata but are not used to influence the vector similarity search for cultural fit scoring
+
+ The cultural fit score is entirely dependent on the general-purpose all-MiniLM-L6-v2 model's ability to encode cultural semantics from raw text.
+
+Current Limitation: No AI learning mechanism exists. The model is static.
+
+Paths for AI Learning Improvement:
+
+Fine-tuning: Use your collected job-candidate match outcomes (human decisions) to fine-tune the SentenceTransformer model specifically for cultural fit prediction.
+
+Feedback Loop: Implement a system where:
+
+Recruiter actions (hires/rejections/interviews) are logged
+
+These become labeled training data pairs (positive/negative examples)
+
+The model is periodically retrained on this new data
+
+Reinforcement Learning: An agent could adjust embedding weights based on successful match outcomes measured through hiring retention rates.
+
+Attribute-Guided Embedding: Use the keyword-extracted cultural attributes to create a supervised learning signal, training the model to produce embeddings that correlate with these explicit attributes.
+
+Ensemble Scoring: Combine the semantic similarity score with a separate score calculated from the keyword attribute overlap, then use human feedback to weight these components optimally over time.
+
+The system currently lacks the infrastructure to collect feedback and retrain models. This would require additional components for data logging, model versioning, and training pipelines.

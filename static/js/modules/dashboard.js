@@ -107,6 +107,13 @@ class DashboardModule {
                                 <span>Cultural Fit:</span>
                                 <span>${breakdown.cultural_fit || 0}%</span>
                             </div>
+                            ${match.cultural_breakdown ? `
+                            <div class="cultural-breakdown" style="margin-left: 10px; font-size: 0.8em; color: #666;">
+                                <small>
+                                    (${match.cultural_breakdown.keyword_score || 0}% Keywords + ${match.cultural_breakdown.semantic_score || 0}% Semantic)
+                                </small>
+                            </div>
+                            ` : ''}
                             
                             <div class="breakdown-item">
                                 <span>Growth Potential:</span>
