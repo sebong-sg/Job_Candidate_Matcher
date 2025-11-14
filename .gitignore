@@ -1,9 +1,17 @@
 Job_Candidate_Matcher/
-# Python cache
+# Ignore Python cache and compiled files
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
 
-# Chroma DB artifacts
+
+# Ignore local Chroma DB artifacts
 chroma_db/
 *.sqlite3
-length.bin
+*.bin
+
+# Ignore environment and build artifacts
+.env
+*.log
+*.tmp
