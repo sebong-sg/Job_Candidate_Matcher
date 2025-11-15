@@ -102,4 +102,54 @@ body {
     flex: 1;
     padding: var(--space-6);
     overflow-y: auto;
-}"
+}
+
+/* Info Icon Tooltips */
+.info-icon-container {
+  position: relative;
+  display: inline-flex;
+}
+
+.info-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  margin-left: 2px;            /*var(--space-1);*/
+  vertical-align: middle; /* Align with text */
+  cursor: help;
+  color: var(--gray-500);
+  transition: color 0.2s ease;
+}
+
+.info-icon:hover {
+  color: var(--primary-500);
+}
+
+.tooltip {
+    display: none;
+    position: absolute;
+/*    bottom: calc(100% + 10px); */
+/*    left: 50%; */
+    top: calc(100% - 50px); /* Position below icon */
+    left: calc(100% + 10px);
+/*    left: calc(100% + 10px); /* Position to the right of icon */
+    transform: translateX(-50%); 
+/*    transform: translateY(-50%); /* Center vertically */
+    margin-left: 150px; /* Add this line to shift right */
+    background: white;
+    color: var(--gray-800);
+    padding: var(--space-3);
+    border-radius: var(--border-radius);
+    font-size: var(--font-size-sm);
+    width: 280px;
+    z-index: 1000;
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--gray-200);
+    line-height: 1.4;
+}
+
+.info-icon-container:hover .tooltip {
+    display: block;
+}
