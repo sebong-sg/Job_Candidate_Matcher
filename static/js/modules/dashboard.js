@@ -88,23 +88,108 @@ class DashboardModule {
                         <div class="score-breakdown">
                             <h5>Score Breakdown:</h5>
                             <div class="breakdown-item">
-                                <span>Skills Match:</span>
+                                <span>Skills Match:
+                                    <span class="info-icon-container">
+                                        <span class="info-icon">
+                                            <svg xmlns="http://www.w3.org/2000/svg" 
+                                                 class="icon info-icon" width="20" height="20" 
+                                                 fill="none" stroke="currentColor" stroke-width="2" 
+                                                 viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                                              <!-- Outer circle -->
+                                              <path d="M12 2a10 10 0 1 0 0 20a10 10 0 0 0 0-20z"/>
+                                              <!-- Stem of the "i" -->
+                                              <path d="M11 12h2v4h-2z"/>
+                                              <!-- Dot of the "i" -->
+                                              <circle cx="12" cy="8" r="1"/>
+                                            </svg>
+                                        </span>
+                                        <div class="tooltip">"Weighted keyword matching between job requirements and candidate skills. Higher weights for technical skills like Python (15%), JavaScript (12%), etc."</div>
+                                    </span>                                
+                                </span>
                                 <span>${breakdown.skills || 0}%</span>
                             </div>
                             <div class="breakdown-item">
-                                <span>Location:</span>
+                                <span>Location:
+                                    <span class="info-icon-container">
+                                        <span class="info-icon">
+                                            <svg xmlns="http://www.w3.org/2000/svg" 
+                                                 class="icon info-icon" width="20" height="20" 
+                                                 fill="none" stroke="currentColor" stroke-width="2" 
+                                                 viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                                              <!-- Outer circle -->
+                                              <path d="M12 2a10 10 0 1 0 0 20a10 10 0 0 0 0-20z"/>
+                                              <!-- Stem of the "i" -->
+                                              <path d="M11 12h2v4h-2z"/>
+                                              <!-- Dot of the "i" -->
+                                              <circle cx="12" cy="8" r="1"/>
+                                            </svg>
+                                        </span>
+                                        <div class="tooltip">"Global location compatibility considering geographic proximity, remote work, visa complexity, and timezone differences."</div>
+                                    </span>                                                               
+                                </span>
                                 <span>${breakdown.location || 0}%</span>
                             </div>
                             <div class="breakdown-item">
-                                <span>Experience:</span>
+                                <span>Experience:
+                                    <span class="info-icon-container">
+                                        <span class="info-icon">
+                                            <svg xmlns="http://www.w3.org/2000/svg" 
+                                                 class="icon info-icon" width="20" height="20" 
+                                                 fill="none" stroke="currentColor" stroke-width="2" 
+                                                 viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                                              <!-- Outer circle -->
+                                              <path d="M12 2a10 10 0 1 0 0 20a10 10 0 0 0 0-20z"/>
+                                              <!-- Stem of the "i" -->
+                                              <path d="M11 12h2v4h-2z"/>
+                                              <!-- Dot of the "i" -->
+                                              <circle cx="12" cy="8" r="1"/>
+                                            </svg>
+                                        </span>
+                                        <div class="tooltip">"Experience level matching based on job title keywords (senior/junior/entry) and years of experience comparison."</div>
+                                    </span>                                                                
+                                </span>
                                 <span>${breakdown.experience || 0}%</span>
                             </div>
                             <div class="breakdown-item">
-                                <span>Profile Relevance:</span>
+                                <span>Profile Relevance:
+                                    <span class="info-icon-container">
+                                        <span class="info-icon">
+                                            <svg xmlns="http://www.w3.org/2000/svg" 
+                                                 class="icon info-icon" width="20" height="20" 
+                                                 fill="none" stroke="currentColor" stroke-width="2" 
+                                                 viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                                              <!-- Outer circle -->
+                                              <path d="M12 2a10 10 0 1 0 0 20a10 10 0 0 0 0-20z"/>
+                                              <!-- Stem of the "i" -->
+                                              <path d="M11 12h2v4h-2z"/>
+                                              <!-- Dot of the "i" -->
+                                              <circle cx="12" cy="8" r="1"/>
+                                            </svg>
+                                        </span>
+                                        <div class="tooltip">"Semantic similarity using ChromaDB vector search. Analyzes contextual meaning beyond keywords using AI embeddings."</div>
+                                    </span>                                
+                                </span>
                                 <span>${breakdown.semantic || 0}%</span>
                             </div> 
                             <div class="breakdown-item">
-                                <span>Cultural Fit:</span>
+                                <span>Cultural Fit:
+                                    <span class="info-icon-container">
+                                        <span class="info-icon">
+                                            <svg xmlns="http://www.w3.org/2000/svg" 
+                                                 class="icon info-icon" width="20" height="20" 
+                                                 fill="none" stroke="currentColor" stroke-width="2" 
+                                                 viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                                              <!-- Outer circle -->
+                                              <path d="M12 2a10 10 0 1 0 0 20a10 10 0 0 0 0-20z"/>
+                                              <!-- Stem of the "i" -->
+                                              <path d="M11 12h2v4h-2z"/>
+                                              <!-- Dot of the "i" -->
+                                              <circle cx="12" cy="8" r="1"/>
+                                            </svg>
+                                        </span>
+                                        <div class="tooltip">"Hybrid scoring: 70% keyword matching (teamwork, innovation, work environment, work pace, customer focus) + 30% semantic analysis of cultural context."</div>
+                                    </span>                                
+                                </span>
                                 <span>${breakdown.cultural_fit || 0}%</span>
                             </div>
                             ${match.cultural_breakdown ? `
