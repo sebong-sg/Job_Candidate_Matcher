@@ -1,5 +1,5 @@
-# 🗃️ CHROMA VECTOR DATABASE MANAGER - ENHANCED WITH GROWTH DATA
-# Fixed metadata serialization issue with growth data integration
+# 🗃️ CHROMA VECTOR DATABASE MANAGER - FIXED VERSION
+# Fixed metadata serialization issue
 
 import chromadb
 import os
@@ -41,7 +41,7 @@ class ChromaVectorDB:
             return 0
     
     def add_candidate(self, candidate: Dict) -> bool:
-        """Add a single candidate to the vector database - WITH GROWTH DATA"""
+        """Add a single candidate to the vector database - FIXED METADATA"""
         if not self.embedding_model:
             print("❌ Embedding model not available")
             return False
@@ -54,37 +54,29 @@ class ChromaVectorDB:
                 
             embedding = self.embedding_model.encode(text_to_embed).tolist()
             
-            # ENHANCED: Include growth data in metadata
+            # FIX: Convert lists to JSON strings for metadata
             self.candidates_collection.add(
                 ids=[str(candidate['id'])],
                 embeddings=[embedding],
                 documents=[text_to_embed],
                 metadatas=[{
                     'name': candidate.get('name', 'Unknown'),
-                    'skills': json.dumps(candidate.get('skills', [])),
+                    'skills': json.dumps(candidate.get('skills', [])),  # Convert list to JSON string
                     'experience_years': candidate.get('experience_years', 0),
                     'location': candidate.get('location', ''),
                     'email': candidate.get('email', ''),
-                    'phone': candidate.get('phone', ''),
                     'profile': candidate.get('profile', ''),
-                    'education': candidate.get('education', ''),
-                    'cultural_attributes': json.dumps(candidate.get('cultural_attributes', {})),
-                    # ENHANCED: Growth data fields
-                    'work_experience': json.dumps(candidate.get('work_experience', [])),
-                    'career_metrics': json.dumps(candidate.get('career_metrics', {})),
-                    'skill_timeline': json.dumps(candidate.get('skill_timeline', [])),
-                    'growth_metrics': json.dumps(candidate.get('growth_metrics', {})),
-                    'learning_velocity': candidate.get('learning_velocity', 0.0)
+                    'cultural_attributes': json.dumps(candidate.get('cultural_attributes', {}))  # ADD THIS LINE
                 }]
             )
-            print(f"✅ Candidate added to vector DB with growth data: {candidate.get('name', 'Unknown')}")
+            print(f"✅ Candidate added to vector DB: {candidate.get('name', 'Unknown')}")
             return True
         except Exception as e:
             print(f"❌ Error adding candidate to vector DB: {e}")
             return False
     
     def add_candidates_batch(self, candidates: List[Dict]) -> bool:
-        """Add multiple candidates to the vector database - WITH GROWTH DATA"""
+        """Add multiple candidates to the vector database - FIXED METADATA"""
         if not self.embedding_model:
             return False
             
@@ -102,23 +94,15 @@ class ChromaVectorDB:
                     ids.append(str(candidate['id']))
                     embeddings.append(embedding)
                     documents.append(text_to_embed)
-                    # ENHANCED: Include growth data in metadata
+                    # FIX: Convert lists to JSON strings for metadata
                     metadatas.append({
                         'name': candidate.get('name', 'Unknown'),
-                        'skills': json.dumps(candidate.get('skills', [])),
+                        'skills': json.dumps(candidate.get('skills', [])),  # Convert list to JSON string
                         'experience_years': candidate.get('experience_years', 0),
                         'location': candidate.get('location', ''),
                         'email': candidate.get('email', ''),
-                        'phone': candidate.get('phone', ''),
                         'profile': candidate.get('profile', ''),
-                        'education': candidate.get('education', ''),
-                        'cultural_attributes': json.dumps(candidate.get('cultural_attributes', {})),
-                        # ENHANCED: Growth data fields
-                        'work_experience': json.dumps(candidate.get('work_experience', [])),
-                        'career_metrics': json.dumps(candidate.get('career_metrics', {})),
-                        'skill_timeline': json.dumps(candidate.get('skill_timeline', [])),
-                        'growth_metrics': json.dumps(candidate.get('growth_metrics', {})),
-                        'learning_velocity': candidate.get('learning_velocity', 0.0)
+                        'cultural_attributes': json.dumps(candidate.get('cultural_attributes', {}))  # ADD THIS LINE
                     })
             
             if ids:
@@ -128,7 +112,7 @@ class ChromaVectorDB:
                     documents=documents,
                     metadatas=metadatas
                 )
-                print(f"✅ Added {len(ids)} candidates to vector database with growth data")
+                print(f"✅ Added {len(ids)} candidates to vector database")
                 return True
             return False
         except Exception as e:
@@ -136,7 +120,7 @@ class ChromaVectorDB:
             return False
     
     def find_matches_for_job(self, job: Dict, top_k: int = 20) -> List[Dict]:
-        """Find candidate matches for a job using semantic search - WITH GROWTH DATA"""
+        """Find candidate matches for a job using semantic search"""
         if not self.embedding_model:
             return []
             
@@ -166,7 +150,7 @@ class ChromaVectorDB:
                     distance = results['distances'][0][i]
                     similarity_score = max(0, 1 - distance)  # Convert distance to similarity
                     
-                    # Parse JSON strings back to original formats
+                    # FIX: Parse JSON string back to list
                     candidate_skills = json.loads(metadata.get('skills', '[]'))
                     
                     # Calculate skill overlap (traditional matching)
@@ -174,25 +158,15 @@ class ChromaVectorDB:
                     candidate_skills_set = set([s.lower() for s in candidate_skills])
                     skill_overlap = len(job_skills.intersection(candidate_skills_set)) / len(job_skills) if job_skills else 0
                     
-                    # ENHANCED: Include growth data in candidate profile
                     matches.append({
                         'candidate': {
                             'id': int(results['ids'][0][i]),
                             'name': metadata.get('name', 'Unknown'),
-                            'skills': candidate_skills,
+                            'skills': candidate_skills,  # Use parsed list
                             'experience_years': metadata.get('experience_years', 0),
                             'location': metadata.get('location', ''),
-                            'email': metadata.get('email', ''),
-                            'phone': metadata.get('phone', ''),
                             'profile': metadata.get('profile', ''),
-                            'education': metadata.get('education', ''),
-                            'cultural_attributes': json.loads(metadata.get('cultural_attributes', '{}')),
-                            # ENHANCED: Growth data fields
-                            'work_experience': json.loads(metadata.get('work_experience', '[]')),
-                            'career_metrics': json.loads(metadata.get('career_metrics', '{}')),
-                            'skill_timeline': json.loads(metadata.get('skill_timeline', '[]')),
-                            'growth_metrics': json.loads(metadata.get('growth_metrics', '{}')),
-                            'learning_velocity': metadata.get('learning_velocity', 0.0)
+                            'cultural_attributes': json.loads(metadata.get('cultural_attributes', '{}'))  # ADD THIS LINE
                         },
                         'score': similarity_score,
                         'common_skills': list(job_skills.intersection(candidate_skills_set)),
@@ -224,7 +198,7 @@ class ChromaVectorDB:
             return False
 
     def get_all_candidates(self) -> List[Dict]:
-        """Retrieve all candidates from Chroma DB in original format - WITH GROWTH DATA"""
+        """Retrieve all candidates from Chroma DB in original format"""
         try:
             # Get all candidates from collection
             results = self.candidates_collection.get(
@@ -234,7 +208,6 @@ class ChromaVectorDB:
             candidates = []
             for i in range(len(results['ids'])):
                 metadata = results['metadatas'][i]
-                # ENHANCED: Include growth data in candidate profile
                 candidates.append({
                     'id': int(results['ids'][i]),
                     'name': metadata.get('name', 'Unknown'),
@@ -242,19 +215,13 @@ class ChromaVectorDB:
                     'phone': metadata.get('phone', ''),
                     'location': metadata.get('location', ''),
                     'experience_years': metadata.get('experience_years', 0),
-                    'skills': json.loads(metadata.get('skills', '[]')),
+                    'skills': json.loads(metadata.get('skills', '[]')),  # Parse JSON string back to list
                     'profile': metadata.get('profile', ''),
                     'education': metadata.get('education', ''),
-                    'cultural_attributes': json.loads(metadata.get('cultural_attributes', '{}')),
-                    # ENHANCED: Growth data fields
-                    'work_experience': json.loads(metadata.get('work_experience', '[]')),
-                    'career_metrics': json.loads(metadata.get('career_metrics', '{}')),
-                    'skill_timeline': json.loads(metadata.get('skill_timeline', '[]')),
-                    'growth_metrics': json.loads(metadata.get('growth_metrics', '{}')),
-                    'learning_velocity': metadata.get('learning_velocity', 0.0)
+                    'cultural_attributes': json.loads(metadata.get('cultural_attributes', '{}'))  # ADD THIS LINE
                 })
             
-            print(f"✅ Retrieved {len(candidates)} candidates from Chroma DB with growth data")
+            print(f"✅ Retrieved {len(candidates)} candidates from Chroma DB")
             return candidates
         except Exception as e:
             print(f"❌ Error retrieving candidates from Chroma DB: {e}")
@@ -282,7 +249,7 @@ class ChromaVectorDB:
                     'experience_required': metadata.get('experience_required', 0),
                     'salary_range': metadata.get('salary_range', ''),
                     'job_type': metadata.get('job_type', ''),
-                    'cultural_attributes': json.loads(metadata.get('cultural_attributes', '{}'))
+                    'cultural_attributes': json.loads(metadata.get('cultural_attributes', '{}'))  # ADD THIS LINE
                 })
             
             print(f"✅ Retrieved {len(jobs)} jobs from Chroma DB")
@@ -319,7 +286,7 @@ class ChromaVectorDB:
                     'experience_required': job.get('experience_required', 0),
                     'salary_range': job.get('salary_range', ''),
                     'job_type': job.get('job_type', ''),
-                    'cultural_attributes': json.dumps(job.get('cultural_attributes', {}))
+                    'cultural_attributes': json.dumps(job.get('cultural_attributes', {}))  # ADD THIS LINE
                 }]
             )
             print(f"✅ Job added to vector DB: {job.get('title', 'Unknown')}")
@@ -357,7 +324,7 @@ class ChromaVectorDB:
                         'experience_required': job.get('experience_required', 0),
                         'salary_range': job.get('salary_range', ''),
                         'job_type': job.get('job_type', ''),
-                        'cultural_attributes': json.dumps(job.get('cultural_attributes', {}))
+                        'cultural_attributes': json.dumps(job.get('cultural_attributes', {}))  # ADD THIS LINE
                     })
             
             if ids:
