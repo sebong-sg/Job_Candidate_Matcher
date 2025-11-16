@@ -381,6 +381,13 @@ class SimpleMatcher:
         
         print(f"🔍 Matching {len(jobs)} jobs using Chroma vector database...")
         print(f"   Vector DB has {vector_db.get_candidate_count()} candidates indexed")
+
+            # DEBUG: Check if candidates have growth data
+        for candidate in candidates:
+            if candidate.get('growth_metrics'):
+                print(f"✅ Candidate {candidate['name']} has growth data")
+            else:
+                print(f"❌ Candidate {candidate['name']} has NO growth data")
         
         matches = {}
         

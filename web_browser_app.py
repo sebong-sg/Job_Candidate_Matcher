@@ -402,8 +402,30 @@ def run_matching():
                 candidate = top_match['candidate']
                 
                 # ENHANCED: Include growth data in match results
-                growth_score = candidate.get('growth_metrics', {}).get('growth_potential_score', 0)
+#                growth_score = candidate.get('growth_metrics', {}).get('growth_potential_score', 0)
+
+               # DEBUG: Check if growth data exists
+                print(f"🔍 DEBUG Candidate: {candidate.get('name')}")
+                print(f"🔍 DEBUG Growth Metrics: {candidate.get('growth_metrics')}")
+
+                # ENHANCED: Include detailed growth data for display
+                growth_metrics = candidate.get('growth_metrics', {})
+                growth_score = growth_metrics.get('growth_potential_score', 0)
+                growth_dimensions = growth_metrics.get('growth_dimensions', {})
                 
+                # Create detailed growth breakdown for display
+                growth_breakdown = {
+                    'vertical_growth': growth_dimensions.get('vertical_growth', 0),
+                    'scope_growth': growth_dimensions.get('scope_growth', 0),
+                    'impact_growth': growth_dimensions.get('impact_growth', 0),
+                    'adaptability': growth_dimensions.get('adaptability', 0),
+                    'leadership_velocity': growth_dimensions.get('leadership_velocity', 0),
+                    'career_archetype': growth_metrics.get('career_archetype', 'unknown'),
+                    'career_stage': growth_metrics.get('career_stage', 'unknown'),
+                    'executive_potential': growth_metrics.get('executive_potential', 0),
+                    'strategic_mobility': growth_metrics.get('strategic_mobility', 0)
+                }
+
                 matches.append({
                     'job_id': job['id'],
                     'job_title': job['title'],
@@ -414,7 +436,9 @@ def run_matching():
                     'common_skills': top_match.get('common_skills', [])[:5],
                     'score_breakdown': top_match.get('score_breakdown', {}),
                     'cultural_breakdown': top_match.get('cultural_breakdown', {}),
-                    'growth_potential_score': growth_score,  # NEW: Growth score
+                    'growth_potential_score': growth_score,  # Main growth score
+                    'growth_breakdown': growth_breakdown,    # Detailed growth data for display
+#                    'growth_potential_score': growth_score,  # NEW: Growth score
                     'match_grade': top_match.get('match_grade', 'A')
                 })
         

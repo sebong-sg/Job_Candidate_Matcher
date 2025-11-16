@@ -201,9 +201,36 @@ class DashboardModule {
                             ` : ''}
                             
                             <div class="breakdown-item">
-                                <span>Growth Potential:</span>
-                                <span>50%</span>
+                                    <span>Growth Potential:
+                                        <span class="info-icon-container">
+                                            <span class="info-icon">
+                                                <svg xmlns="http://www.w3.org/2000/svg" 
+                                                    class="icon info-icon" width="20" height="20" 
+                                                    fill="none" stroke="currentColor" stroke-width="2" 
+                                                    viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                                                    <!-- Outer circle -->
+                                                    <path d="M12 2a10 10 0 1 0 0 20a10 10 0 0 0 0-20z"/>
+                                                    <!-- Stem of the "i" -->
+                                                    <path d="M11 12h2v4h-2z"/>
+                                                    <!-- Dot of the "i" -->
+                                                    <circle cx="12" cy="8" r="1"/>
+                                                </svg>
+                                            </span>
+                                            <div class="tooltip">"AI-powered career progression analysis measuring: Vertical Growth (role progression), Scope Growth (responsibility expansion), Impact Growth (business influence), Adaptability (company changes), Leadership Velocity (time to leadership), and Strategic Mobility (career transitions)."</div>
+                                        </span>
+                                    </span>
+                                    <span>${match.growth_potential_score ? Math.round(match.growth_potential_score) + '%' : '0%'}</span>                            
                             </div>
+                            ${match.growth_breakdown ? `
+                            <div class="growth-breakdown" style="margin-left: 10px; font-size: 0.8em; color: #666;">
+                                <small>
+                                    (Vertical: ${(match.growth_breakdown.vertical_growth * 100).toFixed(0)}%, 
+                                    Scope: ${(match.growth_breakdown.scope_growth * 100).toFixed(0)}%, 
+                                    Impact: ${(match.growth_breakdown.impact_growth * 100).toFixed(0)}%)
+                                </small>
+                            </div>
+                            ` : ''}
+
                         </div>
                         <p><strong>Common Skills:</strong> ${match.common_skills ? match.common_skills.join(', ') : 'None'}</p>
                     </div>
