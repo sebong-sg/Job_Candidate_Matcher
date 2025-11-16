@@ -15,3 +15,7 @@ chroma_db/
 .env
 *.log
 *.tmp
+
+# .gitignore
+.env
+*.env

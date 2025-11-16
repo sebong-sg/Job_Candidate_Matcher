@@ -7,6 +7,11 @@
 from flask import Flask, render_template, request, jsonify
 import sys
 import os
+
+from dotenv import load_dotenv
+# Load environment variables from .env file
+load_dotenv()
+
 import json
 import subprocess
 

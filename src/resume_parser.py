@@ -1,4 +1,4 @@
-# 📄 RESUME PARSER - ENHANCED VERSION WITH CONSISTENT FILTERING
+# 📄 RESUME PARSER - ENHANCED VERSION WITH AI CAREER ASSESSMENT
 # Extracts skills and information from resume text using hybrid pattern + transformer approach
 
 import re
@@ -6,6 +6,10 @@ import nltk
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 import json
+import requests
+import os  
+from typing import Dict, List, Any
+
 import torch
 from sentence_transformers import SentenceTransformer, util
 
@@ -31,25 +35,26 @@ except ImportError:
 class ResumeParser:
     def __init__(self, extraction_method='pattern'):  # Back to pattern as default for reliability
         self.stop_words = set(stopwords.words('english'))
-      # FORCE PATTERN METHOD - COMPLETELY DISABLE TRANSFORMER
+        # FORCE PATTERN METHOD - COMPLETELY DISABLE TRANSFORMER
         self.extraction_method = 'pattern'
         self.transformer_model = None  # Never load transformer
         
+        # SECURE API Configuration - using environment variable
+        self.groq_api_key = os.getenv("GROQ_API_KEY")  # No hardcoded key!
+        self.groq_url = "https://api.groq.com/openai/v1/chat/completions"
+        
+        if not self.groq_api_key:
+            print("⚠️  GROQ_API_KEY environment variable not set - AI features will use fallback")
+        
+        # Enhanced role scope levels
+        self.SCOPE_LEVELS = {
+            'individual_contributor': 1,
+            'team_lead': 2, 
+            'department_head': 3,
+            'organization_lead': 4
+        }
+        
         print("✅ Resume parser initialized with PATTERN METHOD ONLY")
-        
-
-#        self.extraction_method = extraction_method
-        
-        # Initialize transformer model for semantic parsing
-#        self.transformer_model = None
-#        if extraction_method in ['transformer', 'hybrid']:
-#            try:
-#                print("🔄 Loading Sentence Transformer model...")
-#                self.transformer_model = SentenceTransformer('all-MiniLM-L6-v2')
-#                print("✅ Transformer model loaded successfully!")
-#            except Exception as e:
-#                print(f"⚠️ Failed to load transformer model: {e}")
-#                self.transformer_model = None
         
         self.skill_keywords = {
             'programming': ['python', 'java', 'javascript', 'c++', 'c#', 'ruby', 'php', 'swift', 'kotlin', 'go', 'rust'],
@@ -441,7 +446,6 @@ class ResumeParser:
         # Example: "Google | Senior Software Engineer | 2018-2022"
         # =========================================================================
         pattern3 = r'^([A-Za-z\s&]+)\s*[|-]\s*([A-Za-z\s]+)\s*[|-]\s*(\d{4}\s*[-–]\s*(?:Present|\d{4}))'
-#        pattern3 = r'^(.+?)\s*[|-]\s*(.+?)\s*[|-]\s*(.+)'
         matches3 = re.finditer(pattern3, text, re.MULTILINE | re.IGNORECASE)
         for match in matches3:
             company = match.group(1).strip()
@@ -559,138 +563,363 @@ class ResumeParser:
         
         return candidate_data
 
+    # =========================================================================
+    # AI CAREER ASSESSMENT METHODS
+    # =========================================================================
+
+    def analyze_career_with_ai(self, work_experience):
+        """AI assessment of career progression using Groq/Llama3"""
+        if not work_experience:
+            return self._get_default_ai_assessment()
+        
+        try:
+            prompt = self._create_career_analysis_prompt(work_experience)
+            response = self._call_groq_api(prompt)
+            ai_assessment = self._parse_ai_response(response)
+            return ai_assessment
+        except Exception as e:
+            print(f"⚠️ AI career analysis failed: {e}, using fallback")
+            return self._get_fallback_assessment(work_experience)
+
+    def _create_career_analysis_prompt(self, work_experience):
+        """Create structured prompt for career analysis"""
+        work_exp_str = json.dumps(work_experience, indent=2)
+        
+        return f"""
+        Analyze this work experience history for career progression assessment:
+        
+        WORK EXPERIENCE:
+        {work_exp_str}
+        
+        Return ONLY valid JSON with these exact fields:
+        {{
+            "career_archetype": "high_growth_ic" | "steady_manager" | "strategic_executive" | "portfolio_leader" | "technical_specialist",
+            "scope_progression": [array of numbers 1-4 for each role scope level],
+            "impact_scale": [array of numbers 0.0-1.0 for each role impact],
+            "strategic_mobility_score": 0.0-1.0,
+            "executive_potential": 0.0-1.0,
+            "analysis_rationale": "brief explanation of career pattern"
+        }}
+        
+        SCOPE LEVELS: 1=individual_contributor, 2=team_lead, 3=department_head, 4=organization_lead
+        IMPACT SCALE: 0.1=low impact, 0.5=moderate, 0.9=high strategic impact
+        STRATEGIC MOBILITY: 0.1=linear progression, 0.9=strategic lateral moves with increased scope
+        """
+
+    def _call_groq_api(self, prompt):
+        """Call Groq API with enhanced error handling"""
+        # Check if API key is properly configured
+        if not self.groq_api_key:
+            print("   ⚠️  GROQ_API_KEY not set in environment - using fallback analysis")
+            raise ValueError("GROQ_API_KEY environment variable not configured")
+    
+        headers = {
+            "Authorization": f"Bearer {self.groq_api_key}",
+            "Content-Type": "application/json"
+        }
+    
+        data = {
+            "model": "llama-3.3-70b-versatile",  # Current production model
+            "messages": [{"role": "user", "content": prompt}],
+            "temperature": 0.1,
+            "max_tokens": 1024,
+            "response_format": {"type": "json_object"}
+        }
+    
+        try:
+            response = requests.post(self.groq_url, json=data, headers=headers, timeout=30)
+        
+            # Check for specific HTTP errors
+            if response.status_code == 400:
+                print("   ❌ Groq API: Bad Request - Invalid request format")
+                error_detail = response.json().get('error', {}).get('message', 'Unknown error')
+                print(f"   📝 Error details: {error_detail}")
+            elif response.status_code == 401:
+                print("   ❌ Groq API: Unauthorized - Invalid API key")
+            elif response.status_code == 429:
+                print("   ⚠️  Groq API: Rate limit exceeded")
+            elif response.status_code == 500:
+                print("   ❌ Groq API: Internal server error")
+        
+            response.raise_for_status()  # This will raise an exception for 4xx/5xx status codes
+            return response.json()
+        
+        except requests.exceptions.HTTPError as e:
+            print(f"   ❌ Groq API HTTP Error: {e}")
+            raise
+        except requests.exceptions.ConnectionError:
+            print("   ❌ Groq API: Connection failed - check internet connection")
+            raise
+        except requests.exceptions.Timeout:
+            print("   ❌ Groq API: Request timeout")
+            raise
+        except requests.exceptions.RequestException as e:
+            print(f"   ❌ Groq API Request Exception: {e}")
+            raise
+        except Exception as e:
+            print(f"   ❌ Unexpected error calling Groq API: {e}")
+            raise
+
+    def _parse_ai_response(self, response):
+        """Parse and validate AI response"""
+        try:
+            content = response['choices'][0]['message']['content']
+            assessment = json.loads(content)
+            
+            # Validate required fields
+            required_fields = ['career_archetype', 'scope_progression', 'impact_scale', 
+                              'strategic_mobility_score', 'executive_potential', 'analysis_rationale']
+            if all(field in assessment for field in required_fields):
+                return assessment
+            else:
+                raise ValueError("Missing required fields in AI response")
+        except Exception as e:
+            print(f"⚠️ Failed to parse AI response: {e}")
+            raise
+
+    def _get_fallback_assessment(self, work_experience):
+        """Fallback assessment when AI fails"""
+        scope_progression = []
+        impact_scale = []
+        
+        for role in work_experience:
+            scope_level = self._detect_scope_level(role['role_title'])
+            scope_progression.append(scope_level)
+            impact_scale.append(min(scope_level * 0.25, 0.9))
+        
+        return {
+            "career_archetype": "technical_specialist",
+            "scope_progression": scope_progression,
+            "impact_scale": impact_scale,
+            "strategic_mobility_score": 0.5,
+            "executive_potential": 0.3,
+            "analysis_rationale": "Basic fallback analysis"
+        }
+
+    def _get_default_ai_assessment(self):
+        """Default assessment for no work experience"""
+        return {
+            "career_archetype": "early_career",
+            "scope_progression": [],
+            "impact_scale": [],
+            "strategic_mobility_score": 0.5,
+            "executive_potential": 0.1,
+            "analysis_rationale": "No work experience available"
+        }
+
+    def _detect_scope_level(self, role_title):
+        """Detect scope level from role title (fallback method)"""
+        role_lower = role_title.lower()
+        
+        if any(term in role_lower for term in ['cto', 'chief', 'vp', 'vice president']):
+            return 4  # organization_lead
+        elif any(term in role_lower for term in ['director', 'head of']):
+            return 3  # department_head
+        elif any(term in role_lower for term in ['manager', 'lead', 'team lead']):
+            return 2  # team_lead
+        else:
+            return 1  # individual_contributor
+
+    # =========================================================================
+    # ENHANCED GROWTH METRICS WITH AI ASSESSMENT
+    # =========================================================================
+
     def _calculate_growth_metrics(self, work_experience):
-        """Calculate multi-dimensional growth potential from career progression"""
+        """Enhanced growth metrics with AI career assessment"""
         if not work_experience or len(work_experience) < 2:
             print("   ⚠️  Insufficient work experience for growth calculation")
-            return {
-                'growth_potential_score': 0, 
-                'growth_dimensions': {
-                    'vertical_growth': 0,
-                    'scope_growth': 0, 
-                    'impact_growth': 0,
-                    'adaptability': 0,
-                    'leadership_velocity': 0
-                }
-            }
+            return self._get_empty_growth_metrics()
+        
+        # Get AI career assessment
+        print("   🤖 Analyzing career progression with AI...")
+        ai_assessment = self.analyze_career_with_ai(work_experience)
+        
         # FIX: Reverse work experience to get chronological order (oldest first)
         chronological_experience = list(reversed(work_experience))
         print(f"   📅 Chronological order: {[exp['role_title'] for exp in chronological_experience]}")
         
-        # Calculate individual growth dimensions (use chronological_experience instead of work_experience)
-        vertical_growth = self._calculate_vertical_growth(chronological_experience)
-        scope_growth = self._calculate_scope_growth(chronological_experience)
-        impact_growth = self._calculate_impact_growth(chronological_experience)
-        adaptability = self._calculate_adaptability(chronological_experience)
-        leadership_velocity = self._calculate_leadership_velocity(chronological_experience)
-                
-        # Calculate overall growth score (weighted average)
-        weights = {
-            'vertical_growth': 0.25,
-            'scope_growth': 0.20, 
-            'impact_growth': 0.25,
-            'adaptability': 0.15,
-            'leadership_velocity': 0.15
+        # Calculate enhanced growth dimensions using AI insights
+        growth_dimensions = self._calculate_enhanced_dimensions(chronological_experience, ai_assessment)
+        
+        # Classify career stage
+        career_stage = self._classify_career_stage(chronological_experience)
+        
+        # Calculate overall score with career stage adjustment
+        overall_score = self._calculate_stage_adjusted_score(growth_dimensions, career_stage)
+        
+        growth_data = {
+            'growth_potential_score': round(overall_score, 1),
+            'growth_dimensions': growth_dimensions,
+            'career_archetype': ai_assessment["career_archetype"],
+            'career_stage': career_stage,
+            'executive_potential': ai_assessment["executive_potential"],
+            'strategic_mobility': ai_assessment["strategic_mobility_score"],
+            'analysis_rationale': ai_assessment["analysis_rationale"],
+            'promotion_velocity': self._calculate_promotion_velocity(work_experience),
+            'max_role_level': max(exp['role_level'] for exp in work_experience)
         }
         
-        overall_score = (
-            vertical_growth * weights['vertical_growth'] +
-            scope_growth * weights['scope_growth'] +
-            impact_growth * weights['impact_growth'] + 
-            adaptability * weights['adaptability'] +
-            leadership_velocity * weights['leadership_velocity']
-        ) * 100  # Convert to 0-100 scale
+        print("   📈 ENHANCED GROWTH DIMENSIONS CALCULATED:")
+        print(f"      ↗️  Vertical Growth: {growth_dimensions['vertical_growth']} (Role level increases)")
+        print(f"      📊 Scope Growth: {growth_dimensions['scope_growth']} (Responsibility expansion)")
+        print(f"      💼 Impact Growth: {growth_dimensions['impact_growth']} (Business impact scale)") 
+        print(f"      🔄 Adaptability: {growth_dimensions['adaptability']} (Domain/company changes)")
+        print(f"      ⚡ Leadership Velocity: {growth_dimensions['leadership_velocity']} (Time to leadership)")
+        print(f"      🎯 CAREER ARCHETYPE: {ai_assessment['career_archetype']}")
+        print(f"      🎯 OVERALL GROWTH SCORE: {overall_score:.1f}/100")
         
-        growth_dimensions = {
+        return growth_data
+
+    def _calculate_enhanced_dimensions(self, work_experience, ai_assessment):
+        """Calculate enhanced growth dimensions using AI insights"""
+        # Vertical growth - account for executive ceiling
+        vertical_growth = self._calculate_vertical_growth_enhanced(work_experience, ai_assessment)
+        
+        # Scope growth using AI-detected scope progression
+        scope_growth = self._calculate_scope_growth_enhanced(ai_assessment["scope_progression"])
+        
+        # Impact growth using AI impact scale
+        impact_growth = self._calculate_impact_growth_enhanced(ai_assessment["impact_scale"])
+        
+        # Adaptability - company changes with strategic value
+        adaptability = self._calculate_adaptability_enhanced(work_experience, ai_assessment)
+        
+        # Leadership velocity
+        leadership_velocity = self._calculate_leadership_velocity_enhanced(work_experience)
+        
+        return {
             'vertical_growth': round(vertical_growth, 2),
             'scope_growth': round(scope_growth, 2),
             'impact_growth': round(impact_growth, 2),
             'adaptability': round(adaptability, 2),
             'leadership_velocity': round(leadership_velocity, 2)
         }
+
+    def _calculate_vertical_growth_enhanced(self, work_experience, ai_assessment):
+        """Enhanced vertical growth accounting for executive levels"""
+        if len(work_experience) < 2:
+            return 0.5
         
-        print("   📈 GROWTH DIMENSIONS CALCULATED:")
-        print(f"      ↗️  Vertical Growth: {vertical_growth:.2f} (Role level increases)")
-        print(f"      📊 Scope Growth: {scope_growth:.2f} (Responsibility expansion)")
-        print(f"      💼 Impact Growth: {impact_growth:.2f} (Business impact scale)") 
-        print(f"      🔄 Adaptability: {adaptability:.2f} (Domain/company changes)")
-        print(f"      ⚡ Leadership Velocity: {leadership_velocity:.2f} (Time to leadership)")
-        print(f"      🎯 OVERALL GROWTH SCORE: {overall_score:.1f}/100")
+        scope_progression = ai_assessment["scope_progression"]
+        if not scope_progression:
+            return 0.5
         
+        # Calculate progression slope
+        progression = max(scope_progression) - min(scope_progression)
+        max_possible = 3  # Individual to executive (1 to 4)
+        
+        # Normalize and cap at 1.0
+        vertical_growth = min(progression / max_possible, 1.0)
+        
+        # Boost for executive roles (no penalty for lateral executive moves)
+        if max(scope_progression) >= 4:  # Executive level
+            vertical_growth = max(vertical_growth, 0.7)
+        
+        return vertical_growth
+
+    def _calculate_scope_growth_enhanced(self, scope_progression):
+        """Calculate scope growth from AI-detected scope levels"""
+        if len(scope_progression) < 2:
+            return 0.3
+        
+        scope_range = max(scope_progression) - min(scope_progression)
+        max_scope_range = 3  # From IC (1) to Executive (4)
+        
+        return min(scope_range / max_scope_range, 1.0)
+
+    def _calculate_impact_growth_enhanced(self, impact_scale):
+        """Calculate impact growth from AI impact scores"""
+        if len(impact_scale) < 2:
+            return 0.3
+        
+        # Use maximum impact achieved
+        return max(impact_scale)
+
+    def _calculate_adaptability_enhanced(self, work_experience, ai_assessment):
+        """Enhanced adaptability with strategic mobility consideration"""
+        if len(work_experience) <= 1:
+            return 0.3
+        
+        # Base adaptability from company changes
+        companies = len(set(exp.get('company', '') for exp in work_experience))
+        base_adaptability = min(companies / 5, 0.7)  # Cap at 0.7
+        
+        # Boost with strategic mobility score from AI
+        strategic_boost = ai_assessment["strategic_mobility_score"] * 0.3
+        
+        return min(base_adaptability + strategic_boost, 1.0)
+
+    def _calculate_leadership_velocity_enhanced(self, work_experience):
+        """Calculate time to first leadership role"""
+        for i, role in enumerate(work_experience):
+            role_title = role.get('role_title', '').lower()
+            if any(leadership_term in role_title for leadership_term in 
+                   ['manager', 'director', 'head', 'lead', 'chief', 'vp', 'cto']):
+                # Faster promotion to leadership = higher score
+                leadership_velocity = 1.0 - (i / len(work_experience))
+                return max(leadership_velocity, 0.3)
+        
+        return 0.1  # No leadership roles found
+
+    def _classify_career_stage(self, work_experience):
+        """Classify career stage based on experience and roles"""
+        if not work_experience:
+            return "early_career"
+        
+        # Estimate total experience
+        estimated_years = len(work_experience) * 3  # Rough estimate
+        
+        # Check for executive roles
+        has_executive = any('chief' in exp.get('role_title', '').lower() or 
+                           'vp' in exp.get('role_title', '').lower() or
+                           'president' in exp.get('role_title', '').lower()
+                           for exp in work_experience)
+        
+        if has_executive or estimated_years >= 15:
+            return "executive"
+        elif estimated_years >= 8:
+            return "mid_career"
+        else:
+            return "early_career"
+
+    def _calculate_stage_adjusted_score(self, growth_dimensions, career_stage):
+        """Calculate overall score adjusted for career stage context"""
+        # Equal weighting for all dimensions in base calculation
+        base_score = sum(growth_dimensions.values()) / len(growth_dimensions)
+        
+        # Stage-based adjustments
+        stage_weights = {
+            "early_career": 1.1,  # Slight boost for early potential
+            "mid_career": 1.0,    # Neutral
+            "executive": 1.0      # Neutral - let dimensions speak for themselves
+        }
+        
+        adjusted_score = base_score * stage_weights.get(career_stage, 1.0)
+        return min(adjusted_score * 100, 100)  # Convert to percentage
+
+    def _get_empty_growth_metrics(self):
+        """Return empty growth metrics for no experience"""
         return {
-            'growth_potential_score': round(overall_score, 1),
-            'growth_dimensions': growth_dimensions,
-            'promotion_velocity': self._calculate_promotion_velocity(work_experience),
-            'max_role_level': max(exp['role_level'] for exp in work_experience)
+            "growth_potential_score": 0.0,
+            "growth_dimensions": {
+                'vertical_growth': 0.0,
+                'scope_growth': 0.0,
+                'impact_growth': 0.0,
+                'adaptability': 0.0,
+                'leadership_velocity': 0.0
+            },
+            "career_archetype": "early_career",
+            "career_stage": "early_career",
+            "executive_potential": 0.0,
+            "strategic_mobility": 0.0,
+            "analysis_rationale": "No work experience available",
+            "promotion_velocity": 0,
+            "max_role_level": 1
         }
 
-    def _calculate_vertical_growth(self, work_experience):
-        """Calculate vertical career progression (role level increases)"""
-        role_levels = [exp['role_level'] for exp in work_experience]
-        
-        # Count significant level increases (>1 level jump)
-        level_increases = 0
-        for i in range(1, len(role_levels)):
-            if role_levels[i] > role_levels[i-1]:
-                level_increases += (role_levels[i] - role_levels[i-1])
-        
-        max_possible_increases = (4 - min(role_levels)) * (len(role_levels) - 1)
-        return min(1.0, level_increases / max_possible_increases) if max_possible_increases > 0 else 0
-
-    def _calculate_scope_growth(self, work_experience):
-        """Calculate scope expansion (individual → team → leadership)"""
-        scope_weights = {'individual_contributor': 1, 'team_leadership': 2, 'executive': 3}
-        scope_scores = [scope_weights.get(exp['scope'], 1) for exp in work_experience]
-        
-        # Calculate scope progression
-        scope_increases = 0
-        for i in range(1, len(scope_scores)):
-            if scope_scores[i] > scope_scores[i-1]:
-                scope_increases += (scope_scores[i] - scope_scores[i-1])
-        
-        max_possible_scope = (3 - min(scope_scores)) * (len(scope_scores) - 1)
-        return min(1.0, scope_increases / max_possible_scope) if max_possible_scope > 0 else 0.5
-
-    def _calculate_impact_growth(self, work_experience):
-        """Calculate business impact growth based on role level and tenure"""
-        # Higher level roles + longer tenure = more impact opportunity
-        total_impact_score = sum(exp['role_level'] * self._get_tenure_years(exp) for exp in work_experience)
-        max_possible_impact = 4 * 10 * len(work_experience)  # Level 4 * 10 years * roles
-        
-        return min(1.0, total_impact_score / max_possible_impact)
-
-    def _calculate_adaptability(self, work_experience):
-        """Calculate adaptability through company/domain changes"""
-        companies = set(exp['company'] for exp in work_experience)
-        unique_companies = len(companies)
-        
-        # More companies = more adaptability, but balance with stability
-        if len(work_experience) <= 2:
-            return 0.3  # Limited data
-        elif unique_companies == len(work_experience):
-            return 0.9  # Changed company every time (high adaptability)
-        else:
-            return min(0.8, unique_companies / len(work_experience))
-
-    def _calculate_leadership_velocity(self, work_experience):
-        """Calculate how quickly candidate reached leadership roles"""
-        leadership_roles = [exp for exp in work_experience if exp['scope'] != 'individual_contributor']
-        
-        if not leadership_roles:
-            return 0  # No leadership experience
-        
-        # Find first leadership role
-        first_leadership_index = next((i for i, exp in enumerate(work_experience) 
-                                     if exp['scope'] != 'individual_contributor'), None)
-        
-        if first_leadership_index == 0:
-            return 1.0  # Started in leadership
-        elif first_leadership_index <= len(work_experience) * 0.3:
-            return 0.9  # Reached leadership quickly
-        elif first_leadership_index <= len(work_experience) * 0.6:
-            return 0.7  # Moderate pace to leadership
-        else:
-            return 0.4  # Slow to reach leadership
+    # =========================================================================
+    # EXISTING CAREER METRICS METHODS (UNCHANGED)
+    # =========================================================================
 
     def _get_tenure_years(self, experience):
         """Extract tenure years from duration string"""
