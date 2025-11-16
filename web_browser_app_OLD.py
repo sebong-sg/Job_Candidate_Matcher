@@ -1,7 +1,7 @@
-# 🚀 AI JOB MATCHER PRO - ENHANCED WITH GROWTH DATA
+# 🚀 AI JOB MATCHER PRO - CHROMA DB VERSION
 # Enterprise Recruitment Platform with AI-Powered Matching & Vector Database
 # Author: AI Assistant
-# Version: 3.3.0 - Growth Data Enhancement
+# Version: 3.2.0 - Job Management Update
 
 # Import required Python libraries
 from flask import Flask, render_template, request, jsonify
@@ -14,7 +14,7 @@ import subprocess
 sys.path.append(os.path.join(os.path.dirname(__file__), 'src'))
 
 # Print startup message
-print("🚀 Starting AI Job Matcher Pro with Growth Data Enhancement...")
+print("🚀 Starting AI Job Matcher Pro with Professional UI...")
 
 """
 AUTO-INSTALLATION SECTION
@@ -65,7 +65,6 @@ try:
     print("✅ All AI modules loaded successfully!")
     print("🎯 Chroma Vector Database: ACTIVE")
     print("📄 Job Description Parser: ACTIVE")
-    print("📈 Growth Data Analysis: ACTIVE")
     
 except ImportError as e:
     print(f"⚠️  Some modules not found: {e}")
@@ -122,7 +121,7 @@ except ImportError as e:
     vector_db = VectorDB()
 
 """
-FLASK APPLICATION SETUP - ENHANCED WITH GROWTH DATA
+FLASK APPLICATION SETUP - UPDATED FOR JOB MANAGEMENT
 """
 app = Flask(__name__)
 
@@ -133,7 +132,7 @@ email_service = EmailService()
 resume_parser = ResumeParser()
 job_parser = JobDescriptionParser()
 
-print("✅ All services initialized with growth data support!")
+print("✅ All services initialized!")
 
 """
 PROFESSIONAL UI ROUTES
@@ -227,12 +226,12 @@ def create_job():
         return jsonify({'success': False, 'error': str(e)}), 500
 
 """
-RESUME PARSING API ENDPOINTS - ENHANCED WITH GROWTH DATA
+RESUME PARSING API ENDPOINTS
 """
 
 @app.route('/api/parse-resume-file', methods=['POST'])
 def parse_resume_file():
-    """Parse resume file and extract candidate data WITH GROWTH DATA"""
+    """Parse resume file and extract candidate data"""
     try:
         if 'resume' not in request.files:
             return jsonify({'success': False, 'error': 'No file provided'}), 400
@@ -248,18 +247,14 @@ def parse_resume_file():
         else:
             content = file.read().decode('utf-8')
         
-        # ENHANCED: Use enhanced parser with growth data
-        parser = ResumeParser()
-        candidate_data = parser.parse_resume_to_candidate(
-            content, 
-            include_extensions=['core', 'career_timeline', 'skill_progression', 'growth_metrics']
-        )
-        print(f"✅ Resume parsed with growth data: {candidate_data['name']}")
+        # Parse the content
+        candidate_data = resume_parser.parse_resume_to_candidate(content)
+        print(f"✅ Resume parsed: {candidate_data['name']}")
              
-        # Save to database with growth data
+        # ADD THESE LINES TO SAVE TO DATABASE:
         candidate_id = db.add_candidate(candidate_data)
         if candidate_id:
-            print(f"✅ Candidate saved to DB with growth data (ID: {candidate_id})")
+            print(f"✅ Candidate saved to DB with ID: {candidate_id}")
         else:
             print("❌ Failed to save candidate to database")
         
@@ -271,18 +266,13 @@ def parse_resume_file():
 
 @app.route('/api/parse-resume', methods=['POST'])
 def parse_resume():
-    """Parse resume text and extract candidate data WITH GROWTH DATA"""
+    """Parse resume text and extract candidate data"""
     try:
         resume_text = request.json.get('resume_text', '')
-        print(f"📄 Parsing resume text with growth data ({len(resume_text)} characters)...")
+        print(f"📄 Parsing resume text ({len(resume_text)} characters)...")
         
-        # ENHANCED: Use enhanced parser with growth data
-        parser = ResumeParser()
-        candidate_data = parser.parse_resume_to_candidate(
-            resume_text,
-            include_extensions=['core', 'career_timeline', 'skill_progression', 'growth_metrics']
-        )
-        print(f"✅ Resume parsed with growth data: {candidate_data['name']}")
+        candidate_data = resume_parser.parse_resume_to_candidate(resume_text)
+        print(f"✅ Resume parsed: {candidate_data['name']}")
         
         return jsonify({'success': True, 'candidate_data': candidate_data})
     except Exception as e:
@@ -290,61 +280,7 @@ def parse_resume():
         return jsonify({'success': False, 'error': str(e)}), 500
 
 """
-GROWTH DATA API ENDPOINTS - NEW
-"""
-
-@app.route('/api/get-candidate-growth-data/<int:candidate_id>', methods=['GET'])
-def get_candidate_growth_data(candidate_id):
-    """Get detailed growth data for a specific candidate"""
-    try:
-        candidate = db.get_candidate_with_growth_data(candidate_id)
-        if candidate:
-            growth_data = {
-                'growth_metrics': candidate.get('growth_metrics', {}),
-                'career_metrics': candidate.get('career_metrics', {}),
-                'work_experience': candidate.get('work_experience', []),
-                'skill_timeline': candidate.get('skill_timeline', []),
-                'learning_velocity': candidate.get('learning_velocity', 0.0)
-            }
-            return jsonify({'success': True, 'growth_data': growth_data})
-        else:
-            return jsonify({'success': False, 'error': 'Candidate not found'}), 404
-    except Exception as e:
-        print(f"❌ Error getting growth data: {e}")
-        return jsonify({'success': False, 'error': str(e)}), 500
-
-@app.route('/api/get-high-growth-candidates', methods=['GET'])
-def get_high_growth_candidates():
-    """Get candidates with high growth potential"""
-    try:
-        min_score = request.args.get('min_score', 70, type=int)
-        candidates = db.get_candidates_by_growth_potential(min_score=min_score)
-        
-        # Return simplified candidate data for the list
-        simplified_candidates = []
-        for candidate in candidates:
-            growth_score = candidate.get('growth_metrics', {}).get('growth_potential_score', 0)
-            simplified_candidates.append({
-                'id': candidate['id'],
-                'name': candidate['name'],
-                'growth_score': growth_score,
-                'experience_years': candidate.get('experience_years', 0),
-                'skills': candidate.get('skills', [])[:5],  # Top 5 skills
-                'career_trajectory': candidate.get('career_metrics', {}).get('career_progression_slope', 0)
-            })
-        
-        return jsonify({
-            'success': True, 
-            'candidates': simplified_candidates,
-            'count': len(simplified_candidates),
-            'min_score': min_score
-        })
-    except Exception as e:
-        print(f"❌ Error getting high-growth candidates: {e}")
-        return jsonify({'success': False, 'error': str(e)}), 500
-
-"""
-DATA MANAGEMENT API ENDPOINTS - ENHANCED
+DATA MANAGEMENT API ENDPOINTS
 """
 
 @app.route('/api/health')
@@ -352,41 +288,34 @@ def health():
     """System health check endpoint"""
     return jsonify({
         'status': 'healthy',
-        'message': 'AI Job Matcher Pro with Growth Data Enhancement is running!',
-        'version': '3.3.0',
-        'features': ['Chroma DB', 'Job Parser', 'AI Matching', 'Professional UI', 'Growth Data Analysis']
+        'message': 'AI Job Matcher Pro with Professional UI is running!',
+        'version': '3.2.0',
+        'features': ['Chroma DB', 'Job Parser', 'AI Matching', 'Professional UI']
     })
 
 @app.route('/api/stats')
 def get_stats():
-    """Get system statistics and metrics - ENHANCED WITH GROWTH DATA"""
+    """Get system statistics and metrics"""
     try:
         jobs = db.load_jobs()
         candidates = db.load_candidates()
         vector_db_count = vector_db.get_candidate_count()
-        
-        # Enhanced stats with growth data
-        enhanced_stats = db.get_vector_db_stats()
         
         return jsonify({
             'total_jobs': len(jobs),
             'total_candidates': len(candidates),
             'vector_db_count': vector_db_count,
             'total_matches': len(jobs) * len(candidates),
-            'success_rate': 95,
-            # Enhanced growth metrics
-            'average_growth_potential': enhanced_stats.get('average_growth_potential', 0),
-            'high_growth_candidates': enhanced_stats.get('high_growth_candidates', 0),
-            'candidates_with_career_data': enhanced_stats.get('candidates_with_career_data', 0)
+            'success_rate': 95
         })
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
 @app.route('/api/run-matching', methods=['POST'])
 def run_matching():
-    """Run AI matching between jobs and candidates - WITH GROWTH DATA"""
+    """Run AI matching between jobs and candidates"""
     try:
-        print("🤖 Running AI matching with Chroma DB and growth data...")
+        print("🤖 Running AI matching with Chroma DB...")
         results, jobs, candidates = matcher.find_matches()
         
         matches = []
@@ -395,9 +324,6 @@ def run_matching():
                 job = jobs[job_index]
                 top_match = job_matches[0]
                 candidate = top_match['candidate']
-                
-                # ENHANCED: Include growth data in match results
-                growth_score = candidate.get('growth_metrics', {}).get('growth_potential_score', 0)
                 
                 matches.append({
                     'job_id': job['id'],
@@ -408,12 +334,11 @@ def run_matching():
                     'top_score': top_match['score'],
                     'common_skills': top_match.get('common_skills', [])[:5],
                     'score_breakdown': top_match.get('score_breakdown', {}),
-                    'cultural_breakdown': top_match.get('cultural_breakdown', {}),
-                    'growth_potential_score': growth_score,  # NEW: Growth score
+                    'cultural_breakdown': top_match.get('cultural_breakdown', {}),  # ADD THIS LINE
                     'match_grade': top_match.get('match_grade', 'A')
                 })
         
-        print(f"✅ Found {len(matches)} matches using Chroma DB with growth data")
+        print(f"✅ Found {len(matches)} matches using Chroma DB")
         return jsonify({'matches': matches})
         
     except Exception as e:
@@ -422,7 +347,7 @@ def run_matching():
 
 @app.route('/api/get-candidates')
 def get_candidates():
-    """Get all candidates from Chroma DB - NOW WITH GROWTH DATA"""
+    """Get all candidates from Chroma DB"""
     try:
         candidates = db.load_candidates()
         return jsonify({'candidates': candidates})
@@ -440,16 +365,13 @@ def get_jobs():
 
 @app.route('/api/vector-db-stats')
 def get_vector_db_stats():
-    """Get Chroma DB statistics - ENHANCED WITH GROWTH METRICS"""
+    """Get Chroma DB statistics"""
     try:
         stats = db.get_vector_db_stats()
         return jsonify({
             'candidates_in_vector_db': stats['candidates_in_vector_db'],
             'candidates_in_json': 0,  # Removed JSON dependency
             'jobs_count': stats['jobs_count'],
-            'average_growth_potential': stats.get('average_growth_potential', 0),
-            'high_growth_candidates': stats.get('high_growth_candidates', 0),
-            'candidates_with_career_data': stats.get('candidates_with_career_data', 0),
             'status': 'active'
         })
     except Exception as e:
@@ -457,9 +379,9 @@ def get_vector_db_stats():
 
 @app.route('/api/reinitialize-vector-db', methods=['POST'])
 def reinitialize_vector_db():
-    """Reinitialize vector database - WITH GROWTH DATA"""
+    """Reinitialize vector database"""
     try:
-        print("🔄 Reinitializing Vector Database with growth data...")
+        print("🔄 Reinitializing Vector Database...")
         # Clear and reinitialize
         vector_db.clear_candidates()
         candidates = db.load_candidates()
@@ -467,7 +389,7 @@ def reinitialize_vector_db():
         
         return jsonify({
             'status': 'success',
-            'message': 'Vector database reinitialized successfully with growth data',
+            'message': 'Vector database reinitialized successfully',
             'candidates_loaded': len(candidates)
         })
     except Exception as e:
@@ -543,23 +465,21 @@ HTML_TEMPLATE = '''
 '''
 
 """
-APPLICATION STARTUP - ENHANCED
+APPLICATION STARTUP
 """
 if __name__ == '__main__':
-    print("🚀 AI Job Matcher Pro - Growth Data Enhancement")
+    print("🚀 AI Job Matcher Pro - Professional UI")
     print("=" * 70)
     print("✅ All systems initialized and ready!")
     print("🎯 Professional UI: ACTIVE")
     print("🗃️ Chroma Vector Database: ACTIVE")
     print("📄 Job Description Parser: ACTIVE")
-    print("📈 Growth Data Analysis: ACTIVE")
     print("")
     print("🎯 ENTERPRISE FEATURES:")
     print("   • 🎨 Professional enterprise dashboard")
     print("   • 🤖 Chroma DB for instant semantic search") 
     print("   • 📄 AI-powered job description parsing")
     print("   • 👥 Smart candidate management")
-    print("   • 📈 Growth potential analysis")
     print("   • 🚀 Scalable to thousands of records")
     print("")
     print("📍 Access Points:")
