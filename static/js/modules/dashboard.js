@@ -227,6 +227,12 @@ class DashboardModule {
                                     (Vertical: ${(match.growth_breakdown.vertical_growth * 100).toFixed(0)}%, 
                                     Scope: ${(match.growth_breakdown.scope_growth * 100).toFixed(0)}%, 
                                     Impact: ${(match.growth_breakdown.impact_growth * 100).toFixed(0)}%)
+                                    Adaptability: ${(match.growth_breakdown.adaptability * 100).toFixed(0)}%,
+                                    Leadership: ${(match.growth_breakdown.leadership_velocity * 100).toFixed(0)}%,
+                                    Archetype: ${match.growth_breakdown.career_archetype},
+                                    Stage: ${match.growth_breakdown.career_stage},
+                                    Executive: ${(match.growth_breakdown.executive_potential * 100).toFixed(0)}%,
+                                    Mobility: ${(match.growth_breakdown.strategic_mobility * 100).toFixed(0)}%
                                 </small>
                             </div>
                             ` : ''}

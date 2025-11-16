@@ -106,7 +106,12 @@ class ChromaDataManager:
         
         for field, default_value in growth_fields.items():
             if field not in candidate_data:
+                print(f"   ⚠️  Field missing: {field} - setting default")                
                 candidate_data[field] = default_value
+            else:
+                print(f"   ✅ Field exists: {field} = {candidate_data[field]}")
+
+        print(f"🔍 DEBUG: Final growth_metrics: {candidate_data.get('growth_metrics')}")        
     
     def add_candidates_batch(self, candidates_data):
         """Add multiple candidates to Chroma DB - ENHANCED WITH GROWTH DATA"""

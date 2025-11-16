@@ -549,7 +549,11 @@ class ResumeParser:
             "education": parsed_data['education'],
             "work_experience": parsed_data['work_experience'],
             "cultural_attributes": parsed_data['cultural_attributes'],
-            "extraction_method": parsed_data.get('extraction_method_used', 'unknown')
+            "extraction_method": parsed_data.get('extraction_method_used', 'unknown'),
+            # ADD THESE GROWTH DATA FIELDS:
+            "growth_metrics": parsed_data.get('growth_metrics', {}),
+            "career_metrics": parsed_data.get('career_metrics', {}),
+            "learning_velocity": parsed_data.get('learning_velocity', 0.0)            
         }
         
         # 🐛 DEBUG: Check if ID field exists (it shouldn't!)
