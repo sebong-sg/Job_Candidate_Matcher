@@ -1,0 +1,103 @@
+.
+├── ./.vscode
+├── ./Troubleshoot Kits
+│   ├── ./Troubleshoot Kits/calculate_all_matches.py
+│   ├── ./Troubleshoot Kits/calculate_all_scores.py
+│   ├── ./Troubleshoot Kits/calculate_cultural_fit.py
+│   ├── ./Troubleshoot Kits/calculate_real_fit.py
+│   ├── ./Troubleshoot Kits/check_all_candidates.py
+│   ├── ./Troubleshoot Kits/check_candidate_exist.py
+│   ├── ./Troubleshoot Kits/check_db_health.py
+│   ├── ./Troubleshoot Kits/check_job_exist.py
+│   ├── ./Troubleshoot Kits/check_peter_18.py
+│   ├── ./Troubleshoot Kits/check_vector_data.py
+│   ├── ./Troubleshoot Kits/cultural_fit_calculation.py
+│   ├── ./Troubleshoot Kits/debug_candidate_score.py
+│   ├── ./Troubleshoot Kits/debug_cultural.py
+│   ├── ./Troubleshoot Kits/debug_job_loading.py
+│   ├── ./Troubleshoot Kits/debug_load_jobs_detailed.py
+│   ├── ./Troubleshoot Kits/debug_peter_7.py
+│   ├── ./Troubleshoot Kits/debug_saving_process.py
+│   ├── ./Troubleshoot Kits/delete_candidate.py
+│   ├── ./Troubleshoot Kits/examine_peter_tan.py
+│   ├── ./Troubleshoot Kits/find_real_peter.py
+│   ├── ./Troubleshoot Kits/reload_peter_tan.py
+│   ├── ./Troubleshoot Kits/restore_jobs_with_cultural.py
+│   ├── ./Troubleshoot Kits/show_all_scores.py
+│   ├── ./Troubleshoot Kits/show_detailed_breakdown.py
+│   ├── ./Troubleshoot Kits/test_cultural_extraction.py
+│   ├── ./Troubleshoot Kits/test_fix.py
+│   ├── ./Troubleshoot Kits/test_job_loading.py
+│   ├── ./Troubleshoot Kits/trace_cultural_scores.py
+│   └── ./Troubleshoot Kits/verify_fix.py
+├── ./analytics_report.py
+├── ./chroma_data_manager.py
+├── ./chroma_data_manager_OLD.py
+├── ./chroma_db
+│   ├── ./chroma_db/401b2ac5-0f43-4527-b475-71231bb789ee
+│   ├── ./chroma_db/5b57cc25-deae-40cf-b69b-3ec9329e5e03
+│   └── ./chroma_db/c60a4a27-2da4-4938-937c-2bb139630ad9
+├── ./demo.py
+├── ./doc
+├── ./preview_delete_candidates.py
+├── ./preview_delete_jobs.py
+├── ./profile_analyzer.py
+├── ./semantic_matcher.py
+├── ./src
+│   ├── ./src/database.py
+│   ├── ./src/email_service.py
+│   ├── ./src/enhanced_cultural_extractor.py
+│   ├── ./src/enhanced_cultural_extractor_OLD.py
+│   ├── ./src/job_parser.py
+│   ├── ./src/matcher.py
+│   ├── ./src/resume_parser.py
+│   ├── ./src/resume_parser_V0.1.py
+│   ├── ./src/resume_parser_V0.2.py
+│   ├── ./src/resume_parser_problem.py
+│   └── ./src/sample_data.py
+├── ./static
+│   ├── ./static/css
+│   │   ├── ./static/css/components
+│   │   │   ├── ./static/css/components/candidates.css
+│   │   │   ├── ./static/css/components/cards.css
+│   │   │   ├── ./static/css/components/dashboard.css
+│   │   │   ├── ./static/css/components/file-upload.css
+│   │   │   ├── ./static/css/components/icons.css
+│   │   │   ├── ./static/css/components/jobs.css
+│   │   │   ├── ./static/css/components/matching.css
+│   │   │   ├── ./static/css/components/modals.css
+│   │   │   ├── ./static/css/components/navigation.css
+│   │   │   └── ./static/css/components/tables.css
+│   │   ├── ./static/css/main.css
+│   │   └── ./static/css/utils.css
+│   └── ./static/js
+│       ├── ./static/js/app.js
+│       ├── ./static/js/modules
+│       │   ├── ./static/js/modules/candidates.js
+│       │   ├── ./static/js/modules/charts.js
+│       │   ├── ./static/js/modules/dashboard.js
+│       │   ├── ./static/js/modules/file-upload.js
+│       │   ├── ./static/js/modules/job-modal.js
+│       │   ├── ./static/js/modules/jobs.js
+│       │   └── ./static/js/modules/matching.js
+│       └── ./static/js/utils
+│           ├── ./static/js/utils/api.js
+│           ├── ./static/js/utils/formatters.js
+│           └── ./static/js/utils/ui.js
+├── ./templates
+│   ├── ./templates/base.html
+│   ├── ./templates/candidates.html
+│   ├── ./templates/dashboard.html
+│   ├── ./templates/jobs.html
+│   ├── ./templates/matching.html
+│   └── ./templates/partials
+│       ├── ./templates/partials/header.html
+│       ├── ./templates/partials/icons.html
+│       └── ./templates/partials/sidebar.html
+├── ./validate_candidate.py
+├── ./vector_db.py
+├── ./vector_db_OLD.py
+├── ./web_browser_app.py
+└── ./web_browser_app_OLD.py
+
+17 directories, 84 files

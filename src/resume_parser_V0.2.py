@@ -7,6 +7,7 @@ from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 import json
 import requests
+import os  
 from typing import Dict, List, Any
 
 import torch
@@ -38,9 +39,12 @@ class ResumeParser:
         self.extraction_method = 'pattern'
         self.transformer_model = None  # Never load transformer
         
-        # Groq API Configuration
-        self.groq_api_key = "gsk_my_GROQ_API_Key"  # REPLACE WITH YOUR GROQ API KEY
+        # SECURE API Configuration - using environment variable
+        self.groq_api_key = os.getenv("GROQ_API_KEY")  # No hardcoded key!
         self.groq_url = "https://api.groq.com/openai/v1/chat/completions"
+        
+        if not self.groq_api_key:
+            print("⚠️  GROQ_API_KEY environment variable not set - AI features will use fallback")
         
         # Enhanced role scope levels
         self.SCOPE_LEVELS = {
@@ -394,7 +398,28 @@ class ResumeParser:
                     'method': 'pattern'
                 })
                 print(f"   ✅ Pattern5 matched: {role_title} at {company}")
-        
+
+        # =========================================================================
+        # PATTERN 6: Marcus Johnson's Format - Role | Company | Location | Duration
+        # Example: "Senior DevOps Engineer | VelocityTech | Remote | 2019-Present"
+        # =========================================================================
+        pattern6 = r'^(.+?)\s*\|\s*(.+?)\s*\|\s*(.+?)\s*\|\s*(\d{4}\s*[-–]\s*(?:Present|\d{4}))'
+        matches6 = re.finditer(pattern6, text, re.MULTILINE | re.IGNORECASE)
+        for match in matches6:
+            role_title = match.group(1).strip()
+            company = match.group(2).strip()
+            duration = match.group(4).strip()
+    
+            if self._is_valid_company_role(role_title, company):
+                work_experience.append({
+                'role_title': role_title,
+                'company': company,
+                'duration': duration,
+                'confidence': 0.9,
+                'method': 'pattern'
+                })
+                print(f"   ✅ Pattern6 matched: {role_title} at {company}")
+
         # =========================================================================
         # PATTERN 1: Douglas Lim's Format - Role (Duration)\nCompany
         # Example: "Chief Technology Officer (2018 – Present)\nGlobal Fintech Solutions"
@@ -545,7 +570,11 @@ class ResumeParser:
             "education": parsed_data['education'],
             "work_experience": parsed_data['work_experience'],
             "cultural_attributes": parsed_data['cultural_attributes'],
-            "extraction_method": parsed_data.get('extraction_method_used', 'unknown')
+            "extraction_method": parsed_data.get('extraction_method_used', 'unknown'),
+            # ADD THESE GROWTH DATA FIELDS:
+            "growth_metrics": parsed_data.get('growth_metrics', {}),
+            "career_metrics": parsed_data.get('career_metrics', {}),
+            "learning_velocity": parsed_data.get('learning_velocity', 0.0)            
         }
         
         # 🐛 DEBUG: Check if ID field exists (it shouldn't!)
@@ -605,9 +634,9 @@ class ResumeParser:
     def _call_groq_api(self, prompt):
         """Call Groq API with enhanced error handling"""
         # Check if API key is properly configured
-        if not self.groq_api_key or self.groq_api_key.startswith("gsk_your-key-here"):
-            print("   ⚠️  Groq API key not configured - using fallback analysis")
-            raise ValueError("API key not configured")
+        if not self.groq_api_key:
+            print("   ⚠️  GROQ_API_KEY not set in environment - using fallback analysis")
+            raise ValueError("GROQ_API_KEY environment variable not configured")
     
         headers = {
             "Authorization": f"Bearer {self.groq_api_key}",
@@ -695,7 +724,7 @@ class ResumeParser:
     def _get_default_ai_assessment(self):
         """Default assessment for no work experience"""
         return {
-            "career_archetype": "early_career",
+            "career_archetype": "Career_Starter",
             "scope_progression": [],
             "impact_scale": [],
             "strategic_mobility_score": 0.5,
@@ -723,12 +752,25 @@ class ResumeParser:
     def _calculate_growth_metrics(self, work_experience):
         """Enhanced growth metrics with AI career assessment"""
         if not work_experience or len(work_experience) < 2:
-            print("   ⚠️  Insufficient work experience for growth calculation")
+            print("   ⚠️  No work experience for growth calculation")
             return self._get_empty_growth_metrics()
-        
-        # Get AI career assessment
-        print("   🤖 Analyzing career progression with AI...")
-        ai_assessment = self.analyze_career_with_ai(work_experience)
+
+        # FIX: Calculate actual experience years instead of just counting roles
+        estimated_years = self._estimate_experience_from_career(work_experience)
+
+        # FIX: Use experience years instead of role count for sufficiency check
+        if estimated_years < 2:
+            print(f"   ⚠️  Limited experience ({estimated_years} years) for detailed growth analysis")
+            return self._get_empty_growth_metrics()
+    
+        elif estimated_years < 4:
+            print(f"   📊 Basic growth analysis for {estimated_years} years experience")
+            return self._get_basic_growth_metrics(work_experience, estimated_years)
+    
+        else:
+            # Get AI career assessment
+            print("   🤖 Analyzing career progression with AI...")
+            ai_assessment = self.analyze_career_with_ai(work_experience)
         
         # FIX: Reverse work experience to get chronological order (oldest first)
         chronological_experience = list(reversed(work_experience))
@@ -904,7 +946,7 @@ class ResumeParser:
                 'adaptability': 0.0,
                 'leadership_velocity': 0.0
             },
-            "career_archetype": "early_career",
+            "career_archetype": "Career_Starter",
             "career_stage": "early_career",
             "executive_potential": 0.0,
             "strategic_mobility": 0.0,
@@ -983,6 +1025,39 @@ class ResumeParser:
         print(f"   🚀 Learning Velocity: {velocity:.1f} (skills: {skills_count}, exp: {experience_years} years)")
         
         return velocity
+
+    def _get_basic_growth_metrics(self, work_experience, experience_years):
+        """Basic growth metrics for candidates with 2-4 years experience"""
+        max_role_level = max(exp.get('role_level', 1) for exp in work_experience)
+    
+        # Determine appropriate archetype based on role progression
+        if max_role_level >= 3:  # Senior or leadership roles
+            career_archetype = "growth_track_ic"
+            career_stage = "mid_career"
+        else:
+            career_archetype = "career_starter" 
+            career_stage = "early_career"
+    
+        # Calculate basic growth scores based on experience
+        base_score = min(experience_years * 20, 60)  # Scale with experience
+    
+        return {
+            'growth_potential_score': base_score,
+            'growth_dimensions': {
+                'vertical_growth': min(max_role_level / 4.0, 0.6),
+                'scope_growth': 0.4,
+                'impact_growth': 0.3,
+                'adaptability': 0.5,
+                'leadership_velocity': 0.2 if max_role_level >= 2 else 0.1
+            },
+            'career_archetype': career_archetype,
+            'career_stage': career_stage,
+            'executive_potential': 0.1,
+            'strategic_mobility': 0.3,
+            'analysis_rationale': f"Early-mid career professional with {experience_years} years experience",
+            'promotion_velocity': 0,
+            'max_role_level': max_role_level
+        }
 
 def main():
     """Test the enhanced resume parser with different methods"""

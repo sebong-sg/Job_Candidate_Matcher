@@ -147,8 +147,31 @@ body {
     z-index: 1000;
     box-shadow: var(--shadow-md);
     border: 1px solid var(--gray-200);
-    line-height: 1.4;
+    line-height: 1.1; /* Reduced from 1.4 */
+    white-space: pre-line; /* Add this for line breaks */
+    text-align: left; /* Ensure left alignment */
 }
+
+/* Bullet point styling for tooltips */
+.tooltip ul {
+    margin: 0; /* Reduced margin */
+    padding-left: var(--space-4);
+    list-style-type: disc;
+}
+
+.tooltip li {
+    margin-bottom: 0; /* Minimal space between bullets */
+    padding: 0; /* Remove all padding */
+    line-height: 1.2; /* Match tooltip line height */
+}
+
+/* Alternative: If using plain text with bullet characters */
+.tooltip.with-bullets {
+    white-space: pre-line;
+    padding: 0; /* Remove all padding */
+    line-height: 1;
+}
+
 
 .info-icon-container:hover .tooltip {
     display: block;
