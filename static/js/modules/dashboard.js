@@ -187,7 +187,7 @@ class DashboardModule {
                                               <circle cx="12" cy="8" r="1"/>
                                             </svg>
                                         </span>
-                                        <div class="tooltip">"Hybrid scoring: 70% keyword matching (teamwork, innovation, work environment, work pace, customer focus) + 30% semantic analysis of cultural context."</div>
+                                        <div class="tooltip">"Hybrid weighted scoring: 70% keyword matching (teamwork, innovation, work environment, work pace, customer focus) + 30% semantic analysis of cultural context."</div>
                                     </span>                                
                                 </span>
                                 <span>${breakdown.cultural_fit || 0}%</span>
@@ -216,7 +216,20 @@ class DashboardModule {
                                                     <circle cx="12" cy="8" r="1"/>
                                                 </svg>
                                             </span>
-                                            <div class="tooltip">"AI-powered career progression analysis measuring: Vertical Growth (role progression), Scope Growth (responsibility expansion), Impact Growth (business influence), Adaptability (company changes), Leadership Velocity (time to leadership), and Strategic Mobility (career transitions)."</div>
+                                            <div class="tooltip">
+                                            AI-powered career progression analysis measuring:
+                                            <ul>
+                                            <li><strong>Vertical Growth:</strong> Role Progression</li>
+                                            <li><strong>Scope Growth:</strong> Responsibility Expansion</li>
+                                            <li><strong>Impact Growth:</strong> Business Influence</li>
+                                            <li><strong>Adaptability:</strong> Transition Ability</li>
+                                            <li><strong>Leadership Velocity:</strong> Time to Leadership</li>
+                                            <li><strong>Strategic Mobility:</strong> Career Transitions</li>
+                                            <li><strong>Executive:</strong> Executive Potential</li>
+                                            <li><strong>Archetype:</strong> Job Role Pattern</li>
+                                            <li><strong>Stage:</strong> Career Stage</li>
+                                            </ul>
+                                            </div>                                          
                                         </span>
                                     </span>
                                     <span>${match.growth_potential_score ? Math.round(match.growth_potential_score) + '%' : '0%'}</span>                            
@@ -229,10 +242,10 @@ class DashboardModule {
                                     Impact: ${(match.growth_breakdown.impact_growth * 100).toFixed(0)}%)
                                     Adaptability: ${(match.growth_breakdown.adaptability * 100).toFixed(0)}%,
                                     Leadership: ${(match.growth_breakdown.leadership_velocity * 100).toFixed(0)}%,
-                                    Archetype: ${match.growth_breakdown.career_archetype},
-                                    Stage: ${match.growth_breakdown.career_stage},
+                                    Mobility: ${(match.growth_breakdown.strategic_mobility * 100).toFixed(0)}%,
                                     Executive: ${(match.growth_breakdown.executive_potential * 100).toFixed(0)}%,
-                                    Mobility: ${(match.growth_breakdown.strategic_mobility * 100).toFixed(0)}%
+                                    Archetype: ${match.growth_breakdown.career_archetype},
+                                    Stage: ${match.growth_breakdown.career_stage}
                                 </small>
                             </div>
                             ` : ''}
