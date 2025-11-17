@@ -145,7 +145,27 @@ PROFESSIONAL UI ROUTES
 """
 
 @app.route('/')
-def home():
+def index():
+    return render_template('index.html')
+
+@app.route('/vision')
+def vision():
+    """Company Vision page"""
+    return render_template('vision.html')
+
+@app.route('/mission') 
+def mission():
+    """Company Mission page"""
+    return render_template('mission.html')
+
+@app.route('/story')
+def story():
+    """Company Story page"""
+    return render_template('story.html')
+
+
+@app.route('/dashboard')
+def dashboard():
     """Main dashboard with professional UI"""
     return render_template('dashboard.html')
 

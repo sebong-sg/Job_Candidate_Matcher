@@ -4,26 +4,8 @@
             <path d="M3 12h18M3 6h18M3 18h18"/>
         </svg>
     </button>
-    
-    <!-- Navigation Links -->
-    <div class="header__nav">
-        <!-- About Dropdown -->
-        <div class="header__dropdown">
-            <a href="#" class="header__nav-link header__nav-link--dropdown">
-                About
-                <svg class="icon icon--chevron" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M6 9l6 6 6-6"/>
-                </svg>
-            </a>
-            <div class="header__dropdown-menu">
-                <a href="{{ url_for('vision') }}" class="header__dropdown-item">Our Vision</a>
-                <a href="{{ url_for('mission') }}" class="header__dropdown-item">Our Mission</a>
-                <a href="{{ url_for('story') }}" class="header__dropdown-item">Our Story</a>
-            </div>
-        </div>
-    </div>
-    
- </div>
+    <h1 class="header__title">{% block page_title %}Home{% endblock %}</h1>
+</div>
 
 <div class="header__right">
     <div class="header__actions">
