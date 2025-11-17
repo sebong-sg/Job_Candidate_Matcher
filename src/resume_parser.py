@@ -751,7 +751,7 @@ class ResumeParser:
 
     def _calculate_growth_metrics(self, work_experience):
         """Enhanced growth metrics with AI career assessment"""
-        if not work_experience or len(work_experience) < 2:
+        if not work_experience:
             print("   ⚠️  No work experience for growth calculation")
             return self._get_empty_growth_metrics()
 
