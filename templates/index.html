@@ -1,112 +1,226 @@
 {% extends "base.html" %}
 
-{% block title %}AlignMatch - AI-Powered Talent Intelligence Platform{% endblock %}
-
-{% block content %}
+{% block landing_content %}
 <div class="landing-container">
-    <!-- Block 1: Main Brand & Heading -->
-    <div class="landing-hero">
-        <div class="hero-content">
-            <h1 class="hero-title">AlignMatch</h1>
-            <p class="hero-subtitle">AI-Powered Talent Intelligence Platform</p>
-            <h2 class="hero-headline">Transform Recruitment with Intelligent Matching</h2>
-            <p class="hero-description">Beyond capability & experience: match for culture, career trajectory and alignment</p>
+    <!-- Top Navigation -->
+    <header class="top-navigation">
+        <div class="nav-container">
+            <div class="logo">
+                <img src="{{ url_for('static', filename='images/AlignMatch_Logo.jpg') }}" alt="AlignMatch" class="nav-logo">
+            </div>
+            <nav class="nav-menu">
+                <div class="nav-dropdown">
+                    <a href="#vision" class="nav-item">About US ▾</a>
+                    <div class="dropdown-content">
+                        <a href="#vision" class="nav-item">Vision</a>
+                     <a href="#mission" class="nav-item">Mission</a>
+                        <a href="#story" class="nav-item">Our Story</a>
+                    </div>
+                </div>
+                <a href="#features" class="nav-item">Features</a>
+                <a href="#services" class="nav-item">Service</a>
+                <a href="#contact" class="nav-item">Contact Us</a>
+            </nav>
+            <nav class="nav-menu-secondary">
+                <a href="#book" class="nav-item">Book Online</a>
+                <a href="#blog" class="nav-item">Blog</a>
+            </nav>
         </div>
-    </div>
+    </header>
 
-    <!-- Block 2: Three Value Proposition Blocks Side by Side -->
-    <div class="landing-section">
-        <div class="features-grid">
-            <!-- Value Prop 1 -->
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M9 3V5M15 3V5M9 19V21M15 19V21M5 9H3M5 15H3M21 9H19M21 15H19M7 19H17C18.1046 19 19 18.1046 19 17V7C19 5.89543 18.1046 5 17 5H7C5.89543 5 5 5.89543 5 7V17C5 18.1046 5.89543 19 7 19ZM9 9H15V15H9V9Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                </div>
-                <h3 class="feature-title">Multi-Agent AI</h3>
-                <p class="feature-description">Profile, Job, Matching & Learning Agents working together</p>
+    <!-- Main Banner Section -->
+    <section class="main-banner">
+        <div class="banner-content">
+            <div class="banner-left">
+                <h1 class="banner-title">AlignMatch</h1>
+                <p class="banner-subtitle">Redefining fit in the age of AI!</p>
             </div>
-
-            <!-- Value Prop 2 -->
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
+            <div class="banner-right">
+                <p class="banner-description">Empower Your Global Talent Search with AI-Driven Solutions</p>
+                <div class="banner-actions">
+                    <a href="/dashboard" class="cta-button">Start Matching Today</a>
                 </div>
-                <h3 class="feature-title">3 Matching Methods</h3>
-                <p class="feature-description">Semantic+Skills, Skills-Based, and Adaptive Hybrid algorithms</p>
-            </div>
-
-            <!-- Value Prop 3 -->
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M8 12H16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M12 8V16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                </div>
-                <h3 class="feature-title">Global Talent Access</h3>
-                <p class="feature-description">Instant market entry without local recruiter overhead</p>
             </div>
         </div>
-    </div>
+    </section>
 
-    <!-- Block 3: Features Header -->
-    <div class="landing-section">
-        <div class="section-header">
-            <h2 class="section-title">Enterprise-Grade Features</h2>
-            <p class="section-subtitle">Designed for modern HR teams and strategic talent acquisition</p>
-        </div>
-    </div>
-
-    <!-- Block 4: Three Feature Blocks Side by Side -->
-    <div class="landing-section">
-        <div class="features-grid">
-            <!-- Feature 1 -->
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M7 20L11 16M11 16C11 14.3431 9.65685 13 8 13H3M11 16V21M17 20L13 16M13 16C13 14.3431 14.3431 13 16 13H21M13 16V21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
+    <!-- Vision Section -->
+    <section class="vision-section" id="vision">
+        <div class="vision-container">
+            <!-- Top row: Image and Vision title side by side -->
+            <div class="vision-header">
+                <div class="vision-image">
+                    <img src="{{ url_for('static', filename='images/WorkWithUs.jpg') }}" alt="Vision - Diverse Team Collaboration" class="vision-picture">
                 </div>
-                <h3 class="feature-title">Growth Potential</h3>
-                <p class="feature-description">Identify candidates with high vertical growth and leadership velocity</p>
+                <div class="vision-title-content">
+                    <h2 class="section-title">Our Vision</h2>
+                    <p class="vision-text">To build the world's largest platform connecting individuals with opportunity, creating a future where talent has no borders.</p>
+                </div>
             </div>
-
-            <!-- Feature 2 -->
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M17 21V19C17 17.9391 16.5786 16.9217 15.8284 16.1716C15.0783 15.4214 14.0609 15 13 15H11C9.93913 15 8.92172 15.4214 8.17157 16.1716C7.42143 16.9217 7 17.9391 7 19V21M16 7C16 9.20914 14.2091 11 12 11C9.79086 11 8 9.20914 8 7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                </div>
-                <h3 class="feature-title">AI + Human Hybrid</h3>
-                <p class="feature-description">AI efficiency with human oversight for bias detection</p>
+        
+           <!-- Second row: Shaping the Future subtitle -->
+            <div class="vision-subtitle-row">
+                <h3 class="vision-subtitle">Shaping the Future of Talent Intelligence</h3>
+                <p class="vision-description">At AlignMatch, we envision a world where talent discovery is driven by intelligence, not just intuition. Where every career opportunity aligns perfectly with individual potential, and organizations build teams that thrive through strategic talent alignment.</p>
             </div>
-
-            <!-- Feature 3 -->
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M9 12L11 14L15 10M12 3C13.2841 3 14.5598 3.21167 15.7716 3.62588C16.9834 4.04009 18.1137 4.65063 19.1144 5.43114C20.115 6.21165 20.9708 7.15044 21.6442 8.20473C22.3175 9.25902 22.7986 10.4124 23.066 11.6124C23.3334 12.8124 23.3838 14.0408 23.215 15.2503C23.0462 16.4598 22.6609 17.632 22.0762 18.7118C21.4915 19.7916 20.7163 20.7621 19.7866 21.5776C18.8569 22.3931 17.7874 23.0411 16.6299 23.4916C15.4724 23.9421 14.2453 24.1881 13.005 24.2188C11.7647 24.2495 10.5306 24.0644 9.355 23.6723M12 3C10.7159 3 9.44016 3.21167 8.22836 3.62588C7.01656 4.04009 5.88627 4.65063 4.88562 5.43114C3.88496 6.21165 3.02918 7.15044 2.35584 8.20473C1.6825 9.25902 1.20135 10.4124 0.933982 11.6124C0.666614 12.8124 0.616203 14.0408 0.785 15.2503C0.953797 16.4598 1.33906 17.632 1.92377 18.7118C2.50848 19.7916 3.28366 20.7621 4.21336 21.5776C5.14306 22.3931 6.21263 23.0411 7.37012 23.4916C8.52761 23.9421 9.75466 24.1881 10.995 24.2188C12.2353 24.2495 13.4694 24.0644 14.645 23.6723" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
+        
+            <!-- Third row: Three vision points -->
+            <div class="vision-points">
+                <div class="vision-point">
+                    <h4>Intelligent Matching</h4>
+                    <p>Transforming recruitment from keyword matching to potential discovery through advanced AI and growth analysis.</p>
                 </div>
-                <h3 class="feature-title">Career Intelligence</h3>
-                <p class="feature-description">Lifelong career management and strategic hiring simulation</p>
+                <div class="vision-point">
+                    <h4>Global Talent Access</h4>
+                    <p>Breaking down geographical barriers to connect exceptional talent with world-changing opportunities.</p>
+                </div>
+                <div class="vision-point">
+                    <h4>Lifelong Career Growth</h4>
+                    <p>Creating ecosystems where careers evolve strategically, and talent development is continuous and meaningful.</p>
+                </div>
             </div>
         </div>
-    </div>
+    </section>
 
-    <!-- CTA Button -->
-    <div class="landing-section">
-        <div class="cta-container">
-            <a href="/dashboard" class="cta-button">Start Matching Today</a>
+
+    
+    <!-- Mission Section -->
+    <section class="mission-section" id="mission">
+        <div class="mission-container">
+            <div class="mission-content">
+                <h2 class="section-title">Our Mission</h2>
+                <h3 class="mission-subtitle">Transform Talent Discovery</h3>
+                <p class="mission-description">AlignMatch exists to revolutionize how organizations discover and connect with talent. We bridge the gap between human potential and organizational needs through intelligent, AI-powered matching that goes beyond skills to uncover true growth potential.</p>
+                
+                <div class="mission-objectives">
+                    <div class="objective">
+                        <h4>For Organizations</h4>
+                        <p>Reduce hiring costs by 60% while improving candidate quality and cultural fit through our multi-agent AI architecture.</p>
+                    </div>
+                    <div class="objective">
+                        <h4>For Candidates</h4>
+                        <p>Provide career opportunities that align with growth potential, leadership trajectory, and personal aspirations.</p>
+                    </div>
+                    <div class="objective">
+                        <h4>For the Industry</h4>
+                        <p>Set new standards in ethical AI recruitment, bias mitigation, and transparent talent matching processes.</p>
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
+    </section>
+
+    <!-- Story Section -->
+    <section class="story-section" id="story">
+        <div class="story-container">
+            <div class="story-content">
+                <h2 class="section-title">Our Story</h2>
+                <h3 class="story-subtitle">From Vision to Reality</h3>
+                <p class="story-intro">AlignMatch was born from a simple observation: the recruitment industry was stuck in the past. While technology advanced around us, talent matching remained largely unchanged - relying on keywords, resumes, and gut feelings rather than data-driven intelligence.</p>
+                
+                <div class="story-timeline">
+                    <div class="timeline-item">
+                        <h4>2023: The Insight</h4>
+                        <p>Our founders, seasoned HR technology experts, recognized that traditional recruitment methods were missing 80% of qualified candidates due to rigid keyword matching and lack of growth potential analysis.</p>
+                    </div>
+                    <div class="timeline-item">
+                        <h4>2024: The Breakthrough</h4>
+                        <p>We developed the multi-agent AI architecture that forms the core of AlignMatch - combining semantic understanding, growth analysis, and cultural fit assessment in ways never before possible.</p>
+                    </div>
+                    <div class="timeline-item">
+                        <h4>2025: The Launch</h4>
+                        <p>After extensive testing and validation with enterprise partners, AlignMatch launched to transform how organizations discover talent and how professionals find meaningful career opportunities.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Platform Section -->
+    <section class="platform-section" id="features">
+        <div class="platform-container">
+            <div class="platform-content">
+                <h2 class="section-title">Why <span class="highlight">AlignMatch</span> Platform</h2>
+                <p class="platform-subtitle">AI-Powered Talent Intelligence</p>
+                <p class="platform-description">"Reduce hiring costs by 60% while discovering candidates with untapped growth potential, not just current skills."</p>
+            
+                <div class="features-grid">
+                    <div class="feature-item">
+                        <h4>Multi-Agent AI Architecture</h4>
+                        <p>Intelligent agents work in concert to analyze candidates holistically - understanding career trajectory, cultural fit, and future potential beyond resume keywords.</p>
+                    </div>
+                
+                    <div class="feature-item">
+                        <h4>3 Matching Algorithms</h4>
+                        <p>Choose the right approach for each role: Semantic+Skills for comprehensive matching, Skills-Based for technical validation, or Adaptive Hybrid that learns from your hiring success.</p>
+                    </div>
+                
+                    <div class="feature-item">
+                        <h4>Global Talent Access</h4>
+                        <p>Instant market entry to worldwide talent pools without local recruiter overhead - access the best candidates regardless of geography.</p>
+                    </div>
+                
+                    <div class="feature-item">
+                        <h4>Growth Potential Analysis</h4>
+                        <p>Identify candidates with high leadership velocity and strategic mobility - build teams that grow with your organization, not just fill immediate needs.</p>
+                    </div>
+                
+                    <div class="feature-item">
+                        <h4>AI + Human Hybrid</h4>
+                        <p>AI efficiency with human oversight: accelerate screening while maintaining bias detection, cultural assessment, and strategic alignment.</p>
+                    </div>
+                
+                    <div class="feature-item">
+                        <h4>Career Intelligence Engine</h4>
+                        <p>Strategic hiring simulation and lifelong career management - make data-driven decisions about long-term team development and succession planning.</p>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="stats-container">
+                <div class="elevator-pitch">
+                    <h3>Our Promise</h3>
+                        <p>"AlignMatch transforms recruitment from reactive hiring to strategic talent intelligence. We match candidates by growth potential and cultural fit, not just keywords, helping enterprises build future-ready teams at 60% lower cost."</p>
+                </div>
+                <div class="stats-row">
+                    <div class="stat-item">
+                        <div class="stat-number">60%</div>
+                        <div class="stat-label">Time Saved in Hiring</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">20%</div>
+                        <div class="stat-label">Cultural Alignment improvement</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">40%</div>
+                        <div class="stat-label">Accelerated Talent Acquisition</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">10x</div>
+                        <div class="stat-label">Larger qualified candidate pipeline</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 </div>
 
+<!-- Smooth Scroll JavaScript -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Smooth scrolling for navigation links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+    });
+});
+</script>
 {% endblock %}

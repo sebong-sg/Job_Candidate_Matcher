@@ -20,38 +20,28 @@
     {% block extra_css %}{% endblock %}
 </head>
 <body>
-    {% if request.endpoint == 'index' %}
-        <!-- Landing Page Layout (No Sidebar) -->
-        <div class="landing-layout">
-            {% block landing_content %}
-            <!-- Landing page content goes here -->
-            {% endblock %}
-        </div>
-    {% else %}
-        <!-- App Layout with Sidebar -->
-        <div class="app-layout">
-            <!-- Navigation Sidebar -->
-            <nav class="sidebar">
-                {% include 'partials/sidebar.html' %}
-            </nav>
+    <div class="app-layout">
+        <!-- Navigation Sidebar -->
+        <nav class="sidebar">
+            {% include 'partials/sidebar.html' %}
+        </nav>
 
-            <!-- Main Content Area -->
-            <main class="main-content">
-                <!-- Top Header -->
-                <header class="top-header">
-                    {% include 'partials/header.html' %}
-                </header>
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Top Header -->
+            <header class="top-header">
+                {% include 'partials/header.html' %}
+            </header>
 
-                <!-- Page Content -->
-                <div class="content-area">
-                    <h1 class="page-title">{% block page_title %}{% endblock %}</h1>
-                    {% block content %}
-                    <!-- App page content goes here -->
-                    {% endblock %}
-                </div>
-            </main>
-        </div>
-    {% endif %}
+            <!-- Page Content -->
+            <div class="content-area">
+                <h1 class="page-title">{% block page_title %}{% endblock %}</h1>
+                {% block content %}
+                <!-- Page-specific content goes here -->
+                {% endblock %}
+            </div>
+        </main>
+    </div>
 
     <!-- Utility JavaScript -->
     <script src="{{ url_for('static', filename='js/utils/api.js') }}"></script>
