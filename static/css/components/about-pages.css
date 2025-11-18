@@ -1,0 +1,167 @@
+/* About Pages Styles */
+.content-section {
+    padding: var(--space-6);
+}
+
+/* Vision Page Styles */
+.vision-content {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.vision-content h2 {
+    color: var(--gray-800);
+    margin-bottom: var(--space-4);
+    font-size: 2rem;
+}
+
+.vision-content p {
+    color: var(--gray-600);
+    line-height: 1.6;
+    margin-bottom: var(--space-6);
+}
+
+.vision-points {
+    display: grid;
+    gap: var(--space-6);
+    margin-top: var(--space-8);
+}
+
+.vision-point {
+    padding: var(--space-4);
+    border-left: 4px solid var(--primary-600);
+    background: var(--gray-50);
+}
+
+.vision-point h3 {
+    color: var(--gray-800);
+    margin-bottom: var(--space-2);
+}
+
+.vision-point p {
+    margin-bottom: 0;
+    color: var(--gray-600);
+}
+
+/* Mission Page Styles */
+.mission-content {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.mission-content h2 {
+    color: var(--gray-800);
+    margin-bottom: var(--space-4);
+    font-size: 2rem;
+}
+
+.mission-objectives {
+    display: grid;
+    gap: var(--space-6);
+    margin-top: var(--space-8);
+}
+
+.objective {
+    padding: var(--space-4);
+    border-radius: var(--border-radius);
+    background: white;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--gray-200);
+}
+
+.objective h3 {
+    color: var(--primary-600);
+    margin-bottom: var(--space-2);
+}
+
+.objective p {
+    color: var(--gray-600);
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* Story Page Styles */
+.story-content {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.story-content h2 {
+    color: var(--gray-800);
+    margin-bottom: var(--space-4);
+    font-size: 2rem;
+}
+
+.story-timeline {
+    margin-top: var(--space-8);
+    position: relative;
+}
+
+.story-timeline::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--primary-200);
+}
+
+.timeline-item {
+    position: relative;
+    padding-left: var(--space-8);
+    margin-bottom: var(--space-6);
+}
+
+.timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -5px;
+    top: 0;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--primary-600);
+}
+
+.timeline-item h3 {
+    color: var(--gray-800);
+    margin-bottom: var(--space-2);
+}
+
+.timeline-item p {
+    color: var(--gray-600);
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .content-section {
+        padding: var(--space-4);
+    }
+    
+    .vision-content h2,
+    .mission-content h2,
+    .story-content h2 {
+        font-size: 1.5rem;
+    }
+    
+    .vision-points,
+    .mission-objectives {
+        gap: var(--space-4);
+        margin-top: var(--space-6);
+    }
+    
+    .story-timeline::before {
+        left: 10px;
+    }
+    
+    .timeline-item {
+        padding-left: var(--space-6);
+    }
+    
+    .timeline-item::before {
+        left: 5px;
+    }
+}

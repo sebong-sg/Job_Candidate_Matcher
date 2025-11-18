@@ -1,0 +1,425 @@
+/* Landing Layout */
+.landing-layout {
+    width: 100%;
+    min-height: 100vh;
+}
+
+/* Landing Page - PowerPoint Design */
+.landing-container {
+    min-height: 100vh;
+    width: 100%;
+}
+
+/* Top Navigation */
+.top-navigation {
+    background: white;
+    border-bottom: 1px solid var(--gray-200);
+    padding: var(--space-4) 0; /* Increased padding to accommodate bigger logo */
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+}
+
+.nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 var(--space-6);
+}
+
+.nav-logo {
+    height: 90px; /* Much bigger logo - increased from 70px to 90px */
+    width: auto;
+    background: transparent;
+}
+
+.nav-menu {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+    justify-content: flex-end;
+    max-width: 300px; /* Force wrapping */
+}
+
+.nav-item {
+    text-decoration: none;
+    color: var(--gray-700);
+    font-weight: 500;
+    font-size: var(--font-size-sm);
+    transition: color 0.3s ease;
+    white-space: nowrap;
+}
+
+/* The natural flex-wrap will handle the two lines */
+
+.nav-item {
+    text-decoration: none;
+    color: var(--gray-700);
+    font-weight: 500;
+    font-size: var(--font-size-sm);
+    transition: color 0.3s ease;
+    white-space: nowrap;
+}
+
+.nav-item:hover {
+    color: var(--primary-600);
+}
+
+/* Adjust main banner margin for bigger logo */
+.main-banner {
+    background: white;
+    padding: 80px 0 40px 0;
+    margin-top: 90px; /* Increased to match bigger logo height */
+}
+
+.banner-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--space-6);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-6); /* Further reduced gap */
+    align-items: center;
+    justify-items: center; /* Add this to center both columns */
+}
+
+.banner-left {
+    text-align: center; /* Change from left to center */
+}
+
+.banner-title {
+    font-size: 2.75rem; /* Further reduced */
+    font-weight: 700;
+    margin-bottom: var(--space-2); /* Further reduced */
+    color: var(--gray-800);
+}
+
+.banner-subtitle {
+    font-size: 1.25rem; /* Further reduced */
+    margin-bottom: var(--space-2); /* Further reduced */
+    color: var(--primary-600);
+    font-weight: 500;
+}
+
+.banner-right {
+    text-align: center;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center everything horizontally */
+}
+
+
+.banner-description {
+    font-size: 1.1rem;
+    color: var(--gray-600);
+    margin-bottom: var(--space-3);
+    line-height: 1.5;
+    text-align: center; /* Ensure text is centered */
+    width: 100%;
+}
+
+.banner-actions {
+    display: flex;
+    gap: var(--space-4);
+    justify-content: center; /* Center the button */
+    width: 100%;
+}
+
+.cta-button {
+    background: var(--primary-600);
+    color: white;
+    padding: var(--space-2) var(--space-6); /* Smaller button */
+    border-radius: var(--border-radius);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: var(--font-size-sm); /* Smaller font */
+    transition: all 0.3s ease;
+    border: 2px solid var(--primary-600);
+}
+
+.cta-button:hover {
+    background: var(--primary-700);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+/* Vision Section - Split Layout with Blue Gradient */
+
+.vision-section {
+    padding: 60px 0;
+ /*   background: linear-gradient(135deg, rgba(37, 99, 235, 0.1) 0%, rgba(37, 99, 235, 0.3) 50%, rgba(37, 99, 235, 0.5) 100%) !important;
+    background-color: rgba(37, 99, 235, 0.1) !important; /* Fallback color */
+ /*    color: #1e40af; /* Medium blue text */
+    background: url('/static/images/background.jpg') center/cover;    
+    background-attachment: fixed;
+    color: white;
+    position: relative;
+}
+
+.vision-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--space-6);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-6); /* Further reduced gap */
+    align-items: center;
+}
+
+.vision-image {
+    display: flex;
+    justify-content: center;
+}
+
+.vision-picture {
+    width: 100%;
+    max-width: 400px; /* Further reduced */
+    height: auto;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-lg);
+    border: 3px solid rgba(255, 255, 255, 0.1);
+}
+
+.vision-content {
+    text-align: center;
+}
+
+.vision-section .section-title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: var(--space-3);
+/*        color: #1e40af; /* Medium blue */
+    color: white;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    text-align: center; /* Add this to center the Vision heading */
+}
+
+.vision-text {
+    font-size: 1.25rem;
+    color: rgba(255, 255, 255, 0.95) !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    font-weight: 500;
+    /* line-height: 1.5;
+    text-align: center; */
+}
+
+/* Platform Section - Split Layout with Horizontal KPIs */
+.platform-section {
+    padding: 60px 0; /* Further reduced padding */
+    background: white;
+}
+
+.platform-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--space-6);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-6); /* Further reduced gap */
+    align-items: start;
+}
+
+.platform-content {
+    text-align: left;
+}
+
+.platform-section .section-title {
+    font-size: 2rem; /* Further reduced */
+    margin-bottom: var(--space-2); /* Further reduced */
+    color: var(--gray-800);
+}
+
+.platform-subtitle {
+    font-size: 1.25rem; /* Further reduced */
+    color: var(--primary-600);
+    margin-bottom: var(--space-2); /* Further reduced */
+    font-weight: 600;
+}
+
+.platform-description {
+    font-size: 1.1rem; /* Further reduced */
+    color: var(--gray-600);
+    line-height: 1.5;
+    margin-bottom: var(--space-3); /* Further reduced */
+}
+
+.highlight {
+    color: var(--primary-600);
+}
+
+/* Stats Container - Horizontal Layout */
+.stats-container {
+    /* display: grid; */
+    /* grid-template-columns: 1fr; */
+    /* gap: var(--space-3); /* Further reduced gap */
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4); /* Space between vertical items */
+}
+
+.stats-row {
+    /* display: grid;
+    /* grid-template-columns: repeat(3, 1fr);
+    /* gap: var(--space-3); /* Further reduced gap */
+    /* align-items: start; */
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4); /* Space between vertical items */
+    align-items: center;
+}
+
+.stat-item {
+/*    text-align: center;
+    padding: var(--space-3); /* Reduced padding */
+ /*   background: var(--gray-50);
+    border-radius: var(--border-radius);
+    border: 1px solid var(--gray-200);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    transition: all 0.3s ease; */
+    text-align: center;
+    padding: var(--space-4);
+    background: var(--gray-50);
+    border-radius: var(--border-radius);
+    border: 1px solid var(--gray-200);
+    width: 100%; /* Full width for vertical layout */
+    max-width: 280px; /* Limit max width */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    transition: all 0.3s ease;    
+}
+
+.stat-item:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--primary-300);
+}
+
+.stat-number {
+    font-size: 2rem; /* Further reduced */
+    font-weight: 700;
+    color: var(--primary-600);
+    margin-bottom: var(--space-1); /* Further reduced */
+    line-height: 1;
+}
+
+.stat-label {
+    font-size: 0.9rem; /* Further reduced */
+    color: var(--gray-700);
+    font-weight: 500;
+    line-height: 1.3;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .banner-content,
+    .vision-container,
+    .platform-container {
+        grid-template-columns: 1fr;
+        gap: var(--space-4); /* Further reduced gap */
+        text-align: center;
+    }
+    
+    .banner-left,
+    .banner-right,
+    .vision-content,
+    .platform-content {
+        text-align: center;
+    }
+    
+    .nav-menu {
+        gap: var(--space-3);
+    }
+    
+    .stats-row {
+        grid-template-columns: 1fr;
+        gap: var(--space-3);
+    }
+
+    .stat-item {
+        max-width: 100%; /* Full width on tablet */
+    }
+}
+
+@media (max-width: 768px) {
+    .nav-container {
+        flex-direction: column;
+        gap: var(--space-3);
+    }
+    
+    .nav-logo {
+        height: 70px;
+    }
+    
+    .nav-menu {
+        justify-content: center;
+        gap: var(--space-2);
+    }
+    
+    .banner-title {
+        font-size: 2rem;
+    }
+    
+    .banner-subtitle {
+        font-size: 1.125rem;
+    }
+    
+    .banner-description {
+        font-size: 1rem;
+    }
+    
+    .section-title {
+        font-size: 1.75rem;
+    }
+    
+    .vision-text {
+        font-size: 1.125rem;
+    }
+    
+    .stat-number {
+        font-size: 1.75rem;
+    }
+    
+    .main-banner {
+        margin-top: 110px;
+        padding: 40px 0 30px 0;
+    }
+    
+    .vision-section,
+    .platform-section {
+        padding: 40px 0;
+    }
+}
+
+@media (max-width: 480px) {
+    .banner-title {
+        font-size: 1.75rem;
+    }
+    
+    .nav-menu {
+        flex-wrap: wrap;
+    }
+    
+    .nav-item {
+        font-size: var(--font-size-xs);
+    }
+    
+    .stats-container {
+        gap: var(--space-2);
+    }
+    
+    .stat-item {
+        padding: var(--space-2);
+    }
+    
+    .vision-picture {
+        max-width: 100%;
+    }
+}

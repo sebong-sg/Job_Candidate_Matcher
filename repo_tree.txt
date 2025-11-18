@@ -37,7 +37,6 @@
 │   ├── ./chroma_db/401b2ac5-0f43-4527-b475-71231bb789ee
 │   ├── ./chroma_db/5b57cc25-deae-40cf-b69b-3ec9329e5e03
 │   └── ./chroma_db/c60a4a27-2da4-4938-937c-2bb139630ad9
-├── ./demo.py
 ├── ./doc
 ├── ./preview_delete_candidates.py
 ├── ./preview_delete_jobs.py
@@ -51,9 +50,7 @@
 │   ├── ./src/job_parser.py
 │   ├── ./src/matcher.py
 │   ├── ./src/resume_parser.py
-│   ├── ./src/resume_parser_V0.1.py
 │   ├── ./src/resume_parser_V0.2.py
-│   ├── ./src/resume_parser_problem.py
 │   └── ./src/sample_data.py
 ├── ./static
 │   ├── ./static/css
@@ -96,8 +93,7 @@
 │       └── ./templates/partials/sidebar.html
 ├── ./validate_candidate.py
 ├── ./vector_db.py
-├── ./vector_db_OLD.py
 ├── ./web_browser_app.py
 └── ./web_browser_app_OLD.py
 
-17 directories, 84 files
+17 directories, 80 files
