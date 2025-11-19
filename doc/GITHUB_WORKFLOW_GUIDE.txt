@@ -26,7 +26,7 @@ Note: This adds all modified and untracked files, excluding those listed in .git
 ---
 
 📝 Step 3: Commit with a Clear Message
--------------------------------------
+------------------------------------------------------
     git commit -m "Update web_app.py and add new_module.py"
 
 Tip: Use descriptive, governance-friendly messages. Include module tags or versioning if needed.

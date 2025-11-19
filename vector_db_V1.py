@@ -1,5 +1,5 @@
-# 🗃️ CHROMA VECTOR DATABASE MANAGER - ENHANCED WITH GROWTH DATA & JOB REQUIREMENTS
-# Fixed metadata serialization issue with enhanced job data integration
+# 🗃️ CHROMA VECTOR DATABASE MANAGER - ENHANCED WITH GROWTH DATA
+# Fixed metadata serialization issue with growth data integration
 
 import chromadb
 import os
@@ -30,7 +30,7 @@ class ChromaVectorDB:
             metadata={"description": "Job descriptions for semantic search"}
         )
         
-        print("✅ Chroma collections ready for enhanced data!")
+        print("✅ Chroma collections ready!")
     
     def get_candidate_count(self) -> int:
         """Get number of candidates in the vector database"""
@@ -135,104 +135,6 @@ class ChromaVectorDB:
             print(f"❌ Error adding candidates batch: {e}")
             return False
     
-    def add_job(self, job: Dict) -> bool:
-        """Add a single job to the vector database - ENHANCED WITH JOB REQUIREMENTS"""
-        if not self.embedding_model:
-            print("❌ Embedding model not available")
-            return False
-            
-        try:
-            # Generate embedding from job description and skills
-            text_to_embed = f"{job.get('description', '')} {' '.join(job.get('required_skills', []))}"
-            if not text_to_embed.strip():
-                return False
-                
-            embedding = self.embedding_model.encode(text_to_embed).tolist()
-            
-            # ENHANCED: Include job requirements data in metadata
-            self.jobs_collection.add(
-                ids=[str(job['id'])],
-                embeddings=[embedding],
-                documents=[text_to_embed],
-                metadatas=[{
-                    # Existing fields
-                    'title': job.get('title', 'Unknown'),
-                    'company': job.get('company', ''),
-                    'location': job.get('location', ''),
-                    'description': job.get('description', ''),
-                    'required_skills': json.dumps(job.get('required_skills', [])),
-                    'preferred_skills': json.dumps(job.get('preferred_skills', [])),
-                    'experience_required': job.get('experience_required', 0),
-                    'salary_range': job.get('salary_range', ''),
-                    'job_type': job.get('job_type', ''),
-                    'cultural_attributes': json.dumps(job.get('cultural_attributes', {})),
-                    # NEW: Enhanced job dimensions
-                    'growth_requirements': json.dumps(job.get('growth_requirements', {})),
-                    'skill_requirements': json.dumps(job.get('skill_requirements', {})),
-                    'career_progression': json.dumps(job.get('career_progression', {})),
-                    'quality_assessment': json.dumps(job.get('quality_assessment', {})),
-                    'confidence_scores': json.dumps(job.get('confidence_scores', {}))
-                }]
-            )
-            print(f"✅ Job added to vector DB with enhanced data: {job.get('title', 'Unknown')}")
-            return True
-        except Exception as e:
-            print(f"❌ Error adding job to vector DB: {e}")
-            return False
-
-    def add_jobs_batch(self, jobs: List[Dict]) -> bool:
-        """Add multiple jobs to the vector database - ENHANCED"""
-        if not self.embedding_model:
-            return False
-            
-        try:
-            ids = []
-            embeddings = []
-            documents = []
-            metadatas = []
-            
-            for job in jobs:
-                text_to_embed = f"{job.get('description', '')} {' '.join(job.get('required_skills', []))}"
-                if text_to_embed.strip():
-                    embedding = self.embedding_model.encode(text_to_embed).tolist()
-                    
-                    ids.append(str(job['id']))
-                    embeddings.append(embedding)
-                    documents.append(text_to_embed)
-                    metadatas.append({
-                        # Existing fields
-                        'title': job.get('title', 'Unknown'),
-                        'company': job.get('company', ''),
-                        'location': job.get('location', ''),
-                        'description': job.get('description', ''),
-                        'required_skills': json.dumps(job.get('required_skills', [])),
-                        'preferred_skills': json.dumps(job.get('preferred_skills', [])),
-                        'experience_required': job.get('experience_required', 0),
-                        'salary_range': job.get('salary_range', ''),
-                        'job_type': job.get('job_type', ''),
-                        'cultural_attributes': json.dumps(job.get('cultural_attributes', {})),
-                        # NEW: Enhanced job dimensions
-                        'growth_requirements': json.dumps(job.get('growth_requirements', {})),
-                        'skill_requirements': json.dumps(job.get('skill_requirements', {})),
-                        'career_progression': json.dumps(job.get('career_progression', {})),
-                        'quality_assessment': json.dumps(job.get('quality_assessment', {})),
-                        'confidence_scores': json.dumps(job.get('confidence_scores', {}))
-                    })
-            
-            if ids:
-                self.jobs_collection.add(
-                    ids=ids,
-                    embeddings=embeddings,
-                    documents=documents,
-                    metadatas=metadatas
-                )
-                print(f"✅ Added {len(ids)} jobs to vector database with enhanced data")
-                return True
-            return False
-        except Exception as e:
-            print(f"❌ Error adding jobs batch: {e}")
-            return False
-
     def find_matches_for_job(self, job: Dict, top_k: int = 20) -> List[Dict]:
         """Find candidate matches for a job using semantic search - WITH GROWTH DATA"""
         if not self.embedding_model:
@@ -306,7 +208,7 @@ class ChromaVectorDB:
         except Exception as e:
             print(f"❌ Error in semantic search: {e}")
             return []
-
+    
     def clear_candidates(self):
         """Clear all candidates from the vector database (for testing)"""
         try:
@@ -359,7 +261,7 @@ class ChromaVectorDB:
             return []
 
     def get_all_jobs(self) -> List[Dict]:
-        """Retrieve all jobs from Chroma DB in original format - ENHANCED"""
+        """Retrieve all jobs from Chroma DB in original format"""
         try:
             # Get all jobs from collection
             results = self.jobs_collection.get(
@@ -371,7 +273,6 @@ class ChromaVectorDB:
                 metadata = results['metadatas'][i]
                 jobs.append({
                     'id': int(results['ids'][i]),
-                    # Existing fields
                     'title': metadata.get('title', 'Unknown'),
                     'company': metadata.get('company', ''),
                     'location': metadata.get('location', ''),
@@ -381,51 +282,102 @@ class ChromaVectorDB:
                     'experience_required': metadata.get('experience_required', 0),
                     'salary_range': metadata.get('salary_range', ''),
                     'job_type': metadata.get('job_type', ''),
-                    'cultural_attributes': json.loads(metadata.get('cultural_attributes', '{}')),
-                    # NEW: Enhanced job dimensions
-                    'growth_requirements': json.loads(metadata.get('growth_requirements', '{}')),
-                    'skill_requirements': json.loads(metadata.get('skill_requirements', '{}')),
-                    'career_progression': json.loads(metadata.get('career_progression', '{}')),
-                    'quality_assessment': json.loads(metadata.get('quality_assessment', '{}')),
-                    'confidence_scores': json.loads(metadata.get('confidence_scores', '{}'))
+                    'cultural_attributes': json.loads(metadata.get('cultural_attributes', '{}'))
                 })
             
-            print(f"✅ Retrieved {len(jobs)} jobs from Chroma DB with enhanced data")
+            print(f"✅ Retrieved {len(jobs)} jobs from Chroma DB")
             return jobs
         except Exception as e:
             print(f"❌ Error retrieving jobs from Chroma DB: {e}")
             return []
+
+    def add_job(self, job: Dict) -> bool:
+        """Add a single job to the vector database"""
+        if not self.embedding_model:
+            print("❌ Embedding model not available")
+            return False
+            
+        try:
+            # Generate embedding from job description and skills
+            text_to_embed = f"{job.get('description', '')} {' '.join(job.get('required_skills', []))}"
+            if not text_to_embed.strip():
+                return False
+                
+            embedding = self.embedding_model.encode(text_to_embed).tolist()
+            
+            self.jobs_collection.add(
+                ids=[str(job['id'])],
+                embeddings=[embedding],
+                documents=[text_to_embed],
+                metadatas=[{
+                    'title': job.get('title', 'Unknown'),
+                    'company': job.get('company', ''),
+                    'location': job.get('location', ''),
+                    'description': job.get('description', ''),
+                    'required_skills': json.dumps(job.get('required_skills', [])),
+                    'preferred_skills': json.dumps(job.get('preferred_skills', [])),
+                    'experience_required': job.get('experience_required', 0),
+                    'salary_range': job.get('salary_range', ''),
+                    'job_type': job.get('job_type', ''),
+                    'cultural_attributes': json.dumps(job.get('cultural_attributes', {}))
+                }]
+            )
+            print(f"✅ Job added to vector DB: {job.get('title', 'Unknown')}")
+            return True
+        except Exception as e:
+            print(f"❌ Error adding job to vector DB: {e}")
+            return False
+
+    def add_jobs_batch(self, jobs: List[Dict]) -> bool:
+        """Add multiple jobs to the vector database"""
+        if not self.embedding_model:
+            return False
+            
+        try:
+            ids = []
+            embeddings = []
+            documents = []
+            metadatas = []
+            
+            for job in jobs:
+                text_to_embed = f"{job.get('description', '')} {' '.join(job.get('required_skills', []))}"
+                if text_to_embed.strip():
+                    embedding = self.embedding_model.encode(text_to_embed).tolist()
+                    
+                    ids.append(str(job['id']))
+                    embeddings.append(embedding)
+                    documents.append(text_to_embed)
+                    metadatas.append({
+                        'title': job.get('title', 'Unknown'),
+                        'company': job.get('company', ''),
+                        'location': job.get('location', ''),
+                        'description': job.get('description', ''),
+                        'required_skills': json.dumps(job.get('required_skills', [])),
+                        'preferred_skills': json.dumps(job.get('preferred_skills', [])),
+                        'experience_required': job.get('experience_required', 0),
+                        'salary_range': job.get('salary_range', ''),
+                        'job_type': job.get('job_type', ''),
+                        'cultural_attributes': json.dumps(job.get('cultural_attributes', {}))
+                    })
+            
+            if ids:
+                self.jobs_collection.add(
+                    ids=ids,
+                    embeddings=embeddings,
+                    documents=documents,
+                    metadatas=metadatas
+                )
+                print(f"✅ Added {len(ids)} jobs to vector database")
+                return True
+            return False
+        except Exception as e:
+            print(f"❌ Error adding jobs batch: {e}")
+            return False
 
 # Global instance
 vector_db = ChromaVectorDB()
 
 # Test function
 if __name__ == "__main__":
-    print("🧪 Testing Enhanced Chroma Vector DB...")
+    print("🧪 Testing Chroma Vector DB...")
     print(f"Current candidate count: {vector_db.get_candidate_count()}")
-    
-    # Test enhanced job storage
-    test_job = {
-        'id': 999,
-        'title': 'Test Senior Developer',
-        'company': 'TestCorp',
-        'location': 'Remote',
-        'description': 'Senior developer with 5+ years experience',
-        'required_skills': ['python', 'django'],
-        'preferred_skills': ['aws', 'docker'],
-        'experience_required': 5,
-        'job_type': 'Full-time',
-        'cultural_attributes': {},
-        'growth_requirements': {
-            'target_career_stage': 'executive',
-            'role_archetype': 'technical_specialist',
-            'scope_level_required': 2
-        },
-        'quality_assessment': {
-            'quality_level': 'high',
-            'quality_score': 0.85
-        }
-    }
-    
-    success = vector_db.add_job(test_job)
-    print(f"Test job added: {success}")

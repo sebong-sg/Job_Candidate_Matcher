@@ -1,5 +1,5 @@
 # 🚀 ENHANCED JOB MATCHING WITH CHROMA VECTOR DATABASE
-# Hybrid approach: Chroma for semantic search + traditional scoring + growth potential
+# Hybrid approach: Chroma for semantic search + traditional scoring
 
 from chroma_data_manager import ChromaDataManager
 from vector_db import vector_db
@@ -372,193 +372,6 @@ class SimpleMatcher:
         elif total_score >= 0.4: return 'C'
         else: return 'D'
     
-    # NEW: Growth Potential and Career Alignment Methods
-    
-    def calculate_growth_potential_score(self, candidate):
-        """Calculate growth potential score from candidate metrics"""
-        growth_metrics = candidate.get('growth_metrics', {})
-        
-        # Base score from growth potential (0-100 scale normalized to 0-1)
-        base_score = growth_metrics.get('growth_potential_score', 0) / 100.0
-        
-        # Enhance with growth dimensions
-        growth_dimensions = growth_metrics.get('growth_dimensions', {})
-        
-        if growth_dimensions:
-            dimension_scores = [
-                growth_dimensions.get('vertical_growth', 0),
-                growth_dimensions.get('scope_growth', 0),
-                growth_dimensions.get('impact_growth', 0),
-                growth_dimensions.get('adaptability', 0),
-                growth_dimensions.get('leadership_velocity', 0)
-            ]
-            avg_dimension_score = sum(dimension_scores) / len(dimension_scores)
-            # Combine base score with dimension average
-            final_score = (base_score * 0.7) + (avg_dimension_score * 0.3)
-        else:
-            final_score = base_score
-        
-        return max(0.0, min(1.0, final_score))
-    
-    def assess_archetype_match(self, job, candidate):
-        """Match job's required archetype with candidate's natural trajectory"""
-        job_archetype = job.get('growth_requirements', {}).get('role_archetype')
-        candidate_archetype = candidate.get('growth_metrics', {}).get('career_archetype')
-        
-        if not job_archetype or not candidate_archetype:
-            return 0.7  # Neutral if missing data
-        
-        archetype_compatibility = {
-            # High Growth IC: Best for scaling individual impact
-            'high_growth_ic': {
-                'high_growth_ic': 1.0,      # Perfect match
-                'technical_specialist': 0.8, # Good fit
-                'strategic_executive': 0.4,  # May be overqualified
-                'portfolio_leader': 0.6      # Moderate fit
-            },
-            # Technical Specialist: Deep expertise roles
-            'technical_specialist': {
-                'technical_specialist': 1.0,
-                'high_growth_ic': 0.9,
-                'strategic_executive': 0.3,
-                'portfolio_leader': 0.5
-            },
-            # Strategic Executive: Leadership roles
-            'strategic_executive': {
-                'strategic_executive': 1.0,
-                'portfolio_leader': 0.8,
-                'high_growth_ic': 0.4,
-                'technical_specialist': 0.2
-            },
-            # Portfolio Leader: Multi-team management
-            'portfolio_leader': {
-                'portfolio_leader': 1.0,
-                'strategic_executive': 0.9,
-                'high_growth_ic': 0.3,
-                'technical_specialist': 0.2
-            }
-        }
-        
-        return archetype_compatibility.get(job_archetype, {}).get(candidate_archetype, 0.5)
-    
-    def assess_career_stage_match(self, job, candidate):
-        """Assess if candidate's career stage aligns with job requirements"""
-        job_stage = job.get('growth_requirements', {}).get('target_career_stage')
-        candidate_stage = candidate.get('growth_metrics', {}).get('career_stage')
-        
-        if not job_stage or not candidate_stage:
-            return 0.7  # Neutral if missing data
-        
-        stage_progression = {
-            'early_career': 1,
-            'mid_career': 2, 
-            'executive': 3
-        }
-        
-        job_level = stage_progression.get(job_stage, 2)
-        candidate_level = stage_progression.get(candidate_stage, 2)
-        
-        # Scoring logic:
-        if candidate_level == job_level:
-            return 1.0    # Perfect match - right level
-        elif candidate_level == job_level - 1:
-            return 0.9    # Stretch role - good growth opportunity
-        elif candidate_level == job_level + 1:
-            return 0.6    # May be overqualified but could work
-        elif candidate_level <= job_level - 2:
-            return 0.3    # Too junior - significant stretch
-        else:
-            return 0.4    # Overqualified - may get bored
-    
-    def assess_growth_trajectory(self, job, candidate):
-        """Assess long-term growth alignment"""
-        candidate_growth = candidate.get('growth_metrics', {})
-        job_growth = job.get('growth_requirements', {})
-        
-        score = 0.5  # Base neutral score
-        
-        # Match executive potential
-        candidate_exec_potential = candidate_growth.get('executive_potential', 0.5)
-        job_exec_required = job_growth.get('executive_potential_required', 0.3)
-        
-        if candidate_exec_potential >= job_exec_required:
-            score += 0.2  # Candidate has required potential
-        else:
-            score -= 0.1  # May not meet long-term needs
-        
-        # Match strategic mobility
-        candidate_mobility = candidate_growth.get('strategic_mobility', 0.5)
-        job_mobility_preferred = job_growth.get('strategic_mobility_preferred', 0.5)
-        
-        mobility_diff = abs(candidate_mobility - job_mobility_preferred)
-        score += (1 - mobility_diff) * 0.2
-        
-        # Match learning expectations
-        candidate_learning = candidate.get('learning_velocity', 0.5)
-        job_learning = job_growth.get('learning_expectations', 0.5)
-        
-        if candidate_learning >= job_learning:
-            score += 0.1  # Candidate can keep up with learning demands
-        
-        return max(0.0, min(1.0, score))
-    
-    def get_career_alignment_insights(self, job, candidate):
-        """Get human-readable insights about career alignment"""
-        archetype_match = self.assess_archetype_match(job, candidate)
-        stage_match = self.assess_career_stage_match(job, candidate)
-        growth_trajectory = self.assess_growth_trajectory(job, candidate)
-        
-        job_archetype = job.get('growth_requirements', {}).get('role_archetype')
-        candidate_archetype = candidate.get('growth_metrics', {}).get('career_archetype')
-        job_stage = job.get('growth_requirements', {}).get('target_career_stage')
-        candidate_stage = candidate.get('growth_metrics', {}).get('career_stage')
-        
-        insights = []
-        
-        # Archetype insights
-        if archetype_match >= 0.8:
-            insights.append(f"✅ Strong archetype match ({self.format_archetype(job_archetype)} ↔ {self.format_archetype(candidate_archetype)})")
-        elif archetype_match >= 0.6:
-            insights.append(f"⚠️ Moderate archetype match ({self.format_archetype(job_archetype)} ↔ {self.format_archetype(candidate_archetype)})")
-        else:
-            insights.append(f"❌ Weak archetype match ({self.format_archetype(job_archetype)} ↔ {self.format_archetype(candidate_archetype)})")
-        
-        # Career stage insights
-        stage_progression = {'early_career': 1, 'mid_career': 2, 'executive': 3}
-        job_level = stage_progression.get(job_stage, 2)
-        candidate_level = stage_progression.get(candidate_stage, 2)
-        
-        if candidate_level == job_level:
-            insights.append("✅ Perfect career stage alignment")
-        elif candidate_level == job_level - 1:
-            insights.append("🎯 Good stretch opportunity")
-        elif candidate_level == job_level + 1:
-            insights.append("⚠️ May be overqualified")
-        elif candidate_level <= job_level - 2:
-            insights.append("❌ Significant experience gap")
-        else:
-            insights.append("⚠️ Overqualified for role")
-        
-        # Growth trajectory insights
-        if growth_trajectory >= 0.8:
-            insights.append("🚀 Excellent growth trajectory alignment")
-        elif growth_trajectory >= 0.6:
-            insights.append("📈 Good long-term growth potential")
-        else:
-            insights.append("⚠️ Growth trajectory concerns")
-        
-        return insights
-    
-    def format_archetype(self, archetype):
-        """Format archetype for display"""
-        archetypes = {
-            'high_growth_ic': 'High Growth IC',
-            'strategic_executive': 'Strategic Executive',
-            'technical_specialist': 'Technical Specialist',
-            'portfolio_leader': 'Portfolio Leader'
-        }
-        return archetypes.get(archetype, archetype)
-    
     def find_matches(self, jobs=None, candidates=None):
         """Enhanced matching using Chroma vector database for semantic search"""
         if jobs is None:
@@ -569,7 +382,7 @@ class SimpleMatcher:
         print(f"🔍 Matching {len(jobs)} jobs using Chroma vector database...")
         print(f"   Vector DB has {vector_db.get_candidate_count()} candidates indexed")
 
-        # DEBUG: Check if candidates have growth data
+            # DEBUG: Check if candidates have growth data
         for candidate in candidates:
             if candidate.get('growth_metrics'):
                 print(f"✅ Candidate {candidate['name']} has growth data")
@@ -611,24 +424,25 @@ class SimpleMatcher:
                 # Calculate cultural fit
                 cultural_fit = self._calculate_cultural_fit(job, candidate)
 
-                # NEW: Calculate growth potential score
-                growth_potential_score = self.calculate_growth_potential_score(candidate)
-
-                # NEW: Calculate career alignment scores
-                archetype_match = self.assess_archetype_match(job, candidate)
-                career_stage_match = self.assess_career_stage_match(job, candidate)
-                growth_trajectory = self.assess_growth_trajectory(job, candidate)
-
-                # Calculate total weighted score with all components
+                # Calculate total weighted score with cultural fit
                 total_score = (
-                    skill_score * 0.30 +           # Skill matching (reduced from 0.35)
-                    experience_score * 0.20 +      # Experience rules (reduced from 0.25)
+                    skill_score * 0.35 +           # Skill matching (reduced from 0.40)
+                    experience_score * 0.25 +      # Experience rules
                     location_score * 0.15 +        # Global location scoring  
                     semantic_score * 0.20 +        # Semantic understanding from Chroma
-                    cultural_fit['final_score'] * 0.05 +  # Cultural fit (5%)
-                    growth_potential_score * 0.10  # NEW: Growth potential (10%)
+#                    cultural_fit * 0.05            # NEW: Cultural fit (5% weight)
+                    cultural_fit['final_score'] * 0.05
                 )
 
+# Below OLD code replace by above                
+                # Calculate total weighted score
+#                total_score = (
+#                    skill_score * 0.40 +           # Skill matching
+#                    experience_score * 0.25 +      # Experience rules
+#                    location_score * 0.15 +        # Global location scoring  
+#                    semantic_score * 0.20          # Semantic understanding from Chroma
+#                )
+                
                 # Update the match with complete scoring
                 match['score'] = total_score
                 match['score_breakdown'] = {
@@ -636,23 +450,16 @@ class SimpleMatcher:
                     'experience': int(experience_score * 100),
                     'location': int(location_score * 100),
                     'semantic': int(semantic_score * 100),
-                    'cultural_fit': int(cultural_fit['final_score'] * 100),
-                    'growth_potential': int(growth_potential_score * 100)  # NEW
+#                    'cultural_fit': int(cultural_fit * 100)  # NEW: Add cultural fit to breakdown
+                    'cultural_fit': int(cultural_fit['final_score'] * 100)  # CHANGE HERE
                 }
 
-                # Add cultural fit breakdown
+                # ADD THIS SECTION for cultural fit breakdown
                 match['cultural_breakdown'] = {
                     'keyword_score': int(cultural_fit['keyword_score'] * 100),
                     'semantic_score': int(cultural_fit['semantic_score'] * 100),  
-                    'final_score': int(cultural_fit['final_score'] * 100)
-                }
-
-                # NEW: Add career alignment data
-                match['career_alignment'] = {
-                    'archetype_match': int(archetype_match * 100),
-                    'career_stage_match': int(career_stage_match * 100),
-                    'growth_trajectory': int(growth_trajectory * 100),
-                    'insights': self.get_career_alignment_insights(job, candidate)
+                    'final_score': int(cultural_fit['final_score'] * 100)    
+#                    'final_score': int(cultural_fit * 100)
                 }
 
                 match['match_grade'] = self.get_match_grade(total_score)
@@ -688,6 +495,7 @@ class SimpleMatcher:
         except Exception as e:
             print(f"❌ Error adding job: {e}")
             return None
+    # New Cultural Attribute method
 
     def _calculate_cultural_fit(self, job_data, candidate):
         """Calculate cultural fit between job and candidate"""
@@ -700,6 +508,7 @@ class SimpleMatcher:
                 'semantic_score': 0.5,
                 'final_score': 0.5
             }     
+#            return 0.5
     
         total_score = 0
         count = 0
@@ -746,6 +555,8 @@ class SimpleMatcher:
             'semantic_score': semantic_score,
             'final_score': final_score
         }
+       
+#        return final_score
 
     def _calculate_semantic_cultural_fit(self, job_data, candidate):
         """Calculate cultural fit using semantic similarity of cultural context"""
@@ -785,6 +596,8 @@ class SimpleMatcher:
             
         return " ".join(cultural_text_parts) if cultural_text_parts else ""
 
+#        return total_score / count if count > 0 else 0.5
+
 # Test function
 def main():
     matcher = SimpleMatcher()
@@ -797,12 +610,8 @@ def main():
         for match in job_matches[:3]:  # Show top 3
             candidate = match['candidate']
             breakdown = match.get('score_breakdown', {})
-            career_alignment = match.get('career_alignment', {})
             print(f"   👤 {candidate['name']} - Score: {match['score']:.3f} ({match['match_grade']})")
-            print(f"      Skills: {breakdown.get('skills', 0)}% | Exp: {breakdown.get('experience', 0)}% | Location: {breakdown.get('location', 0)}%")
-            print(f"      Semantic: {breakdown.get('semantic', 0)}% | Cultural: {breakdown.get('cultural_fit', 0)}% | Growth: {breakdown.get('growth_potential', 0)}%")
-            if career_alignment.get('insights'):
-                print(f"      Career Insights: {', '.join(career_alignment['insights'][:2])}")
+            print(f"      Skills: {breakdown.get('skills', 0)}% | Exp: {breakdown.get('experience', 0)}% | Location: {breakdown.get('location', 0)}% | Semantic: {breakdown.get('semantic', 0)}%")
 
 if __name__ == "__main__":
     main()

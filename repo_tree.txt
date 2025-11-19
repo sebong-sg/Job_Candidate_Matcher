@@ -1,35 +1,5 @@
 .
 ├── ./.vscode
-├── ./Troubleshoot Kits
-│   ├── ./Troubleshoot Kits/calculate_all_matches.py
-│   ├── ./Troubleshoot Kits/calculate_all_scores.py
-│   ├── ./Troubleshoot Kits/calculate_cultural_fit.py
-│   ├── ./Troubleshoot Kits/calculate_real_fit.py
-│   ├── ./Troubleshoot Kits/check_all_candidates.py
-│   ├── ./Troubleshoot Kits/check_candidate_exist.py
-│   ├── ./Troubleshoot Kits/check_db_health.py
-│   ├── ./Troubleshoot Kits/check_job_exist.py
-│   ├── ./Troubleshoot Kits/check_peter_18.py
-│   ├── ./Troubleshoot Kits/check_vector_data.py
-│   ├── ./Troubleshoot Kits/cultural_fit_calculation.py
-│   ├── ./Troubleshoot Kits/debug_candidate_score.py
-│   ├── ./Troubleshoot Kits/debug_cultural.py
-│   ├── ./Troubleshoot Kits/debug_job_loading.py
-│   ├── ./Troubleshoot Kits/debug_load_jobs_detailed.py
-│   ├── ./Troubleshoot Kits/debug_peter_7.py
-│   ├── ./Troubleshoot Kits/debug_saving_process.py
-│   ├── ./Troubleshoot Kits/delete_candidate.py
-│   ├── ./Troubleshoot Kits/examine_peter_tan.py
-│   ├── ./Troubleshoot Kits/find_real_peter.py
-│   ├── ./Troubleshoot Kits/reload_peter_tan.py
-│   ├── ./Troubleshoot Kits/restore_jobs_with_cultural.py
-│   ├── ./Troubleshoot Kits/show_all_scores.py
-│   ├── ./Troubleshoot Kits/show_detailed_breakdown.py
-│   ├── ./Troubleshoot Kits/test_cultural_extraction.py
-│   ├── ./Troubleshoot Kits/test_fix.py
-│   ├── ./Troubleshoot Kits/test_job_loading.py
-│   ├── ./Troubleshoot Kits/trace_cultural_scores.py
-│   └── ./Troubleshoot Kits/verify_fix.py
 ├── ./analytics_report.py
 ├── ./chroma_data_manager.py
 ├── ./chroma_data_manager_OLD.py
@@ -55,6 +25,7 @@
 ├── ./static
 │   ├── ./static/css
 │   │   ├── ./static/css/components
+│   │   │   ├── ./static/css/components/about-pages.css
 │   │   │   ├── ./static/css/components/candidates.css
 │   │   │   ├── ./static/css/components/cards.css
 │   │   │   ├── ./static/css/components/dashboard.css
@@ -65,8 +36,11 @@
 │   │   │   ├── ./static/css/components/modals.css
 │   │   │   ├── ./static/css/components/navigation.css
 │   │   │   └── ./static/css/components/tables.css
+│   │   ├── ./static/css/landing.css
+│   │   ├── ./static/css/landing_V1.css
 │   │   ├── ./static/css/main.css
 │   │   └── ./static/css/utils.css
+│   ├── ./static/images
 │   └── ./static/js
 │       ├── ./static/js/app.js
 │       ├── ./static/js/modules
@@ -83,17 +57,26 @@
 │           └── ./static/js/utils/ui.js
 ├── ./templates
 │   ├── ./templates/base.html
+│   ├── ./templates/base_V1.html
 │   ├── ./templates/candidates.html
 │   ├── ./templates/dashboard.html
+│   ├── ./templates/index.html
+│   ├── ./templates/index_V1.html
+│   ├── ./templates/index_V2.html
 │   ├── ./templates/jobs.html
 │   ├── ./templates/matching.html
-│   └── ./templates/partials
-│       ├── ./templates/partials/header.html
-│       ├── ./templates/partials/icons.html
-│       └── ./templates/partials/sidebar.html
+│   ├── ./templates/mission.html
+│   ├── ./templates/partials
+│   │   ├── ./templates/partials/header.html
+│   │   ├── ./templates/partials/header_v1.html
+│   │   ├── ./templates/partials/icons.html
+│   │   ├── ./templates/partials/sidebar.html
+│   │   └── ./templates/partials/sidebar_V1.html
+│   ├── ./templates/story.html
+│   └── ./templates/vision.html
 ├── ./validate_candidate.py
 ├── ./vector_db.py
 ├── ./web_browser_app.py
 └── ./web_browser_app_OLD.py
 
-17 directories, 80 files
+17 directories, 63 files
