@@ -1,9 +1,9 @@
-// 🎯 JOB MODAL MANAGEMENT - Enhanced with Quality Assessment
-// Handles job creation with quality flags and improvement suggestions
+// 🎯 CANDIDATE MODAL MANAGEMENT - Enhanced with Quality Assessment
+// Handles candidate creation with quality flags and improvement suggestions
 
-class JobModal {
+class CandidateModal {
     constructor() {
-        this.modal = document.getElementById('addJobModal');
+        this.modal = document.getElementById('addCandidateModal');
         this.currentMethod = 'upload';
         this.parsedData = null;
         this.initialized = false;
@@ -14,7 +14,7 @@ class JobModal {
         
         this.setupEventListeners();
         this.initialized = true;
-        console.log('✅ Job modal initialized with quality assessment');
+        console.log('✅ Candidate modal initialized with quality assessment');
     }
 
     setupEventListeners() {
@@ -26,17 +26,17 @@ class JobModal {
         });
 
         // Modal controls
-        document.getElementById('closeJobModal').addEventListener('click', () => this.close());
-        document.getElementById('cancelJob').addEventListener('click', () => this.close());
-        document.getElementById('saveJob').addEventListener('click', () => this.saveJob());
+        document.getElementById('closeCandidateModal').addEventListener('click', () => this.close());
+        document.getElementById('cancelCandidate').addEventListener('click', () => this.close());
+        document.getElementById('saveCandidate').addEventListener('click', () => this.saveCandidate());
 
         // Parse actions
-        document.getElementById('parseJdText').addEventListener('click', () => this.parseText());
+        document.getElementById('parseResumeText').addEventListener('click', () => this.parseText());
         
         // File upload setup
         this.setupFileUpload();
         
-        // NEW: Quality improvement actions
+        // Quality improvement actions
         this.setupQualityActions();
     }
 
@@ -63,7 +63,7 @@ class JobModal {
     }
 
     setupFileUpload() {
-        const uploadZone = document.getElementById('jdUploadZone');
+        const uploadZone = document.getElementById('resumeUploadZone');
         const fileInput = uploadZone.querySelector('.file-input');
 
         // Click to open file dialog
@@ -126,47 +126,47 @@ class JobModal {
         try {
             UIUtils.showNotification('Reading file...', 'info');
             const content = await this.readFileContent(file);
-            this.parseJobDescription(content);
+            this.parseResume(content);
         } catch (error) {
             UIUtils.showNotification('Failed to read file', 'error');
         }
     }
 
     async parseText() {
-        const text = document.getElementById('jdText').value;
+        const text = document.getElementById('resumeText').value;
         if (!text.trim()) {
-            UIUtils.showNotification('Please enter job description text', 'error');
+            UIUtils.showNotification('Please enter resume text', 'error');
             return;
         }
-        this.parseJobDescription(text);
+        this.parseResume(text);
     }
 
-    async parseJobDescription(text) {
+    async parseResume(text) {
         try {
-            UIUtils.showNotification('Parsing job description with AI...', 'info');
+            UIUtils.showNotification('Parsing resume with AI...', 'info');
             
-            const response = await api.post('/api/parse-job-description', { job_text: text });
+            const response = await api.post('/api/parse-resume', { resume_text: text });
             
             if (response.success) {
-                this.parsedData = response.job_data;
+                this.parsedData = response.candidate_data;
                 this.showParsedReview();
                 
-                // NEW: Show quality assessment
+                // Show quality assessment
                 this.showQualityAssessment();
                 
-                UIUtils.showNotification('Job description parsed successfully! Please verify.', 'success');
+                UIUtils.showNotification('Resume parsed successfully!', 'success');
             } else {
                 throw new Error(response.error);
             }
         } catch (error) {
             console.error('Parsing error:', error);
-            UIUtils.showNotification('Failed to parse job description', 'error');
+            UIUtils.showNotification('Failed to parse resume', 'error');
         }
     }
 
     showParsedReview() {
         document.getElementById('parsedReview').style.display = 'block';
-        document.getElementById('saveJob').style.display = 'block';
+        document.getElementById('saveCandidate').style.display = 'block';
         
         // Populate parsed fields for editing
         const fieldsContainer = document.getElementById('parsedFields');
@@ -174,10 +174,10 @@ class JobModal {
     }
 
     showQualityAssessment() {
-        // NEW: Always show quality indicator
+        // Always show quality indicator
         this.renderQualityIndicator();
         
-        // Show warnings for low quality JDs
+        // Show warnings for low quality resumes
         if (this.parsedData.quality_assessment && 
             (this.parsedData.quality_assessment.quality_level === 'low' || 
              this.parsedData.quality_assessment.quality_level === 'very_low')) {
@@ -224,7 +224,7 @@ class JobModal {
                         <path d="M12 8v6"></path>
                         <circle cx="12" cy="17" r="1"></circle>
                     </svg>
-                    <h4>Job Description Needs Improvement</h4>
+                    <h4>Resume Needs Improvement</h4>
                 </div>
                 <div class="warning-content">
                     <div class="warning-metrics">
@@ -235,9 +235,9 @@ class JobModal {
                             </span>
                         </div>
                         <div class="warning-metric">
-                            <span class="metric-label">Missing Fields:</span>
+                            <span class="metric-label">Issues Found:</span>
                             <span class="metric-value">
-                                ${quality.missing_required_fields.length + quality.missing_recommended_fields.length}
+                                ${quality.quality_issues.length}
                             </span>
                         </div>
                     </div>
@@ -259,13 +259,13 @@ class JobModal {
                     </div>
                 </div>
                 <div class="warning-actions">
-                    <button onclick="jobModal.showQualityGuide()" class="btn btn--outline">
+                    <button onclick="candidateModal.showQualityGuide()" class="btn btn--outline">
                         📋 View Quality Guide
                     </button>
-                    <button onclick="jobModal.rewriteJD()" class="btn btn--primary">
-                        ✏️ Rewrite Job Description
+                    <button onclick="candidateModal.rewriteResume()" class="btn btn--primary">
+                        ✏️ Improve Resume
                     </button>
-                    <button onclick="jobModal.continueAnyway()" class="btn btn--secondary">
+                    <button onclick="candidateModal.continueAnyway()" class="btn btn--secondary">
                         ➡️ Continue Anyway
                     </button>
                 </div>
@@ -279,120 +279,100 @@ class JobModal {
     renderParsedFields() {
         if (!this.parsedData) return '';
         
-        const confidence = this.parsedData.confidence_scores || {};
         const quality = this.parsedData.quality_assessment || {};
-        const aiProfile = this.parsedData.ai_job_profile || {};
         
         return `
             <div class="form-grid">
                 <div class="form-group">
-                    <label>Job Title</label>
-                    <input type="text" value="${this.parsedData.title || ''}" class="form-input" data-field="title">
-                    <span class="confidence-indicator ${this.getConfidenceClass(confidence.title)}">
-                        ${Math.round(confidence.title * 100)}%
+                    <label>Full Name</label>
+                    <input type="text" value="${this.parsedData.name || ''}" class="form-input" data-field="name">
+                    <span class="confidence-indicator ${this.getConfidenceClass(0.8)}">
+                        80%
                     </span>
                 </div>
                 <div class="form-group">
-                    <label>Company</label>
-                    <input type="text" value="${this.parsedData.company || ''}" class="form-input" data-field="company">
-                    <span class="confidence-indicator ${this.getConfidenceClass(confidence.company)}">
-                        ${Math.round(confidence.company * 100)}%
+                    <label>Email</label>
+                    <input type="email" value="${this.parsedData.email || ''}" class="form-input" data-field="email">
+                    <span class="confidence-indicator ${this.getConfidenceClass(0.9)}">
+                        90%
                     </span>
                 </div>
                 <div class="form-group">
                     <label>Location</label>
                     <input type="text" value="${this.parsedData.location || ''}" class="form-input" data-field="location">
-                    <span class="confidence-indicator ${this.getConfidenceClass(confidence.location)}">
-                        ${Math.round(confidence.location * 100)}%
+                    <span class="confidence-indicator ${this.getConfidenceClass(0.7)}">
+                        70%
                     </span>
                 </div>
                 <div class="form-group">
-                    <label>Experience Required (years)</label>
-                    <input type="number" value="${this.parsedData.experience_required || 0}" class="form-input" min="0" max="50" data-field="experience">
-                    <span class="confidence-indicator ${this.getConfidenceClass(confidence.experience)}">
-                        ${Math.round(confidence.experience * 100)}%
-                    </span>
-                </div>
-                <div class="form-group">
-                    <label>Employment Type</label>
-                    <select class="form-select" data-field="employment_type">
-                        <option value="Full-time" ${this.parsedData.employment_type === 'Full-time' ? 'selected' : ''}>Full-time</option>
-                        <option value="Part-time" ${this.parsedData.employment_type === 'Part-time' ? 'selected' : ''}>Part-time</option>
-                        <option value="Contract" ${this.parsedData.employment_type === 'Contract' ? 'selected' : ''}>Contract</option>
-                        <option value="Remote" ${this.parsedData.employment_type === 'Remote' ? 'selected' : ''}>Remote</option>
-                        <option value="Hybrid" ${this.parsedData.employment_type === 'Hybrid' ? 'selected' : ''}>Hybrid</option>
-                    </select>
-                    <span class="confidence-indicator ${this.getConfidenceClass(confidence.employment_type)}">
-                        ${Math.round(confidence.employment_type * 100)}%
+                    <label>Years of Experience</label>
+                    <input type="number" value="${this.parsedData.experience_years || 0}" class="form-input" min="0" max="50" data-field="experience_years">
+                    <span class="confidence-indicator ${this.getConfidenceClass(0.6)}">
+                        60%
                     </span>
                 </div>
                 
-                <!-- NEW: Enhanced Data Display -->
-                ${this.parsedData.growth_requirements ? `
+                <!-- Enhanced Data Display -->
+                ${this.parsedData.growth_metrics ? `
                 <div class="form-group full-width">
-                    <label>Career Stage & Growth</label>
+                    <label>Career & Growth Profile</label>
                     <div class="enhanced-data-display">
                         <div class="enhanced-data-item">
-                            <span class="enhanced-label">Target Career Stage:</span>
-                            <span class="enhanced-value">${this.formatCareerStage(this.parsedData.growth_requirements.target_career_stage)}</span>
+                            <span class="enhanced-label">Career Stage:</span>
+                            <span class="enhanced-value">${this.formatCareerStage(this.parsedData.growth_metrics.career_stage)}</span>
+                        </div>
+                        <div class="enhanced-data-item">
+                            <span class="enhanced-label">Growth Potential:</span>
+                            <span class="enhanced-value">${Math.round(this.parsedData.growth_metrics.growth_potential_score * 100)}%</span>
                         </div>
                         <div class="enhanced-data-item">
                             <span class="enhanced-label">Role Archetype:</span>
-                            <span class="enhanced-value">${this.formatArchetype(this.parsedData.growth_requirements.role_archetype)}</span>
-                        </div>
-                        <div class="enhanced-data-item">
-                            <span class="enhanced-label">Scope Level:</span>
-                            <span class="enhanced-value">${this.formatScopeLevel(this.parsedData.growth_requirements.scope_level_required)}</span>
+                            <span class="enhanced-value">${this.formatArchetype(this.parsedData.growth_metrics.career_archetype)}</span>
                         </div>
                     </div>
-                    <span class="confidence-indicator ${this.getConfidenceClass(confidence.enhanced_data)}">
-                        Enhanced Data: ${Math.round(confidence.enhanced_data * 100)}%
+                    <span class="confidence-indicator ${this.getConfidenceClass(0.7)}">
+                        Enhanced Data: 70%
                     </span>
                 </div>
                 ` : ''}
                 
                 <div class="form-group full-width">
-                    <label>Required Skills</label>
+                    <label>Skills</label>
                     <div class="skills-display">
-                        ${(this.parsedData.required_skills || []).map(skill => 
+                        ${(this.parsedData.skills || []).map(skill => 
                             `<span class="skill-tag">${skill}</span>`
                         ).join('')}
-                        ${(!this.parsedData.required_skills || this.parsedData.required_skills.length === 0) ? 
+                        ${(!this.parsedData.skills || this.parsedData.skills.length === 0) ? 
                             '<span class="text-muted">No skills extracted</span>' : ''}
                     </div>
-                    <span class="confidence-indicator ${this.getConfidenceClass(confidence.skills)}">
-                        ${Math.round(confidence.skills * 100)}%
+                    <span class="confidence-indicator ${this.getConfidenceClass(0.8)}">
+                        ${Math.round((this.parsedData.skills || []).length / 10 * 100)}%
                     </span>
                 </div>
-
-                <!-- NEW: AI Job Profile Display -->
-                ${aiProfile.role_overview ? `
                 <div class="form-group full-width">
-                    <label>AI Job Profile Preview</label>
-                    <div class="ai-profile-preview">
-                        <div class="ai-profile-section">
-                            <h5>Role Overview</h5>
-                            <p>${aiProfile.role_overview}</p>
-                        </div>
-                        <div class="ai-profile-section">
-                            <h5>Ideal Candidate</h5>
-                            <p>${aiProfile.ideal_candidate}</p>
-                        </div>
-                        <div class="ai-profile-section">
-                            <h5>Success Factors</h5>
-                            <p>${aiProfile.success_factors}</p>
-                        </div>
+                    <label>Education</label>
+                    <input type="text" value="${this.parsedData.education || ''}" class="form-input" data-field="education">
+                    <span class="confidence-indicator ${this.getConfidenceClass(0.7)}">
+                        70%
+                    </span>
+                </div>
+                <div class="form-group full-width">
+                    <label>Professional Profile</label>
+                    <textarea class="form-textarea" rows="4" data-field="profile">${this.parsedData.profile || ''}</textarea>
+                </div>
+
+                <!-- ADD THIS SECTION: Complete Resume Text Display -->
+                ${this.parsedData.original_text ? `
+                <div class="form-group full-width">
+                    <label>Complete Resume Text</label>
+                    <div class="cv-details-content" style="max-height: 200px; overflow-y: auto; font-family: 'Courier New', monospace; font-size: 0.85rem; line-height: 1.5; color: var(--gray-700); white-space: pre-wrap; word-wrap: break-word; padding: 1rem; background: var(--gray-50); border: 1px solid var(--gray-200); border-radius: 6px;">
+                        ${this.parsedData.original_text}
                     </div>
                     <span class="confidence-indicator confidence-high">
-                        🤖 AI Generated Profile
+                        Original Resume
                     </span>
                 </div>
                 ` : ''}
-
-                <div class="form-group full-width">
-                    <label>Job Description</label>
-                    <textarea class="form-textarea" rows="4" data-field="description">${this.parsedData.original_job_text || ''}</textarea>
-                </div>
             </div>
         `;
     }
@@ -427,24 +407,16 @@ class JobModal {
             'high_growth_ic': 'High Growth Individual Contributor',
             'strategic_executive': 'Strategic Executive',
             'technical_specialist': 'Technical Specialist',
-            'portfolio_leader': 'Portfolio Leader'
+            'portfolio_leader': 'Portfolio Leader',
+            'career_starter': 'Career Starter',
+            'growth_track_ic': 'Growth Track IC'
         };
         return archetypes[archetype] || archetype;
     }
 
-    formatScopeLevel(level) {
-        const levels = {
-            1: 'Individual Contributor',
-            2: 'Team Lead',
-            3: 'Department Head', 
-            4: 'Organization Lead'
-        };
-        return levels[level] || `Level ${level}`;
-    }
-
     hideParsedReview() {
         document.getElementById('parsedReview').style.display = 'none';
-        document.getElementById('saveJob').style.display = 'none';
+        document.getElementById('saveCandidate').style.display = 'none';
         this.parsedData = null;
     }
 
@@ -453,56 +425,58 @@ class JobModal {
         document.getElementById('qualityIndicator').style.display = 'none';
     }
 
-    // NEW: Quality Improvement Actions
+    // Quality Improvement Actions
     showQualityGuide() {
         const guideHtml = `
             <div class="quality-guide">
                 <div class="guide-header">
-                    <h3>📋 Job Description Quality Guide</h3>
+                    <h3>📋 Resume Quality Guide</h3>
                     <button onclick="this.parentElement.parentElement.remove()" class="btn-close">×</button>
                 </div>
                 <div class="guide-content">
                     <div class="guide-section">
-                        <h4>✅ Excellent Job Description Includes:</h4>
+                        <h4>✅ Excellent Resume Includes:</h4>
                         <ul>
-                            <li>Clear, specific job title and company name</li>
-                            <li>500+ characters detailed description</li>
-                            <li>5-7 specific responsibilities as bullet points</li>
-                            <li>5-7 required skills (both technical and soft skills)</li>
-                            <li>Specific years of experience required</li>
-                            <li>Education and certification requirements</li>
-                            <li>Clear location/remote work specifications</li>
-                            <li>Career growth and development opportunities</li>
+                            <li>Clear contact information (name, email, phone)</li>
+                            <li>500+ characters of detailed content</li>
+                            <li>Specific work experience with company names and durations</li>
+                            <li>5+ specific technical and soft skills</li>
+                            <li>Education background and qualifications</li>
+                            <li>Professional summary or objective</li>
+                            <li>Clear career progression and achievements</li>
+                            <li>Quantifiable results and accomplishments</li>
                         </ul>
                     </div>
                     
                     <div class="guide-section">
-                        <h4>❌ Poor Job Description Signs:</h4>
+                        <h4>❌ Poor Resume Signs:</h4>
                         <ul>
                             <li>Less than 200 characters total</li>
-                            <li>Vague language ("etc.", "and more", "similar experience")</li>
-                            <li>No specific skills listed</li>
-                            <li>Missing experience requirements</li>
-                            <li>No clear sections (Responsibilities, Requirements)</li>
-                            <li>Generic company description</li>
+                            <li>Missing contact information</li>
+                            <li>No specific work experience listed</li>
+                            <li>Fewer than 3 skills mentioned</li>
+                            <li>No education information</li>
+                            <li>Generic descriptions without specifics</li>
+                            <li>Missing dates and durations</li>
                         </ul>
                     </div>
                     
                     <div class="guide-section">
                         <h4>🎯 Best Practices:</h4>
                         <ul>
-                            <li>Use specific numbers (e.g., "3+ years of Python experience")</li>
-                            <li>Separate required skills from preferred skills</li>
+                            <li>Use specific numbers and metrics (e.g., "Increased efficiency by 30%")</li>
                             <li>Include both technical and soft skills</li>
-                            <li>Mention team structure and reporting lines</li>
-                            <li>Describe company culture and work environment</li>
-                            <li>Include specific projects or technologies used</li>
+                            <li>List relevant certifications and education</li>
+                            <li>Use action verbs to describe accomplishments</li>
+                            <li>Tailor content to target job roles</li>
+                            <li>Include keywords from job descriptions</li>
+                            <li>Keep formatting clean and professional</li>
                         </ul>
                     </div>
                 </div>
                 <div class="guide-actions">
-                    <button onclick="jobModal.rewriteJD()" class="btn btn--primary">
-                        ✏️ Rewrite Using This Guide
+                    <button onclick="candidateModal.rewriteResume()" class="btn btn--primary">
+                        ✏️ Improve Using This Guide
                     </button>
                     <button onclick="this.parentElement.parentElement.remove()" class="btn btn--secondary">
                         Close Guide
@@ -518,171 +492,158 @@ class JobModal {
         document.body.appendChild(overlay);
     }
 
-    rewriteJD() {
+    rewriteResume() {
         // Clear current parsed data and return to text input
         this.hideParsedReview();
         this.hideQualityWarnings();
-        this.switchMethod('text');
+        this.switchMethod('paste');
         
         // Pre-fill the textarea with the original text for editing
-        const jdTextarea = document.getElementById('jdText');
-        if (jdTextarea && this.parsedData) {
-            jdTextarea.value = this.parsedData.description;
-            jdTextarea.focus();
+        const resumeTextarea = document.getElementById('resumeText');
+        if (resumeTextarea && this.parsedData) {
+            resumeTextarea.value = this.parsedData.original_text || '';
+            resumeTextarea.focus();
         }
         
-        UIUtils.showNotification('Please rewrite the job description using the quality guide', 'info');
+        UIUtils.showNotification('Please improve the resume using the quality guide', 'info');
     }
 
     continueAnyway() {
         // Just hide the warnings and continue with saving
         this.hideQualityWarnings();
-        UIUtils.showNotification('Proceeding with job creation despite quality issues', 'warning');
+        UIUtils.showNotification('Proceeding with candidate creation despite quality issues', 'warning');
     }
 
-    async saveJob() {
+    async saveCandidate() {
         try {
-            UIUtils.showNotification('Saving job to database...', 'info');
+            UIUtils.showNotification('Saving candidate to database...', 'info');
             
-            let jobData = {};
+            let candidateData = {};
             
             if (this.parsedData) {
                 // Robust field collection using data attributes
                 const fieldsContainer = document.getElementById('parsedFields');
                 
                 // Get each field by its data-field attribute
-                const titleInput = fieldsContainer.querySelector('[data-field="title"]');
-                const companyInput = fieldsContainer.querySelector('[data-field="company"]');
+                const nameInput = fieldsContainer.querySelector('[data-field="name"]');
+                const emailInput = fieldsContainer.querySelector('[data-field="email"]');
                 const locationInput = fieldsContainer.querySelector('[data-field="location"]');
-                const experienceInput = fieldsContainer.querySelector('[data-field="experience"]');
-                const employmentSelect = fieldsContainer.querySelector('[data-field="employment_type"]');
-                const descriptionTextarea = fieldsContainer.querySelector('[data-field="description"]');
+                const experienceInput = fieldsContainer.querySelector('[data-field="experience_years"]');
+                const educationInput = fieldsContainer.querySelector('[data-field="education"]');
+                const profileTextarea = fieldsContainer.querySelector('[data-field="profile"]');
                 
                 // Validate required fields exist
-                if (!titleInput || !companyInput) {
+                if (!nameInput || !emailInput) {
                     throw new Error('Required form fields are missing');
                 }
                 
-                jobData = {
+                candidateData = {
                     // Existing fields
-                    title: titleInput.value.trim(),
-                    company: companyInput.value.trim(),
+                    name: nameInput.value.trim(),
+                    email: emailInput.value.trim(),
                     location: locationInput ? locationInput.value.trim() : this.parsedData.location || '',
-                    experience_required: experienceInput ? parseInt(experienceInput.value) || 0 : this.parsedData.experience_required || 0,
-                    job_type: employmentSelect ? employmentSelect.value : this.parsedData.employment_type || 'Full-time',
-                    required_skills: this.parsedData.required_skills || [],
-                    description: descriptionTextarea ? descriptionTextarea.value.trim() : this.parsedData.description || '',
-                    original_job_text: this.parsedData.original_job_text || text || '',
+                    experience_years: experienceInput ? parseInt(experienceInput.value) || 0 : this.parsedData.experience_years || 0,
+                    education: educationInput ? educationInput.value.trim() : this.parsedData.education || '',
+                    skills: this.parsedData.skills || [],
+                    profile: profileTextarea ? profileTextarea.value.trim() : this.parsedData.profile || '',
                     cultural_attributes: this.parsedData.cultural_attributes || {},
-                    // NEW: Enhanced data
-                    growth_requirements: this.parsedData.growth_requirements || {},
-                    skill_requirements: this.parsedData.skill_requirements || {},
-                    career_progression: this.parsedData.career_progression || {},
+                    
+                    // Add this line to save the original resume text
+                    original_resume_text: this.parsedData.original_text || '',
+
+                    // Enhanced data
+                    growth_metrics: this.parsedData.growth_metrics || {},
+                    career_metrics: this.parsedData.career_metrics || {},
                     quality_assessment: this.parsedData.quality_assessment || {},
-                    confidence_scores: this.parsedData.confidence_scores || {},
-                    // NEW: AI Job Profile - CRITICAL: Include this data
-                    ai_job_profile: this.parsedData.ai_job_profile || {}
+                    extraction_method: this.parsedData.extraction_method || 'unknown'
                 };
             } else if (this.currentMethod === 'form') {
                 // Use quick form data
-                const form = document.getElementById('quickJobForm');
-                jobData = {
-                    title: form.title.value.trim(),
-                    company: form.company.value.trim(),
+                const form = document.getElementById('quickCandidateForm');
+                const skills = form.skills.value.split(',').map(skill => skill.trim()).filter(skill => skill);
+                
+                candidateData = {
+                    name: form.name.value.trim(),
+                    email: form.email.value.trim(),
                     location: form.location.value.trim(),
-                    description: form.description.value.trim(),
-                    required_skills: [],
-                    experience_required: parseInt(form.experience_required.value) || 0,
-                    job_type: form.job_type.value,
+                    experience_years: parseInt(form.experience_years.value) || 0,
+                    education: '',
+                    skills: skills,
+                    profile: form.profile.value.trim(),
                     cultural_attributes: {},
-                    // NEW: Default enhanced data for manual entries
-                    growth_requirements: this._getDefaultGrowthRequirements(),
-                    skill_requirements: this._getDefaultSkillRequirements(),
-                    career_progression: this._getDefaultCareerProgression(),
+                    // Default enhanced data for manual entries
+                    growth_metrics: this._getDefaultGrowthMetrics(),
+                    career_metrics: this._getDefaultCareerMetrics(),
                     quality_assessment: {
                         quality_score: 0.5,
                         quality_level: 'medium',
-                        quality_issues: ['Manually entered job description'],
+                        quality_issues: ['Manually entered candidate'],
                         missing_required_fields: [],
                         missing_recommended_fields: [],
                         suggestions_for_improvement: []
                     },
-                    // NEW: Default AI Job Profile for manual entries
-                    ai_job_profile: this._getDefaultAIJobProfile()
+                    extraction_method: 'manual'
                 };
             } else {
-                throw new Error('No job data to save - please parse or enter job information first');
+                throw new Error('No candidate data to save - please parse or enter candidate information first');
             }
             
             // Validate required fields
-            if (!jobData.title) {
-                throw new Error('Job title is required');
+            if (!candidateData.name) {
+                throw new Error('Candidate name is required');
             }
-            if (!jobData.company) {
-                throw new Error('Company name is required');
+            if (!candidateData.email) {
+                throw new Error('Email is required');
             }
             
-            const response = await api.post('/api/create-job', { job_data: jobData });
+            const response = await api.post('/api/create-candidate', { candidate_data: candidateData });
             
             if (response.success) {
-                const qualityLevel = jobData.quality_assessment?.quality_level || 'unknown';
-                const hasAIProfile = jobData.ai_job_profile && Object.keys(jobData.ai_job_profile).length > 0;
-                UIUtils.showNotification(`Job "${jobData.title}" created successfully! (Quality: ${qualityLevel}, AI Profile: ${hasAIProfile ? 'Yes' : 'No'})`, 'success');
+                const qualityLevel = candidateData.quality_assessment?.quality_level || 'unknown';
+                UIUtils.showNotification(`Candidate "${candidateData.name}" created successfully! (Quality: ${qualityLevel})`, 'success');
                 this.close();
                 
-                // Refresh jobs list
-                if (window.jobsModule) {
-                    jobsModule.displayJobs(document.getElementById('jobsContainer'));
+                // Refresh candidates list
+                if (window.candidatesModule) {
+                    candidatesModule.displayCandidates(document.getElementById('candidatesContainer'));
                 }
             } else {
                 throw new Error(response.error);
             }
             
         } catch (error) {
-            console.error('Save job error:', error);
-            UIUtils.showNotification(`Failed to save job: ${error.message}`, 'error');
+            console.error('Save candidate error:', error);
+            UIUtils.showNotification(`Failed to save candidate: ${error.message}`, 'error');
         }
     }
 
-    _getDefaultGrowthRequirements() {
+    _getDefaultGrowthMetrics() {
         return {
-            target_career_stage: 'mid_career',
-            role_archetype: 'technical_specialist',
-            scope_level_required: 1,
-            executive_potential_required: 0.3,
-            learning_expectations: 0.5,
-            confidence: 0.3,
-            has_clear_requirements: false
+            growth_potential_score: 0.5,
+            growth_dimensions: {
+                vertical_growth: 0.5,
+                scope_growth: 0.5,
+                impact_growth: 0.5,
+                adaptability: 0.5,
+                leadership_velocity: 0.3
+            },
+            career_archetype: 'technical_specialist',
+            career_stage: 'mid_career',
+            executive_potential: 0.3,
+            strategic_mobility: 0.5,
+            analysis_rationale: 'Manually entered candidate',
+            promotion_velocity: 0,
+            max_role_level: 2
         };
     }
 
-    _getDefaultSkillRequirements() {
+    _getDefaultCareerMetrics() {
         return {
-            core_skills: [],
-            secondary_skills: [],
-            required_proficiency: {},
-            skill_priority_weights: {},
-            confidence: 0.3
-        };
-    }
-
-    _getDefaultCareerProgression() {
-        return {
-            promotion_expectations: 'standard',
-            strategic_mobility_preferred: 0.5,
-            impact_scale_required: 0.5,
-            confidence: 0.3
-        };
-    }
-
-    _getDefaultAIJobProfile() {
-        return {
-            "role_overview": "This position requires a skilled professional with relevant experience and technical capabilities.",
-            "ideal_candidate": "A qualified candidate with appropriate background and skills for this role.",
-            "success_factors": "Technical competence, teamwork, and results-oriented approach.",
-            "growth_potential": "Opportunities for professional development and career advancement.",
-            "cultural_fit": "Collaborative environment that values contribution and growth.",
-            "recruiting_insights": "Look for candidates with relevant experience and demonstrated capabilities."
+            average_tenure_months: 24,
+            career_progression_slope: 0.1,
+            leadership_experience: false,
+            number_of_companies: 1,
+            role_variety_score: 0.5
         };
     }
 
@@ -700,7 +661,7 @@ class JobModal {
         // Reset form when opening
         this.hideParsedReview();
         this.hideQualityWarnings();
-        document.getElementById('jdText').value = '';
+        document.getElementById('resumeText').value = '';
     }
 
     close() {
@@ -711,4 +672,4 @@ class JobModal {
 }
 
 // Global instance
-window.jobModal = new JobModal();
+window.candidateModal = new CandidateModal();

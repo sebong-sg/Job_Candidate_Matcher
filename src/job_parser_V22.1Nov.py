@@ -39,9 +39,6 @@ class JobDescriptionParser:
                 ai_profile = self._generate_ai_job_profile(parsed_data, text)
                 parsed_data['ai_job_profile'] = ai_profile
                 
-                # NEW: Add confidence scores
-                parsed_data['confidence_scores'] = self._calculate_confidence_scores(parsed_data, text)
-                
                 return parsed_data
             else:
                 print("🔍 DEBUG: Groq API exception - using fallback")
@@ -80,10 +77,10 @@ class JobDescriptionParser:
         - employment_type: Extract from phrases like "Full-time", "Part-time", "Contract"
         - required_skills: List of technical skills mentioned in requirements
         - preferred_skills: List of bonus/nice-to-have skills
-        - description: Return the COMPLETE ORIGINAL job description text, , word for word, keep the section, line and paragraph formatting the same without any changes or missing any word at all
+        - description: The full job description text
         - career_stage: early_career (0-3 yrs), mid_career (3-8 yrs), or executive (8+ yrs)
         - summary: Professional summary (2-3 sentences summarizing the role)
-        - original_job_text: Complete original job description text, word for word, keep the section, line and paragraph formatting the same without any changes or missing any word at all 
+        - original_job_text: Complete original job description text
         
         Return ONLY valid JSON in this exact format:
         {{
@@ -94,7 +91,7 @@ class JobDescriptionParser:
             "employment_type": "Full-time",
             "required_skills": ["skill1", "skill2"],
             "preferred_skills": ["skill1", "skill2"],
-            "description": "Full description text...",,
+            "description": "Full description text...",
             "career_stage": "mid_career",
             "summary": "Professional summary of the role...",
             "original_job_text": "Complete original text..."
@@ -168,7 +165,9 @@ class JobDescriptionParser:
         - Experience Required: {parsed_data.get('experience_required', 0)} years
         - Required Skills: {parsed_data.get('required_skills', [])}
         - Career Stage: {parsed_data.get('career_stage', 'mid_career')}
-        - Job Description: {parsed_data.get('description', '')[:500]}...
+        
+        ORIGINAL JOB DESCRIPTION:
+        {original_text}
         
         Create an AI Job Profile with these sections:
         
@@ -178,8 +177,6 @@ class JobDescriptionParser:
         4. GROWTH POTENTIAL: Career progression and development opportunities
         5. CULTURAL FIT: Team dynamics and work environment expectations
         6. RECRUITING INSIGHTS: Tips for finding and attracting the right candidates
-        
-        Make the content specific, actionable, and professional. Focus on what makes this role unique.
         
         Return ONLY valid JSON in this exact format:
         {{
@@ -192,46 +189,15 @@ class JobDescriptionParser:
         }}
         """
 
-    def _calculate_confidence_scores(self, parsed_data, text):
-        """Calculate confidence scores for extracted fields"""
-        scores = {
-            'title': 0.8,
-            'company': 0.7,
-            'location': 0.6,
-            'experience': 0.7,
-            'skills': 0.8,
-            'employment_type': 0.6,
-            'cultural_fit': 0.5,
-            'overall_quality': 0.7,
-            'enhanced_data': 0.8
-        }
-        
-        # Adjust scores based on data quality
-        if not parsed_data.get('title') or parsed_data['title'] == 'Job Title':
-            scores['title'] = 0.3
-        if not parsed_data.get('company') or parsed_data['company'] == 'Company':
-            scores['company'] = 0.3
-        if not parsed_data.get('location') or parsed_data['location'] == 'Location not specified':
-            scores['location'] = 0.3
-        if len(parsed_data.get('required_skills', [])) < 2:
-            scores['skills'] = 0.5
-            
-        return scores
-
     def _fallback_ai_profile(self, parsed_data):
         """Fallback AI Job Profile when Groq is unavailable"""
-        title = parsed_data.get('title', 'this position')
-        company = parsed_data.get('company', 'the company')
-        experience = parsed_data.get('experience_required', 0)
-        skills = parsed_data.get('required_skills', [])
-        
         return {
-            "role_overview": f"This {title} role at {company} requires {experience}+ years of experience and focuses on {', '.join(skills[:3])}. The position offers opportunities for professional growth and impactful contributions.",
-            "ideal_candidate": f"An experienced professional with strong expertise in {', '.join(skills[:3])} and {experience}+ years of relevant experience. Someone who demonstrates problem-solving abilities, teamwork, and adaptability to evolving requirements.",
-            "success_factors": f"Technical proficiency in {', '.join(skills[:3])}, strong communication skills, ability to work collaboratively, and a results-oriented mindset. Demonstrated ability to deliver quality work under deadlines.",
-            "growth_potential": f"Opportunities for skill advancement in {', '.join(skills[:2])}, potential for leadership responsibilities, exposure to new technologies, and career progression within {company}.",
-            "cultural_fit": f"Team-oriented environment that values collaboration, innovation, and continuous learning. Fast-paced setting with opportunities for professional development and knowledge sharing.",
-            "recruiting_insights": f"Look for candidates with proven experience in {', '.join(skills[:3])}. Prioritize both technical competence and cultural alignment. Consider candidates who show learning agility and potential for growth."
+            "role_overview": f"This {parsed_data.get('title', 'position')} role at {parsed_data.get('company', 'the company')} requires {parsed_data.get('experience_required', 0)}+ years of experience and focuses on {', '.join(parsed_data.get('required_skills', ['relevant skills']))}.",
+            "ideal_candidate": f"An experienced professional with strong {', '.join(parsed_data.get('required_skills', ['technical skills']))} and {parsed_data.get('experience_required', 0)}+ years in the field. Someone who thrives in a collaborative environment and is looking for long-term growth.",
+            "success_factors": "Technical proficiency, problem-solving abilities, teamwork, and adaptability to changing requirements. Strong communication skills and ability to work independently.",
+            "growth_potential": "Opportunities for career advancement, skill development, and potential leadership roles. Exposure to new technologies and business domains.",
+            "cultural_fit": "Team-oriented environment that values collaboration, innovation, and continuous learning. Fast-paced setting with opportunities for professional development.",
+            "recruiting_insights": "Look for candidates with proven experience in required technologies. Consider both technical skills and cultural fit. Prioritize candidates with demonstrated growth and learning agility."
         }
 
     def _fallback_parse(self, text):
@@ -253,17 +219,6 @@ class JobDescriptionParser:
                 'quality_score': 0.5,
                 'quality_level': 'medium',
                 'quality_issues': ['Used fallback parsing']
-            },
-            'confidence_scores': {
-                'title': 0.6,
-                'company': 0.5,
-                'location': 0.5,
-                'experience': 0.6,
-                'skills': 0.7,
-                'employment_type': 0.8,
-                'cultural_fit': 0.5,
-                'overall_quality': 0.6,
-                'enhanced_data': 0.3
             }
         }
         
@@ -373,4 +328,3 @@ if __name__ == "__main__":
     print(f"✅ Parsed: {result.get('title')} at {result.get('company')}")
     print(f"📊 Quality: {result.get('quality_assessment', {}).get('quality_level')}")
     print(f"🤖 AI Profile: {result.get('ai_job_profile', {}).get('role_overview', 'No AI profile')}")
-    print(f"🎯 Confidence Scores: {result.get('confidence_scores', {})}")

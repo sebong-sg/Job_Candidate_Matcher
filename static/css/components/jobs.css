@@ -236,3 +236,364 @@
 .job-card {
     animation: slideUp 0.3s ease;
 }
+
+//* Job Requirements Styles */
+.requirements-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1rem;
+}
+
+.requirements-category {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1.25rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.requirements-category h5 {
+    margin: 0 0 1rem 0;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.5rem;
+}
+
+.requirement-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.requirement-item:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.requirement-label {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+    flex: 1;
+}
+
+.requirement-value {
+    font-size: 0.85rem;
+    color: var(--text-primary);
+    font-weight: 500;
+    text-align: right;
+    flex: 1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.skill-tag--small {
+    font-size: 0.75rem;
+    padding: 0.2rem 0.5rem;
+    margin: 0.1rem;
+    background: var(--primary-color-light);
+    color: var(--primary-color);
+    border-radius: 4px;
+    border: 1px solid var(--primary-color-light);
+}
+
+/* Leadership scope badges */
+.leadership-badge {
+    display: inline-block;
+    padding: 0.3rem 0.6rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: capitalize;
+}
+
+.leadership-badge--individual_contributor {
+    background: #e3f2fd;
+    color: #1976d2;
+    border: 1px solid #bbdefb;
+}
+
+.leadership-badge--team_lead {
+    background: #e8f5e8;
+    color: #2e7d32;
+    border: 1px solid #c8e6c9;
+}
+
+.leadership-badge--manager {
+    background: #fff3e0;
+    color: #ef6c00;
+    border: 1px solid #ffe0b2;
+}
+
+.leadership-badge--executive {
+    background: #fce4ec;
+    color: #c2185b;
+    border: 1px solid #f8bbd9;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .requirements-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .requirement-item {
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+    
+    .requirement-value {
+        justify-content: flex-start;
+        text-align: left;
+    }
+}
+
+/* Cultural value indicators */
+.cultural-value {
+    display: inline-block;
+    padding: 0.3rem 0.6rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.cultural-value--high {
+    background: #e8f5e8;
+    color: #2e7d32;
+    border: 1px solid #c8e6c9;
+}
+
+.cultural-value--medium {
+    background: #fff3e0;
+    color: #ef6c00;
+    border: 1px solid #ffe0b2;
+}
+
+.cultural-value--low {
+    background: #ffebee;
+    color: #c62828;
+    border: 1px solid #ffcdd2;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .requirements-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .requirement-item {
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+    
+    .requirement-value {
+        justify-content: flex-start;
+        text-align: left;
+    }
+}
+
+/* Ensure the job requirements section has proper spacing */
+.job-detail-section#jobRequirementsSection {
+    margin-bottom: 2rem;
+}
+
+.job-detail-section#jobRequirementsSection h4 {
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+/* Job Detail Meta Grid - Match candidate layout */
+.job-detail-meta-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.job-detail-meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.job-detail-meta-label {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.job-detail-meta-value {
+    font-size: 0.9rem;
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+/* Update existing job detail sections */
+.job-detail-container {
+    padding: 0;
+}
+
+.job-detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.job-detail-main h2 {
+    margin: 0 0 0.25rem 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.job-detail-company {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+/* Ensure consistent spacing with candidate modal */
+.job-detail-section {
+    margin-bottom: 2rem;
+}
+
+.job-detail-section h4 {
+    margin: 0 0 1rem 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .job-detail-meta-grid {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+    
+    .job-detail-header {
+        flex-direction: column;
+        gap: 1rem;
+    }
+}
+
+/* Job Description Sections - Match candidate CV layout */
+.job-description-section {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.job-description-section h4 {
+    margin: 0 0 1rem 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.job-description-content {
+    background: white;
+    border: 1px solid var(--gray-200);
+    border-radius: 6px;
+    padding: 1.5rem;
+    line-height: 1.6;
+    color: var(--gray-700);
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+/* Professional Summary Section */
+.professional-summary-section {
+    background: var(--primary-50);
+    border: 1px solid var(--primary-200);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.professional-summary-section h4 {
+    margin: 0 0 1rem 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--primary-700);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.professional-summary-content {
+    background: white;
+    border: 1px solid var(--primary-200);
+    border-radius: 6px;
+    padding: 1.5rem;
+    line-height: 1.6;
+    color: var(--gray-700);
+    font-style: italic;
+}
+
+/* Scrollable content areas */
+.job-description-content,
+.professional-summary-content {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.job-description-content::-webkit-scrollbar,
+.professional-summary-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.job-description-content::-webkit-scrollbar-track,
+.professional-summary-content::-webkit-scrollbar-track {
+    background: var(--gray-100);
+    border-radius: 3px;
+}
+
+.job-description-content::-webkit-scrollbar-thumb,
+.professional-summary-content::-webkit-scrollbar-thumb {
+    background: var(--gray-400);
+    border-radius: 3px;
+}
+
+.job-description-content::-webkit-scrollbar-thumb:hover,
+.professional-summary-content::-webkit-scrollbar-thumb:hover {
+    background: var(--gray-500);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .job-description-content,
+    .professional-summary-content {
+        max-height: 200px;
+        padding: 1rem;
+        font-size: 0.9rem;
+    }
+    
+    .job-description-section,
+    .professional-summary-section {
+        padding: 1rem;
+    }
+}

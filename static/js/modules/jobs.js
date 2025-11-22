@@ -112,6 +112,7 @@ class JobsModule {
         const quality = job.quality_assessment || {};
         const hasQualityData = quality.quality_level && quality.quality_level !== 'unknown';
         const hasEnhancedData = job.growth_requirements && job.growth_requirements.target_career_stage;
+        const hasAIProfile = job.ai_job_profile && Object.keys(job.ai_job_profile).length > 0;
         
         return `
             <div class="job-card" data-job-id="${job.id}" onclick="jobsModule.showJobDetail(${job.id})">
@@ -150,6 +151,11 @@ class JobsModule {
                         ${job.growth_requirements.role_archetype ? `
                             <span class="enhanced-badge">${this.formatArchetype(job.growth_requirements.role_archetype)}</span>
                         ` : ''}
+                    </div>
+                ` : ''}
+                ${hasAIProfile ? `
+                    <div class="job-card__ai-profile">
+                        <span class="ai-badge">🤖 AI Enhanced</span>
                     </div>
                 ` : ''}
                 <div class="job-card__skills">
@@ -197,8 +203,9 @@ class JobsModule {
         document.getElementById('detailExperience').textContent = `${job.experience_required || 0}+ years`;
         document.getElementById('detailJobType').textContent = job.job_type || 'Full-time';
         document.getElementById('detailSalary').textContent = job.salary_range || 'Not specified';
-        document.getElementById('detailDescription').textContent = job.description || 'No description available';
-        
+        // document.getElementById('detailDescription').textContent = job.description || 'No description available';
+        document.getElementById('detailDescription').textContent = job.original_job_text || job.description || 'No description available';
+
         // Quality badge
         const quality = job.quality_assessment || {};
         const qualityBadge = document.getElementById('detailQualityBadge');
@@ -216,19 +223,67 @@ class JobsModule {
         document.getElementById('preferredSkillsSection').style.display = 
             job.preferred_skills && job.preferred_skills.length > 0 ? 'block' : 'none';
         
+        // NEW: AI Job Profile
+        this.populateAIJobProfile(job);
+        
         // Enhanced data
         this.populateEnhancedData(job);
         
         // Quality assessment
         this.populateQualityAssessment(job);
         
-        // Cultural attributes
-        this.populateCulturalAttributes(job);
-        
-        // Career Alignment
-        this.populateCareerAlignment(job);
+        // Job Requirements
+        this.populateJobRequirements(job);
         
         console.log('✅ Job detail modal populated successfully');
+    }
+
+    populateAIJobProfile(job) {
+        const aiProfileSection = document.getElementById('aiJobProfileSection');
+        const aiProfileContent = document.getElementById('aiJobProfileContent');
+        
+        if (!aiProfileSection || !aiProfileContent) {
+            console.error('AI Job Profile elements not found');
+            return;
+        }
+        
+        const aiProfile = job.ai_job_profile || {};
+        
+        if (aiProfile && Object.keys(aiProfile).length > 0) {
+            const profileHtml = `
+                <div class="ai-profile-section">
+                    <div class="ai-profile-item">
+                        <h5>Role Overview</h5>
+                        <p>${aiProfile.role_overview || 'No role overview available.'}</p>
+                    </div>
+                    <div class="ai-profile-item">
+                        <h5>Ideal Candidate Profile</h5>
+                        <p>${aiProfile.ideal_candidate || 'No candidate profile available.'}</p>
+                    </div>
+                    <div class="ai-profile-item">
+                        <h5>Key Success Factors</h5>
+                        <p>${aiProfile.success_factors || 'No success factors identified.'}</p>
+                    </div>
+                    <div class="ai-profile-item">
+                        <h5>Growth Potential</h5>
+                        <p>${aiProfile.growth_potential || 'No growth potential analysis available.'}</p>
+                    </div>
+                    <div class="ai-profile-item">
+                        <h5>Cultural Fit</h5>
+                        <p>${aiProfile.cultural_fit || 'No cultural fit analysis available.'}</p>
+                    </div>
+                    <div class="ai-profile-item">
+                        <h5>Recruiting Insights</h5>
+                        <p>${aiProfile.recruiting_insights || 'No recruiting insights available.'}</p>
+                    </div>
+                </div>
+            `;
+            
+            aiProfileContent.innerHTML = profileHtml;
+            aiProfileSection.style.display = 'block';
+        } else {
+            aiProfileSection.style.display = 'none';
+        }
     }
 
     populateSkills(containerId, skills) {
@@ -272,10 +327,14 @@ class JobsModule {
                     <span class="enhanced-data-label">Scope Level:</span>
                     <span class="enhanced-data-value">${this.formatScopeLevel(growthReqs.scope_level_required)}</span>
                 </div>
-                ${growthReqs.executive_potential_required ? `
+                ${growthReqs.leadership_scope ? `
                 <div class="enhanced-data-item">
-                    <span class="enhanced-data-label">Executive Potential:</span>
-                    <span class="enhanced-data-value">${Math.round(growthReqs.executive_potential_required * 100)}%</span>
+                    <span class="enhanced-data-label">Leadership Scope:</span>
+                    <span class="enhanced-data-value">
+                        <span class="leadership-badge leadership-badge--${growthReqs.leadership_scope}">
+                            ${this.formatLeadershipScope(growthReqs.leadership_scope)}
+                        </span>
+                    </span>    
                 </div>
                 ` : ''}
             `;
@@ -283,6 +342,16 @@ class JobsModule {
         } else {
             enhancedSection.style.display = 'none';
         }
+    }
+
+    formatLeadershipScope(scope) {
+       const scopes = {
+            'individual_contributor': 'Individual Contributor',
+            'team_lead': 'Team Lead', 
+            'manager': 'Manager',
+            'executive': 'Executive'
+        };
+        return scopes[scope] || scope;
     }
 
     populateQualityAssessment(job) {
@@ -328,109 +397,108 @@ class JobsModule {
         }
     }
 
-    populateCulturalAttributes(job) {
-        const culturalSection = document.getElementById('culturalSection');
-        const culturalContent = document.getElementById('detailCultural');
+    populateJobRequirements(job) {
+        const requirementsSection = document.getElementById('jobRequirementsSection');
+        const requirementsGrid = document.getElementById('jobRequirementsGrid');
         
-        if (!culturalSection || !culturalContent) {
-            console.error('Cultural attributes elements not found');
+        if (!requirementsSection || !requirementsGrid) {
+            console.error('Job requirements elements not found');
             return;
         }
         
-        const jobCultural = job.cultural_attributes || {};
-        const candidateCultural = this.getTopCandidateCulturalData();
-        
-        if (Object.keys(jobCultural).length > 0) {
-            culturalContent.innerHTML = this.renderCulturalComparison(jobCultural, candidateCultural);
-            culturalSection.style.display = 'block';
-        } else {
-            culturalSection.style.display = 'none';
-        }
+        const requirements = this.extractJobRequirements(job);
+        requirementsGrid.innerHTML = this.renderJobRequirements(requirements);
+        requirementsSection.style.display = 'block';
     }
 
-    renderCulturalComparison(jobCultural, candidateCultural) {
-        const culturalDimensions = [
-            { key: 'teamwork', label: 'Team Collaboration' },
-            { key: 'innovation', label: 'Innovation Focus' },
-            { key: 'work_environment', label: 'Work Environment' },
-            { key: 'work_pace', label: 'Work Pace' },
-            { key: 'customer_focus', label: 'Customer Focus' }
-        ];
+    extractJobRequirements(job) {
+        const cultural = job.cultural_attributes || {};
+        const growth = job.growth_requirements || {};
+        const skillReqs = job.skill_requirements || {};
+        
+        return {
+            skills: {
+                core: skillReqs.core_skills || job.required_skills || [],
+                secondary: skillReqs.secondary_skills || job.preferred_skills || [],
+                proficiency: skillReqs.required_proficiency || {}
+            },
+            location: job.location || 'Not specified',
+            experience: job.experience_required || 0,
+            employmentType: job.job_type || 'Full-time',
+            cultural: {
+                teamwork: this.extractCulturalScore(cultural.teamwork),
+                innovation: this.extractCulturalScore(cultural.innovation),
+                workEnvironment: this.extractCulturalScore(cultural.work_environment),
+                workPace: this.extractCulturalScore(cultural.work_pace),
+                customerFocus: this.extractCulturalScore(cultural.customer_focus)
+            },
+            growth: {
+                careerStage: growth.target_career_stage || 'mid_career',
+                roleArchetype: growth.role_archetype || 'technical_specialist',
+                scopeLevel: growth.scope_level_required || 1,
+                executivePotential: growth.executive_potential_required || 0.3
+            }
+        };
+    }
 
-        const comparisonItems = culturalDimensions.map(dimension => {
-            const jobScore = this.extractCulturalScore(jobCultural[dimension.key]);
-            const candidateScore = this.extractCulturalScore(candidateCultural[dimension.key]);
-            const matchQuality = this.calculateCulturalMatchQuality(jobScore, candidateScore);
-            
-            return this.renderCulturalDimension(dimension.label, jobScore, candidateScore, matchQuality);
-        }).join('');
-
-        const insights = this.generateCulturalInsights(jobCultural, candidateCultural);
-
+    renderJobRequirements(requirements) {
         return `
-            <div class="cultural-comparison">
-                <div class="cultural-comparison-header">
-                    <div class="insight-header">
-                        <svg class="icon" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                            <circle cx="9" cy="7" r="4"></circle>
-                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                        </svg>
-                        Cultural Fit Analysis
-                    </div>
-                    <div class="cultural-comparison-legend">
-                        <div class="legend-item">
-                            <div class="legend-color legend-job"></div>
-                            <span>Job Requirements</span>
-                        </div>
-                        <div class="legend-item">
-                            <div class="legend-color legend-candidate"></div>
-                            <span>Candidate Assessment</span>
-                        </div>
-                    </div>
+            <div class="requirements-category">
+                <h5>Skills & Experience</h5>
+                <div class="requirement-item">
+                    <span class="requirement-label">Core Skills:</span>
+                    <span class="requirement-value">
+                        ${requirements.skills.core.length > 0 ? 
+                            requirements.skills.core.slice(0, 8).map(skill => 
+                                `<span class="skill-tag skill-tag--small">${skill}</span>`
+                            ).join('') : 
+                            '<span class="text-muted">None specified</span>'
+                        }
+                        ${requirements.skills.core.length > 8 ? 
+                            `<span class="skill-tag skill-tag--small">+${requirements.skills.core.length - 8}</span>` : 
+                            ''
+                        }
+                    </span>
                 </div>
-                <div class="cultural-comparison-grid">
-                    ${comparisonItems}
+                <div class="requirement-item">
+                    <span class="requirement-label">Experience Required:</span>
+                    <span class="requirement-value">${requirements.experience}+ years</span>
                 </div>
-                ${insights}
+                <div class="requirement-item">
+                    <span class="requirement-label">Employment Type:</span>
+                    <span class="requirement-value">${requirements.employmentType}</span>
+                </div>
             </div>
-        `;
-    }
-
-    renderCulturalDimension(label, jobScore, candidateScore, matchQuality) {
-        const jobPercent = Math.round(jobScore * 100);
-        const candidatePercent = Math.round(candidateScore * 100);
-        
-        let matchClass = 'match-fair';
-        let matchText = 'Fair';
-        
-        if (matchQuality >= 0.8) {
-            matchClass = 'match-excellent';
-            matchText = 'Excellent';
-        } else if (matchQuality >= 0.6) {
-            matchClass = 'match-good';
-            matchText = 'Good';
-        } else if (matchQuality <= 0.3) {
-            matchClass = 'match-poor';
-            matchText = 'Poor';
-        }
-
-        return `
-            <div class="cultural-dimension">
-                <div class="cultural-dimension-label">${label}</div>
-                <div class="cultural-scores">
-                    <div class="cultural-score-bar">
-                        <div class="cultural-score-fill cultural-score-fill--job" style="width: ${jobPercent}%"></div>
-                        <div class="cultural-score-fill cultural-score-fill--candidate" style="width: ${candidatePercent}%"></div>
-                    </div>
-                    <div class="cultural-score-labels">
-                        <span class="cultural-job-score">${jobPercent}%</span>
-                        <span class="cultural-candidate-score">${candidatePercent}%</span>
-                    </div>
+            
+            <div class="requirements-category">
+                <h5>Location & Environment</h5>
+                <div class="requirement-item">
+                    <span class="requirement-label">Location:</span>
+                    <span class="requirement-value">${requirements.location}</span>
                 </div>
-                <div class="cultural-match-indicator">
-                    <span class="match-status ${matchClass}">${matchText}</span>
+                <div class="requirement-item">
+                    <span class="requirement-label">Team Collaboration:</span>
+                    <span class="requirement-value">${this.formatCulturalValue(requirements.cultural.teamwork)}</span>
+                </div>
+                <div class="requirement-item">
+                    <span class="requirement-label">Work Pace:</span>
+                    <span class="requirement-value">${this.formatCulturalValue(requirements.cultural.workPace)}</span>
+                </div>
+            </div>
+            
+            <div class="requirements-category">
+                <h5>Career Growth</h5>
+                <div class="requirement-item">
+                    <span class="requirement-label">Career Stage:</span>
+                    <span class="requirement-value">${this.formatCareerStage(requirements.growth.careerStage)}</span>
+                </div>
+                <div class="requirement-item">
+                    <span class="requirement-label">Role Type:</span>
+                    <span class="requirement-value">${this.formatArchetype(requirements.growth.roleArchetype)}</span>
+                </div>
+                <div class="requirement-item">
+                    <span class="requirement-label">Scope Level:</span>
+                    <span class="requirement-value">${this.formatScopeLevel(requirements.growth.scopeLevel)}</span>
                 </div>
             </div>
         `;
@@ -447,243 +515,11 @@ class JobsModule {
         return 0.5;
     }
 
-    calculateCulturalMatchQuality(jobScore, candidateScore) {
-        const difference = Math.abs(jobScore - candidateScore);
-        return 1 - difference;
-    }
-
-    generateCulturalInsights(jobCultural, candidateCultural) {
-        const insights = [];
-        
-        const dimensions = [
-            { key: 'teamwork', label: 'Team Collaboration' },
-            { key: 'innovation', label: 'Innovation' },
-            { key: 'work_environment', label: 'Work Environment' },
-            { key: 'work_pace', label: 'Work Pace' },
-            { key: 'customer_focus', label: 'Customer Focus' }
-        ];
-
-        dimensions.forEach(dimension => {
-            const jobScore = this.extractCulturalScore(jobCultural[dimension.key]);
-            const candidateScore = this.extractCulturalScore(candidateCultural[dimension.key]);
-            const difference = Math.abs(jobScore - candidateScore);
-
-            if (difference <= 0.2) {
-                insights.push({
-                    text: `Strong alignment on ${dimension.label}`,
-                    class: 'insight-positive',
-                    icon: 'check'
-                });
-            } else if (difference <= 0.4) {
-                insights.push({
-                    text: `Moderate difference in ${dimension.label}`,
-                    class: 'insight-warning',
-                    icon: 'alert'
-                });
-            } else {
-                insights.push({
-                    text: `Significant mismatch in ${dimension.label}`,
-                    class: 'insight-negative',
-                    icon: 'x'
-                });
-            }
-        });
-
-        // Add overall cultural fit insight
-        const overallMatch = this.calculateOverallCulturalMatch(jobCultural, candidateCultural);
-        if (overallMatch >= 0.8) {
-            insights.unshift({
-                text: 'Excellent overall cultural fit',
-                class: 'insight-positive',
-                icon: 'star'
-            });
-        } else if (overallMatch >= 0.6) {
-            insights.unshift({
-                text: 'Good cultural alignment with some areas for discussion',
-                class: 'insight-warning',
-                icon: 'info'
-            });
-        } else {
-            insights.unshift({
-                text: 'Significant cultural fit concerns',
-                class: 'insight-negative',
-                icon: 'alert-triangle'
-            });
-        }
-
-        if (insights.length > 0) {
-            return `
-                <div class="cultural-insights">
-                    <div class="insight-header">
-                        <svg class="icon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                            <circle cx="12" cy="10" r="3"></circle>
-                        </svg>
-                        Cultural Fit Assessment
-                    </div>
-                    <ul class="insight-list">
-                        ${insights.map(insight => `
-                            <li class="insight-item ${insight.class}">
-                                ${this.getInsightIcon(insight.icon)}
-                                ${insight.text}
-                            </li>
-                        `).join('')}
-                    </ul>
-                </div>
-            `;
-        }
-        
-        return '';
-    }
-
-    getInsightIcon(iconType) {
-        const icons = {
-            check: `
-                <svg class="icon insight-icon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="20 6 9 17 4 12"></polyline>
-                </svg>
-            `,
-            alert: `
-                <svg class="icon insight-icon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <line x1="12" y1="8" x2="12" y2="12"></line>
-                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
-                </svg>
-            `,
-            x: `
-                <svg class="icon insight-icon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
-                    <line x1="18" y1="6" x2="6" y2="18"></line>
-                    <line x1="6" y1="6" x2="18" y2="18"></line>
-                </svg>
-            `,
-            star: `
-                <svg class="icon insight-icon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
-                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-                </svg>
-            `,
-            'alert-triangle': `
-                <svg class="icon insight-icon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
-                    <line x1="12" y1="9" x2="12" y2="13"></line>
-                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
-                </svg>
-            `,
-            info: `
-                <svg class="icon insight-icon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <line x1="12" y1="16" x2="12" y2="12"></line>
-                    <line x1="12" y1="8" x2="12.01" y2="8"></line>
-                </svg>
-            `
-        };
-        
-        return icons[iconType] || icons.info;
-    }
-
-    calculateOverallCulturalMatch(jobCultural, candidateCultural) {
-        let totalMatch = 0;
-        let count = 0;
-
-        for (const key in jobCultural) {
-            if (candidateCultural[key] !== undefined) {
-                const jobScore = this.extractCulturalScore(jobCultural[key]);
-                const candidateScore = this.extractCulturalScore(candidateCultural[key]);
-                const match = 1 - Math.abs(jobScore - candidateScore);
-                totalMatch += match;
-                count++;
-            }
-        }
-
-        return count > 0 ? totalMatch / count : 0.5;
-    }
-
-    getTopCandidateCulturalData() {
-        // This should come from your actual matching results
-        return {
-            teamwork: [0.8, 0.9],
-            innovation: [0.3, 0.7],
-            work_environment: [0.9, 0.7],
-            work_pace: [0.5, 0.3],
-            customer_focus: [0.6, 0.4]
-        };
-    }
-
-    populateCareerAlignment(job) {
-        const careerSection = document.getElementById('careerAlignmentSection');
-        const careerContent = document.getElementById('careerAlignmentContent');
-        
-        if (!careerSection || !careerContent) {
-            console.error('Career alignment elements not found');
-            return;
-        }
-        
-        // For now, use placeholder data
-        const careerAlignment = this.getCareerAlignmentPlaceholder(job);
-        
-        if (careerAlignment.insights && careerAlignment.insights.length > 0) {
-            careerContent.innerHTML = `
-                <div class="career-alignment-grid">
-                    ${careerAlignment.archetype_match ? `
-                    <div class="career-metric">
-                        <span class="career-label">Archetype Match:</span>
-                        <span class="career-value career-value--${this.getCareerScoreClass(careerAlignment.archetype_match)}">
-                            ${careerAlignment.archetype_match}%
-                        </span>
-                    </div>
-                    ` : ''}
-                    
-                    ${careerAlignment.career_stage_match ? `
-                    <div class="career-metric">
-                        <span class="career-label">Career Stage:</span>
-                        <span class="career-value career-value--${this.getCareerScoreClass(careerAlignment.career_stage_match)}">
-                            ${careerAlignment.career_stage_match}%
-                        </span>
-                    </div>
-                    ` : ''}
-                    
-                    ${careerAlignment.growth_trajectory ? `
-                    <div class="career-metric">
-                        <span class="career-label">Growth Trajectory:</span>
-                        <span class="career-value career-value--${this.getCareerScoreClass(careerAlignment.growth_trajectory)}">
-                            ${careerAlignment.growth_trajectory}%
-                        </span>
-                    </div>
-                    ` : ''}
-                </div>
-                
-                <div class="career-insights">
-                    <h5>Career Alignment Insights:</h5>
-                    <ul>
-                        ${careerAlignment.insights.map(insight => `
-                            <li class="career-insight">${insight}</li>
-                        `).join('')}
-                    </ul>
-                </div>
-            `;
-            careerSection.style.display = 'block';
-        } else {
-            careerSection.style.display = 'none';
-        }
-    }
-
-    getCareerAlignmentPlaceholder(job) {
-        return {
-            archetype_match: 85,
-            career_stage_match: 90,
-            growth_trajectory: 78,
-            insights: [
-                "Strong archetype match (Technical Specialist ↔ Technical Specialist)",
-                "Perfect career stage alignment", 
-                "Excellent growth trajectory alignment"
-            ]
-        };
-    }
-
-    getCareerScoreClass(score) {
-        if (score >= 80) return 'excellent';
-        if (score >= 60) return 'good';
-        if (score >= 40) return 'moderate';
-        return 'poor';
+    formatCulturalValue(score) {
+        if (score >= 0.8) return 'Very High';
+        if (score >= 0.6) return 'High';
+        if (score >= 0.4) return 'Medium';
+        return 'Low';
     }
 
     openJobDetailModal() {
@@ -731,27 +567,6 @@ class JobsModule {
             'portfolio_leader': 'Portfolio Leader'
         };
         return archetypes[archetype] || archetype;
-    }
-
-    formatCulturalKey(key) {
-        const keys = {
-            'teamwork': 'Team Collaboration',
-            'innovation': 'Innovation Focus', 
-            'work_environment': 'Work Environment',
-            'work_pace': 'Work Pace',
-            'customer_focus': 'Customer Focus'
-        };
-        return keys[key] || key;
-    }
-
-    formatCulturalValue(value) {
-        if (typeof value === 'number') {
-            if (value >= 0.8) return 'Very High';
-            if (value >= 0.6) return 'High';
-            if (value >= 0.4) return 'Medium';
-            return 'Low';
-        }
-        return value;
     }
 }
 

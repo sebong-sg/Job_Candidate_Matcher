@@ -2,7 +2,7 @@
 ├── ./.vscode
 ├── ./analytics_report.py
 ├── ./chroma_data_manager.py
-├── ./chroma_data_manager_OLD.py
+├── ./chroma_data_manager_V1.py
 ├── ./chroma_db
 │   ├── ./chroma_db/401b2ac5-0f43-4527-b475-71231bb789ee
 │   ├── ./chroma_db/5b57cc25-deae-40cf-b69b-3ec9329e5e03
@@ -18,7 +18,10 @@
 │   ├── ./src/enhanced_cultural_extractor.py
 │   ├── ./src/enhanced_cultural_extractor_OLD.py
 │   ├── ./src/job_parser.py
+│   ├── ./src/job_parser_V1.py
+│   ├── ./src/job_parser_V2.py
 │   ├── ./src/matcher.py
+│   ├── ./src/matcher_V1.py
 │   ├── ./src/resume_parser.py
 │   ├── ./src/resume_parser_V0.2.py
 │   └── ./src/sample_data.py
@@ -35,6 +38,7 @@
 │   │   │   ├── ./static/css/components/matching.css
 │   │   │   ├── ./static/css/components/modals.css
 │   │   │   ├── ./static/css/components/navigation.css
+│   │   │   ├── ./static/css/components/quality-assessment.css
 │   │   │   └── ./static/css/components/tables.css
 │   │   ├── ./static/css/landing.css
 │   │   ├── ./static/css/landing_V1.css
@@ -44,12 +48,18 @@
 │   └── ./static/js
 │       ├── ./static/js/app.js
 │       ├── ./static/js/modules
+│       │   ├── ./static/js/modules/candidate-modal.js
 │       │   ├── ./static/js/modules/candidates.js
+│       │   ├── ./static/js/modules/candidates_V1.js
 │       │   ├── ./static/js/modules/charts.js
 │       │   ├── ./static/js/modules/dashboard.js
 │       │   ├── ./static/js/modules/file-upload.js
 │       │   ├── ./static/js/modules/job-modal.js
+│       │   ├── ./static/js/modules/job-modal_V1.js
 │       │   ├── ./static/js/modules/jobs.js
+│       │   ├── ./static/js/modules/jobs_V1.js
+│       │   ├── ./static/js/modules/jobs_V2.js
+│       │   ├── ./static/js/modules/jobs_V3.js
 │       │   └── ./static/js/modules/matching.js
 │       └── ./static/js/utils
 │           ├── ./static/js/utils/api.js
@@ -59,11 +69,14 @@
 │   ├── ./templates/base.html
 │   ├── ./templates/base_V1.html
 │   ├── ./templates/candidates.html
+│   ├── ./templates/candidates_V1.html
 │   ├── ./templates/dashboard.html
 │   ├── ./templates/index.html
 │   ├── ./templates/index_V1.html
 │   ├── ./templates/index_V2.html
 │   ├── ./templates/jobs.html
+│   ├── ./templates/jobs_V1.html
+│   ├── ./templates/jobs_V2.html
 │   ├── ./templates/matching.html
 │   ├── ./templates/mission.html
 │   ├── ./templates/partials
@@ -76,7 +89,8 @@
 │   └── ./templates/vision.html
 ├── ./validate_candidate.py
 ├── ./vector_db.py
+├── ./vector_db_V1.py
 ├── ./web_browser_app.py
 └── ./web_browser_app_OLD.py
 
-17 directories, 63 files
+17 directories, 77 files

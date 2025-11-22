@@ -117,8 +117,8 @@ class JobsModule {
             <div class="job-card" data-job-id="${job.id}" onclick="jobsModule.showJobDetail(${job.id})">
                 <div class="job-card__header">
                     <div>
-                        <h4 class="job-card__title">${job.title}</h4>
-                        <div class="job-card__company">${job.company}</div>
+                        <h4 class="job-card__title">${job.title || 'Untitled Job'}</h4>
+                        <div class="job-card__company">${job.company || 'No company'}</div>
                     </div>
                     ${hasQualityData ? `
                         <span class="job-quality-badge job-quality-badge--${quality.quality_level}">
@@ -133,7 +133,7 @@ class JobsModule {
                             <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
                             <circle cx="12" cy="10" r="3"></circle>
                         </svg>
-                        ${job.location}
+                        ${job.location || 'Location not specified'}
                     </div>
                     <div class="job-card__experience">
                         <svg class="icon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
@@ -153,17 +153,17 @@ class JobsModule {
                     </div>
                 ` : ''}
                 <div class="job-card__skills">
-                    ${job.required_skills.slice(0, 5).map(skill => 
+                    ${(job.required_skills || []).slice(0, 5).map(skill => 
                         `<span class="skill-tag skill-tag--required">${skill}</span>`
                     ).join('')}
                     ${job.preferred_skills && job.preferred_skills.slice(0, 3).map(skill => 
                         `<span class="skill-tag">${skill}</span>`
                     ).join('')}
-                    ${(job.required_skills.length > 5 || (job.preferred_skills && job.preferred_skills.length > 3)) ? 
-                        `<span class="skill-tag">+${(job.required_skills.length - 5) + (job.preferred_skills ? job.preferred_skills.length - 3 : 0)}</span>` : ''}
+                    ${((job.required_skills || []).length > 5 || (job.preferred_skills && job.preferred_skills.length > 3)) ? 
+                        `<span class="skill-tag">+${((job.required_skills || []).length - 5) + (job.preferred_skills ? job.preferred_skills.length - 3 : 0)}</span>` : ''}
                 </div>
                 <div class="job-card__description">
-                    ${Formatters.truncateText(job.description, 150)}
+                    ${Formatters.truncateText(job.description || 'No description available', 150)}
                 </div>
                 ${quality.quality_issues && quality.quality_issues.length > 0 ? `
                     <div class="job-card__quality-issues">
@@ -179,6 +179,7 @@ class JobsModule {
         
         if (!job) {
             console.error('Job not found:', jobId);
+            UIUtils.showNotification('Job details not found', 'error');
             return;
         }
         
@@ -187,9 +188,11 @@ class JobsModule {
     }
 
     populateJobDetailModal(job) {
+        console.log('🔍 Populating job detail modal with:', job);
+        
         // Populate basic info
-        document.getElementById('detailJobTitle').textContent = job.title;
-        document.getElementById('detailCompany').textContent = job.company;
+        document.getElementById('detailJobTitle').textContent = job.title || 'No title available';
+        document.getElementById('detailCompany').textContent = job.company || 'No company specified';
         document.getElementById('detailLocation').textContent = job.location || 'Not specified';
         document.getElementById('detailExperience').textContent = `${job.experience_required || 0}+ years`;
         document.getElementById('detailJobType').textContent = job.job_type || 'Full-time';
@@ -199,8 +202,8 @@ class JobsModule {
         // Quality badge
         const quality = job.quality_assessment || {};
         const qualityBadge = document.getElementById('detailQualityBadge');
-        if (quality.quality_level) {
-            qualityBadge.innerHTML = `${this.formatQualityLevel(quality.quality_level)} ${Math.round(quality.quality_score * 100)}%`;
+        if (quality.quality_level && quality.quality_level !== 'unknown') {
+            qualityBadge.innerHTML = `${this.formatQualityLevel(quality.quality_level)} ${Math.round((quality.quality_score || 0.5) * 100)}%`;
             qualityBadge.className = `job-quality-badge job-quality-badge--${quality.quality_level}`;
             qualityBadge.style.display = 'inline-flex';
         } else {
@@ -219,13 +222,20 @@ class JobsModule {
         // Quality assessment
         this.populateQualityAssessment(job);
         
-        // Cultural attributes
-        this.populateCulturalAttributes(job);
+        // Job Requirements
+        this.populateJobRequirements(job);
+        
+        console.log('✅ Job detail modal populated successfully');
     }
 
     populateSkills(containerId, skills) {
         const container = document.getElementById(containerId);
-        if (skills.length > 0) {
+        if (!container) {
+            console.error('Container not found:', containerId);
+            return;
+        }
+        
+        if (skills && skills.length > 0) {
             container.innerHTML = skills.map(skill => 
                 `<span class="skill-tag">${skill}</span>`
             ).join('');
@@ -238,25 +248,35 @@ class JobsModule {
         const enhancedSection = document.getElementById('detailEnhancedData');
         const enhancedGrid = document.getElementById('enhancedDataGrid');
         
-        if (job.growth_requirements && job.growth_requirements.target_career_stage) {
-            const growth = job.growth_requirements;
+        if (!enhancedSection || !enhancedGrid) {
+            console.error('Enhanced data elements not found');
+            return;
+        }
+        
+        const growthReqs = job.growth_requirements || {};
+        
+        if (growthReqs.target_career_stage) {
             enhancedGrid.innerHTML = `
                 <div class="enhanced-data-item">
                     <span class="enhanced-data-label">Career Stage:</span>
-                    <span class="enhanced-data-value">${this.formatCareerStage(growth.target_career_stage)}</span>
+                    <span class="enhanced-data-value">${this.formatCareerStage(growthReqs.target_career_stage)}</span>
                 </div>
                 <div class="enhanced-data-item">
                     <span class="enhanced-data-label">Role Type:</span>
-                    <span class="enhanced-data-value">${this.formatArchetype(growth.role_archetype)}</span>
+                    <span class="enhanced-data-value">${this.formatArchetype(growthReqs.role_archetype)}</span>
                 </div>
                 <div class="enhanced-data-item">
                     <span class="enhanced-data-label">Scope Level:</span>
-                    <span class="enhanced-data-value">${this.formatScopeLevel(growth.scope_level_required)}</span>
+                    <span class="enhanced-data-value">${this.formatScopeLevel(growthReqs.scope_level_required)}</span>
                 </div>
-                ${growth.executive_potential_required ? `
+                ${growthReqs.leadership_scope ? `
                 <div class="enhanced-data-item">
-                    <span class="enhanced-data-label">Executive Potential:</span>
-                    <span class="enhanced-data-value">${Math.round(growth.executive_potential_required * 100)}%</span>
+                    <span class="enhanced-data-label">Leadership Scope:</span>
+                    <span class="enhanced-data-value">
+                        <span class="leadership-badge leadership-badge--${growthReqs.leadership_scope}">
+                            ${this.formatLeadershipScope(growthReqs.leadership_scope)}
+                        </span>
+                    </span>    
                 </div>
                 ` : ''}
             `;
@@ -266,9 +286,26 @@ class JobsModule {
         }
     }
 
+
+    formatLeadershipScope(scope) {
+       const scopes = {
+            'individual_contributor': 'Individual Contributor',
+            'team_lead': 'Team Lead', 
+            'manager': 'Manager',
+            'executive': 'Executive'
+        };
+        return scopes[scope] || scope;
+    }
+
     populateQualityAssessment(job) {
         const qualitySection = document.getElementById('detailQuality');
         const qualityContent = document.getElementById('qualityDetailContent');
+        
+        if (!qualitySection || !qualityContent) {
+            console.error('Quality assessment elements not found');
+            return;
+        }
+        
         const quality = job.quality_assessment || {};
         
         if (quality.quality_level) {
@@ -276,7 +313,7 @@ class JobsModule {
                 <div class="quality-indicator quality-indicator--${quality.quality_level}">
                     <div class="quality-indicator__header">
                         <span class="quality-indicator__label">Overall Quality Score</span>
-                        <span class="quality-indicator__score">${Math.round(quality.quality_score * 100)}%</span>
+                        <span class="quality-indicator__score">${Math.round((quality.quality_score || 0.5) * 100)}%</span>
                     </div>
                     <div class="quality-indicator__level">
                         <span class="quality-badge quality-badge--${quality.quality_level}">
@@ -303,47 +340,129 @@ class JobsModule {
         }
     }
 
-    populateCulturalAttributes(job) {
-        const culturalSection = document.getElementById('culturalSection');
-        const culturalContent = document.getElementById('detailCultural');
-        const cultural = job.cultural_attributes || {};
+    populateJobRequirements(job) {
+        const requirementsSection = document.getElementById('jobRequirementsSection');
+        const requirementsGrid = document.getElementById('jobRequirementsGrid');
         
-        if (Object.keys(cultural).length > 0) {
-            culturalContent.innerHTML = `
-                <div class="cultural-attributes">
-                    ${Object.entries(cultural).map(([key, value]) => `
-                        <div class="cultural-item">
-                            <span class="cultural-label">${this.formatCulturalKey(key)}:</span>
-                            <span class="cultural-value">${this.formatCulturalValue(value)}</span>
-                        </div>
-                    `).join('')}
-                </div>
-            `;
-            culturalSection.style.display = 'block';
-        } else {
-            culturalSection.style.display = 'none';
+        if (!requirementsSection || !requirementsGrid) {
+            console.error('Job requirements elements not found');
+            return;
         }
+        
+        const requirements = this.extractJobRequirements(job);
+        requirementsGrid.innerHTML = this.renderJobRequirements(requirements);
+        requirementsSection.style.display = 'block';
     }
 
-    formatCulturalKey(key) {
-        const keys = {
-            'teamwork': 'Team Collaboration',
-            'innovation': 'Innovation Focus', 
-            'work_environment': 'Work Environment',
-            'work_pace': 'Work Pace',
-            'customer_focus': 'Customer Focus'
+    extractJobRequirements(job) {
+        const cultural = job.cultural_attributes || {};
+        const growth = job.growth_requirements || {};
+        const skillReqs = job.skill_requirements || {};
+        
+        return {
+            skills: {
+                core: skillReqs.core_skills || job.required_skills || [],
+                secondary: skillReqs.secondary_skills || job.preferred_skills || [],
+                proficiency: skillReqs.required_proficiency || {}
+            },
+            location: job.location || 'Not specified',
+            experience: job.experience_required || 0,
+            employmentType: job.job_type || 'Full-time',
+            cultural: {
+                teamwork: this.extractCulturalScore(cultural.teamwork),
+                innovation: this.extractCulturalScore(cultural.innovation),
+                workEnvironment: this.extractCulturalScore(cultural.work_environment),
+                workPace: this.extractCulturalScore(cultural.work_pace),
+                customerFocus: this.extractCulturalScore(cultural.customer_focus)
+            },
+            growth: {
+                careerStage: growth.target_career_stage || 'mid_career',
+                roleArchetype: growth.role_archetype || 'technical_specialist',
+                scopeLevel: growth.scope_level_required || 1,
+                executivePotential: growth.executive_potential_required || 0.3
+            }
         };
-        return keys[key] || key;
     }
 
-    formatCulturalValue(value) {
-        if (typeof value === 'number') {
-            if (value >= 0.8) return 'Very High';
-            if (value >= 0.6) return 'High';
-            if (value >= 0.4) return 'Medium';
-            return 'Low';
+    renderJobRequirements(requirements) {
+        return `
+            <div class="requirements-category">
+                <h5>Skills & Experience</h5>
+                <div class="requirement-item">
+                    <span class="requirement-label">Core Skills:</span>
+                    <span class="requirement-value">
+                        ${requirements.skills.core.length > 0 ? 
+                            requirements.skills.core.slice(0, 8).map(skill => 
+                                `<span class="skill-tag skill-tag--small">${skill}</span>`
+                            ).join('') : 
+                            '<span class="text-muted">None specified</span>'
+                        }
+                        ${requirements.skills.core.length > 8 ? 
+                            `<span class="skill-tag skill-tag--small">+${requirements.skills.core.length - 8}</span>` : 
+                            ''
+                        }
+                    </span>
+                </div>
+                <div class="requirement-item">
+                    <span class="requirement-label">Experience Required:</span>
+                    <span class="requirement-value">${requirements.experience}+ years</span>
+                </div>
+                <div class="requirement-item">
+                    <span class="requirement-label">Employment Type:</span>
+                    <span class="requirement-value">${requirements.employmentType}</span>
+                </div>
+            </div>
+            
+            <div class="requirements-category">
+                <h5>Location & Environment</h5>
+                <div class="requirement-item">
+                    <span class="requirement-label">Location:</span>
+                    <span class="requirement-value">${requirements.location}</span>
+                </div>
+                <div class="requirement-item">
+                    <span class="requirement-label">Team Collaboration:</span>
+                    <span class="requirement-value">${this.formatCulturalValue(requirements.cultural.teamwork)}</span>
+                </div>
+                <div class="requirement-item">
+                    <span class="requirement-label">Work Pace:</span>
+                    <span class="requirement-value">${this.formatCulturalValue(requirements.cultural.workPace)}</span>
+                </div>
+            </div>
+            
+            <div class="requirements-category">
+                <h5>Career Growth</h5>
+                <div class="requirement-item">
+                    <span class="requirement-label">Career Stage:</span>
+                    <span class="requirement-value">${this.formatCareerStage(requirements.growth.careerStage)}</span>
+                </div>
+                <div class="requirement-item">
+                    <span class="requirement-label">Role Type:</span>
+                    <span class="requirement-value">${this.formatArchetype(requirements.growth.roleArchetype)}</span>
+                </div>
+                <div class="requirement-item">
+                    <span class="requirement-label">Scope Level:</span>
+                    <span class="requirement-value">${this.formatScopeLevel(requirements.growth.scopeLevel)}</span>
+                </div>
+            </div>
+        `;
+    }
+
+    extractCulturalScore(scoreData) {
+        if (typeof scoreData === 'number') {
+            return scoreData;
+        } else if (Array.isArray(scoreData) && scoreData.length > 0) {
+            return scoreData[0];
+        } else if (typeof scoreData === 'object' && scoreData !== null) {
+            return scoreData.score || 0.5;
         }
-        return value;
+        return 0.5;
+    }
+
+    formatCulturalValue(score) {
+        if (score >= 0.8) return 'Very High';
+        if (score >= 0.6) return 'High';
+        if (score >= 0.4) return 'Medium';
+        return 'Low';
     }
 
     openJobDetailModal() {

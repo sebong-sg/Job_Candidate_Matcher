@@ -1,3 +1,7 @@
+<!-- 👥 CANDIDATES MANAGEMENT INTERFACE
+     Professional candidate management with resume parsing and growth data
+     Integrated with Chroma Vector DB for AI-powered matching -->
+
 {% extends "base.html" %}
 
 {% block title %}Candidates - AI Job Matcher Pro{% endblock %}
@@ -5,8 +9,9 @@
 {% block page_title %}Candidates{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/components/file-upload.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/components/candidates.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/components/modals.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/components/quality-assessment.css') }}">
 {% endblock %}
 
 {% block content %}
@@ -15,16 +20,6 @@
     <div class="view-header">
         <h1>Candidate Management</h1>
         <div class="action-buttons">
-            <button class="btn btn--secondary" id="bulkUploadBtn">
-                <svg class="icon btn__icon" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                    <polyline points="14 2 14 8 20 8"></polyline>
-                    <line x1="16" y1="13" x2="8" y2="13"></line>
-                    <line x1="16" y1="17" x2="8" y2="17"></line>
-                    <polyline points="10 9 9 9 8 9"></polyline>
-                </svg>
-                Bulk Upload
-            </button>
             <button class="btn btn--primary" id="addCandidateBtn">
                 <svg class="icon btn__icon" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
                     <line x1="12" y1="5" x2="12" y2="19"></line>
@@ -35,95 +30,323 @@
         </div>
     </div>
 
-    <!-- Single Candidate Upload Section -->
-    <div class="upload-section" id="singleUploadSection">
-        <div class="batch-upload-container">
-            <div id="singleUploadZone"></div>
+    <!-- Candidates List Container -->
+    <div class="candidates-container" id="candidatesContainer">
+        <div class="loading-state">
+            <div class="loading-spinner"></div>
+            <p>Loading candidates...</p>
         </div>
     </div>
+</div>
 
-    <!-- Candidates List -->
-    <div class="candidates-container" id="candidatesContainer">
-        <!-- Content will be loaded dynamically -->
+<!-- Add Candidate Modal -->
+<div class="modal" id="addCandidateModal">
+    <div class="modal__overlay"></div>
+    <div class="modal__content">
+        <div class="modal__header">
+            <h3>Add New Candidate</h3>
+            <button class="modal__close" id="closeCandidateModal">&times;</button>
+        </div>
+        
+        <div class="modal__body">
+            <!-- Input Method Selection Tabs -->
+            <div class="input-methods">
+                <button class="input-method-tab active" data-method="upload">
+                    <svg class="icon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                    </svg>
+                    Upload Resume
+                </button>
+                <button class="input-method-tab" data-method="paste">
+                    <svg class="icon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M16 4h-2.5a2 2 0 0 0-2 2v2a2 2 0 0 0 2 2H16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"></path>
+                        <path d="M8 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"></path>
+                    </svg>
+                    Paste Text
+                </button>
+                <button class="input-method-tab" data-method="form">
+                    <svg class="icon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 3h-2a2 2 0 0 0-2 2v2a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2z"></path>
+                        <path d="M18 9h-2a2 2 0 0 0-2 2v2a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2v-2a2 2 0 0 0-2-2z"></path>
+                        <path d="M6 15h-2a2 2 0 0 0-2 2v2a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2v-2a2 2 0 0 0-2-2z"></path>
+                    </svg>
+                    Quick Form
+                </button>
+            </div>
+
+            <!-- Method 1: Upload Resume File -->
+            <div class="input-method-content active" id="uploadMethod">
+                <div class="file-drop-zone" id="resumeUploadZone">
+                    <div class="drop-zone-content">
+                        <svg class="drop-zone-icon" width="48" height="48" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                            <polyline points="10 9 9 9 8 9"></polyline>
+                        </svg>
+                        <h4>Upload Resume</h4>
+                        <p>Drag & drop a resume file or click to browse</p>
+                        <input type="file" class="file-input" accept=".pdf,.doc,.docx,.txt">
+                        <div class="supported-formats">Supported: PDF, DOC, DOCX, TXT</div>
+                    </div>
+                </div>
+                <div class="upload-tips">
+                    <p><strong>Tip:</strong> Upload candidate resumes. Our AI will extract key details automatically and assess quality with growth data analysis.</p>
+                </div>
+            </div>
+
+            <!-- Method 2: Paste Resume Text -->
+            <div class="input-method-content" id="pasteMethod">
+                <div class="form-group full-width">
+                    <label for="resumeText">Paste Resume Text</label>
+                    <textarea id="resumeText" class="form-textarea" rows="8" 
+                              placeholder="Paste the complete resume text here. Our AI will extract:
+• Candidate Name & Contact Info
+• Skills & Experience
+• Education & Qualifications
+• Career Growth Potential
+• And more...
+
+Example:
+John Doe
+john.doe@email.com | San Francisco, CA
+5+ years of experience as a Python Developer
+Skills: Python, Django, AWS, Docker, Kubernetes
+Education: BS Computer Science, Stanford University"></textarea>
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn--primary" id="parseResumeText">
+                        <svg class="icon btn__icon" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 20h9"></path>
+                            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                        </svg>
+                        Parse Resume
+                    </button>
+                </div>
+            </div>
+
+            <!-- Method 3: Quick Form Entry -->
+            <div class="input-method-content" id="formMethod">
+                <form id="quickCandidateForm" class="form-grid">
+                    <div class="form-group">
+                        <label for="candidateName">Full Name *</label>
+                        <input type="text" id="candidateName" name="name" required class="form-input" 
+                               placeholder="e.g., John Doe">
+                    </div>
+                    <div class="form-group">
+                        <label for="candidateEmail">Email *</label>
+                        <input type="email" id="candidateEmail" name="email" required class="form-input"
+                               placeholder="e.g., john.doe@example.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="candidateLocation">Location</label>
+                        <input type="text" id="candidateLocation" name="location" class="form-input"
+                               placeholder="e.g., San Francisco, CA">
+                    </div>
+                    <div class="form-group">
+                        <label for="candidateExperience">Years of Experience</label>
+                        <input type="number" id="candidateExperience" name="experience_years" 
+                               class="form-input" min="0" max="50" value="0">
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="candidateSkills">Skills (comma-separated)</label>
+                        <input type="text" id="candidateSkills" name="skills" class="form-input"
+                               placeholder="e.g., Python, Django, AWS, Docker, Kubernetes">
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="candidateProfile">Professional Profile</label>
+                        <textarea id="candidateProfile" name="profile" class="form-textarea" rows="4"
+                                  placeholder="Brief professional summary, career objectives, or key achievements..."></textarea>
+                    </div>
+                </form>
+                <div class="form-tips">
+                    <p><strong>Quick Entry:</strong> Perfect for manually adding candidate information. 
+                    You can add detailed growth analysis later.</p>
+                </div>
+            </div>
+
+            <!-- Quality Assessment Section -->
+            <div class="quality-indicator" id="qualityIndicator" style="display: none;">
+                <!-- Dynamically populated with quality assessment -->
+            </div>
+
+            <!-- Quality Warnings -->
+            <div class="quality-warnings" id="qualityWarnings" style="display: none;">
+                <!-- Dynamically populated with quality warnings -->
+            </div>
+
+            <!-- Parsed Data Review Section -->
+            <div class="parsed-review" id="parsedReview">
+                <h4>
+                    <svg class="icon" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                        <polyline points="10 9 9 9 8 9"></polyline>
+                    </svg>
+                    Review Parsed Candidate Details
+                </h4>
+                <p class="review-description">Our AI has extracted the following details with growth data analysis. 
+                Please review and edit any fields before saving.</p>
+                <div id="parsedFields" class="parsed-fields-container">
+                    <!-- Dynamically populated with parsed candidate data -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Footer Actions -->
+        <div class="modal__footer">
+            <button class="btn btn--secondary" id="cancelCandidate">
+                Cancel
+            </button>
+            <button class="btn btn--primary" id="saveCandidate">
+                <svg class="icon btn__icon" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                    <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                    <polyline points="7 3 7 8 15 8"></polyline>
+                </svg>
+                Save Candidate
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Candidate Detail Modal -->
+<div class="modal" id="candidateDetailModal">
+    <div class="modal__overlay"></div>
+    <div class="modal__content modal__content--large">
+        <div class="modal__header">
+            <h3 id="candidateDetailTitle">Candidate Details</h3>
+            <button class="modal__close" id="closeCandidateDetailModal">&times;</button>
+        </div>
+        
+        <div class="modal__body">
+            <div class="candidate-detail-container">
+                <!-- Candidate Header -->
+                <div class="candidate-detail-header">
+                    <div class="candidate-detail-main">
+                        <h2 id="detailCandidateName"></h2>
+                        <div class="candidate-detail-email" id="detailEmail"></div>
+                    </div>
+                    <div class="candidate-detail-meta">
+                        <span class="candidate-quality-badge" id="detailQualityBadge"></span>
+                    </div>
+                </div>
+
+                <!-- Candidate Meta Information -->
+                <div class="candidate-detail-meta-grid">
+                    <div class="meta-item">
+                        <svg class="icon" width="16" height="16" fill="none" stroke="currentColor">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                            <circle cx="12" cy="10" r="3"></circle>
+                        </svg>
+                        <span id="detailLocation"></span>
+                    </div>
+                    <div class="meta-item">
+                        <svg class="icon" width="16" height="16" fill="none" stroke="currentColor">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                        <span id="detailExperience"></span>
+                    </div>
+                    <div class="meta-item">
+                        <svg class="icon" width="16" height="16" fill="none" stroke="currentColor">
+                            <path d="M12 2a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"></path>
+                            <path d="M19 10v1a7 7 0 0 1-14 0v-1"></path>
+                            <line x1="12" y1="19" x2="12" y2="23"></line>
+                            <line x1="8" y1="23" x2="16" y2="23"></line>
+                        </svg>
+                        <span id="detailEducation"></span>
+                    </div>
+                </div>
+
+                <!-- Enhanced Data Section -->
+                <div class="candidate-detail-enhanced" id="detailEnhancedData" style="display: none;">
+                    <h4>Career & Growth Profile</h4>
+                    <div class="enhanced-data-grid" id="enhancedDataGrid"></div>
+                </div>
+
+                <!-- Quality Assessment -->
+                <div class="candidate-detail-quality" id="detailQuality" style="display: none;">
+                    <h4>Profile Quality Assessment</h4>
+                    <div id="qualityDetailContent"></div>
+                </div>
+
+                <!-- Candidate Profile Section -->
+                <div class="candidate-detail-section" id="candidateRequirementsSection">
+                    <h4>Candidate Profile</h4>
+                    <div class="requirements-grid" id="candidateRequirementsGrid">
+                        <!-- Dynamically populated with candidate profile data -->
+                    </div>
+                </div>
+
+                <!-- Skills Section -->
+                <div class="candidate-detail-section">
+                    <h4>Skills & Technologies</h4>
+                    <div class="skills-container" id="detailSkills"></div>
+                </div>
+
+                <!-- Professional Profile -->
+                <div class="candidate-detail-section">
+                    <h4>Professional Profile</h4>
+                    <div class="candidate-profile-content" id="detailProfile"></div>
+                </div>
+                
+                <div class="candidate-detail-section" id="cvDetailsSection" style="display: none;">
+                    <h4>
+                        <svg class="icon" width="20" height="20" fill="none" stroke="currentColor">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                        </svg>
+                        Complete CV Details
+                    </h4>
+                    <div class="cv-details-content" id="cvDetailsContent">
+                        <!-- Original resume text will be displayed here -->
+                    </div>
+                    </div>
+            
+            </div>
+        </div>
+
+        <div class="modal__footer">
+            <button class="btn btn--secondary" id="closeDetailCandidateModal">Close</button>
+            <button class="btn btn--primary" id="findJobsForCandidateBtn">
+                <svg class="icon btn__icon" width="16" height="16" fill="none" stroke="currentColor">
+                    <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                    <path d="M16 3v4M8 3v4M3 11h18"></path>
+                </svg>
+                Find Matching Jobs
+            </button>
+        </div>
     </div>
 </div>
 {% endblock %}
 
 {% block extra_js %}
-<script src="{{ url_for('static', filename='js/modules/file-upload.js') }}"></script>
 <script src="{{ url_for('static', filename='js/modules/candidates.js') }}"></script>
+<script src="{{ url_for('static', filename='js/modules/candidate-modal.js') }}"></script>
 <script>
+    // 👥 Candidates Page Initialization
     document.addEventListener('DOMContentLoaded', function() {
-        // Initialize modules
-        fileUpload.init();
+        // Initialize candidate management modules
         candidatesModule.init();
-
-        // Create single file upload zone
-        const singleUploadZone = fileUpload.createDropZone(
-            document.getElementById('singleUploadZone'),
-            {
-                title: 'Upload Resume',
-                subtitle: 'Drag & drop a resume file or click to browse',
-                multiple: false,
-                onFilesSelected: (files) => {
-                    if (files.length === 1) {
-                        fileUpload.uploadFile(files[0], {
-                            onUploadStart: (file) => {
-                                console.log('Uploading:', file.name);
-                            },
-                            onUploadComplete: (result, file) => {
-                                console.log('Upload complete:', result);
-                                // Hide upload section after successful upload
-                                document.getElementById('singleUploadSection').classList.remove('upload-section--visible');
-                                // Refresh candidates list
-                                candidatesModule.displayCandidates(
-                                    document.getElementById('candidatesContainer')
-                                );
-
-                                   
-                                // ADD THESE LINES TO REFRESH DASHBOARD:
-                                if (window.dashboardModule) {
-                                    dashboardModule.loadStats();
-                                    dashboardModule.loadMatches();
-                                }
-
-                                // Show success message
-                                if (window.UIUtils) {
-                                    UIUtils.showNotification('Candidate added successfully!', 'success');
-                                }
-                            },
-                            onUploadError: (error, file) => {
-                                console.error('Upload failed:', error);
-                                if (window.UIUtils) {
-                                    UIUtils.showNotification(`Failed to upload ${file.name}`, 'error');
-                                }
-                            }
-                        });
-                    }
-                }
-            }
-        );
-
-        // Toggle single candidate upload section
-        document.getElementById('addCandidateBtn').addEventListener('click', function() {
-            const uploadSection = document.getElementById('singleUploadSection');
-            uploadSection.classList.toggle('upload-section--visible');
-            
-            // Scroll to upload section if opening
-            if (uploadSection.classList.contains('upload-section--visible')) {
-                uploadSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-            }
-        });
-
-        // Bulk upload button (placeholder for now)
-        document.getElementById('bulkUploadBtn').addEventListener('click', function() {
-            if (window.UIUtils) {
-                UIUtils.showNotification('Bulk upload feature coming soon!', 'info');
-            }
-        });
-
-        // Load initial candidates (without loading message)
+        candidateModal.init();
+        
+        // Load initial candidates list
         candidatesModule.displayCandidates(document.getElementById('candidatesContainer'));
+
+        // Add Candidate button opens the modal
+        document.getElementById('addCandidateBtn').addEventListener('click', function() {
+            candidateModal.open();
+        });
+
+        // Success message when candidates load
+        console.log('✅ Candidates management interface ready');
     });
 </script>
 {% endblock %}

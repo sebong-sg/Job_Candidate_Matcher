@@ -296,6 +296,14 @@ Location: Remote | Full-time position"></textarea>
                     <div id="qualityDetailContent"></div>
                 </div>
 
+                <!-- Job Requirements Section -->
+                <div class="job-detail-section" id="jobRequirementsSection">
+                    <h4>Job Requirements</h4>
+                    <div class="requirements-grid" id="jobRequirementsGrid">
+                        <!-- Dynamically populated with job requirements -->
+                    </div>
+                </div>
+
                 <!-- Skills Section -->
                 <div class="job-detail-section">
                     <h4>Required Skills</h4>
@@ -307,25 +315,24 @@ Location: Remote | Full-time position"></textarea>
                     <div class="skills-container" id="detailPreferredSkills"></div>
                 </div>
 
+                <!-- NEW: AI Job Profile Section - MOVED ABOVE JOB DESCRIPTION -->
+                <div class="job-detail-section" id="aiJobProfileSection" style="display: none;">
+                    <h4>
+                        <svg class="icon" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 20h9"></path>
+                            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                        </svg>
+                        AI Job Profile
+                    </h4>
+                    <div class="ai-profile-content" id="aiJobProfileContent">
+                        <!-- Dynamically populated with AI Job Profile data -->
+                    </div>
+                </div>
+
                 <!-- Job Description -->
                 <div class="job-detail-section">
                     <h4>Job Description</h4>
                     <div class="job-description-content" id="detailDescription"></div>
-                </div>
-
-                <!-- Cultural Attributes -->
-                <div class="job-detail-section" id="culturalSection" style="display: none;">
-                    <h4>Cultural Fit Analysis</h4>
-                    <div id="detailCultural"></div>
-                        <!-- Dynamically populated with cultural comparison -->
-                </div>
-
-                <!-- Career Alignment Section -->
-                <div class="career-alignment-section" id="careerAlignmentSection" style="display: none;">
-                    <h4> Career Alignment Assessment</h4>
-                    <div id="careerAlignmentContent">
-                        <!-- Dynamically populated with career alignment data -->
-                    </div>
                 </div>
             </div>
         </div>

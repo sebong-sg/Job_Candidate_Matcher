@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+{% block title %}Candidates - AI Job Matcher Pro{% endblock %}
+
+{% block page_title %}Candidates{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/components/file-upload.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/components/candidates.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="candidates-view">
+    <!-- Header with Actions -->
+    <div class="view-header">
+        <h1>Candidate Management</h1>
+        <div class="action-buttons">
+            <button class="btn btn--secondary" id="bulkUploadBtn">
+                <svg class="icon btn__icon" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                    <polyline points="10 9 9 9 8 9"></polyline>
+                </svg>
+                Bulk Upload
+            </button>
+            <button class="btn btn--primary" id="addCandidateBtn">
+                <svg class="icon btn__icon" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                Add Candidate
+            </button>
+        </div>
+    </div>
+
+    <!-- Single Candidate Upload Section -->
+    <div class="upload-section" id="singleUploadSection">
+        <div class="batch-upload-container">
+            <div id="singleUploadZone"></div>
+        </div>
+    </div>
+
+    <!-- Candidates List -->
+    <div class="candidates-container" id="candidatesContainer">
+        <!-- Content will be loaded dynamically -->
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/modules/file-upload.js') }}"></script>
+<script src="{{ url_for('static', filename='js/modules/candidates.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize modules
+        fileUpload.init();
+        candidatesModule.init();
+
+        // Create single file upload zone
+        const singleUploadZone = fileUpload.createDropZone(
+            document.getElementById('singleUploadZone'),
+            {
+                title: 'Upload Resume',
+                subtitle: 'Drag & drop a resume file or click to browse',
+                multiple: false,
+                onFilesSelected: (files) => {
+                    if (files.length === 1) {
+                        fileUpload.uploadFile(files[0], {
+                            onUploadStart: (file) => {
+                                console.log('Uploading:', file.name);
+                            },
+                            onUploadComplete: (result, file) => {
+                                console.log('Upload complete:', result);
+                                // Hide upload section after successful upload
+                                document.getElementById('singleUploadSection').classList.remove('upload-section--visible');
+                                // Refresh candidates list
+                                candidatesModule.displayCandidates(
+                                    document.getElementById('candidatesContainer')
+                                );
+
+                                   
+                                // ADD THESE LINES TO REFRESH DASHBOARD:
+                                if (window.dashboardModule) {
+                                    dashboardModule.loadStats();
+                                    dashboardModule.loadMatches();
+                                }
+
+                                // Show success message
+                                if (window.UIUtils) {
+                                    UIUtils.showNotification('Candidate added successfully!', 'success');
+                                }
+                            },
+                            onUploadError: (error, file) => {
+                                console.error('Upload failed:', error);
+                                if (window.UIUtils) {
+                                    UIUtils.showNotification(`Failed to upload ${file.name}`, 'error');
+                                }
+                            }
+                        });
+                    }
+                }
+            }
+        );
+
+        // Toggle single candidate upload section
+        document.getElementById('addCandidateBtn').addEventListener('click', function() {
+            const uploadSection = document.getElementById('singleUploadSection');
+            uploadSection.classList.toggle('upload-section--visible');
+            
+            // Scroll to upload section if opening
+            if (uploadSection.classList.contains('upload-section--visible')) {
+                uploadSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        });
+
+        // Bulk upload button (placeholder for now)
+        document.getElementById('bulkUploadBtn').addEventListener('click', function() {
+            if (window.UIUtils) {
+                UIUtils.showNotification('Bulk upload feature coming soon!', 'info');
+            }
+        });
+
+        // Load initial candidates (without loading message)
+        candidatesModule.displayCandidates(document.getElementById('candidatesContainer'));
+    });
+</script>
+{% endblock %}

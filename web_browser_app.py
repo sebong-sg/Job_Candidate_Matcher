@@ -66,7 +66,6 @@ try:
     from resume_parser import ResumeParser
     from vector_db import vector_db
     from job_parser import JobDescriptionParser
-    
     print("✅ All AI modules loaded successfully!")
     print("🎯 Chroma Vector Database: ACTIVE")
     print("📄 Job Description Parser: ACTIVE")
@@ -102,7 +101,8 @@ except ImportError as e:
             return {
                 "name": "Candidate from Resume", "email": "resume@example.com", "phone": "123-456-7890",
                 "skills": ["python", "communication", "problem-solving"], "experience_years": 3,
-                "location": "Unknown", "education": "Extracted from resume", "profile": "Professional extracted from resume text"
+                "location": "Unknown", "education": "Extracted from resume", "profile": "Professional extracted from resume text",
+                "original_resume_text": text
             }
 
     class JobDescriptionParser:
@@ -131,7 +131,8 @@ FLASK APPLICATION SETUP - ENHANCED WITH GROWTH DATA
 """
 app = Flask(__name__)
 
-# Initialize services
+# Initialize services - SINGLE INITIALIZATION
+print("🔄 Initializing services...")
 db = ChromaDataManager()
 matcher = SimpleMatcher()
 email_service = EmailService()
@@ -196,6 +197,106 @@ def matching():
     return render_template('matching.html')
 
 """
+CANDIDATE MANAGEMENT API ENDPOINTS - NEW
+"""
+
+@app.route('/api/parse-resume', methods=['POST'])
+def parse_resume():
+    """
+    API endpoint for parsing resume text with AI
+    Returns structured candidate data with quality assessment and growth metrics
+    """
+    try:
+        data = request.json
+        resume_text = data.get('resume_text', '')
+        
+        if not resume_text.strip():
+            return jsonify({'success': False, 'error': 'Empty resume text'}), 400
+            
+        print(f"📄 Parsing resume with AI ({len(resume_text)} characters)...")
+        
+        # Use the enhanced resume parser with quality assessment
+        parsed_data = resume_parser.parse_resume_text(resume_text)
+        
+        if not parsed_data:
+            return jsonify({'success': False, 'error': 'Failed to parse resume'}), 500
+        
+        print(f"✅ Resume parsed: {parsed_data['name']} | {len(parsed_data['skills'])} skills | {parsed_data['experience']} years experience")
+        
+        # Convert to candidate format for frontend - ENSURE FIELD CONSISTENCY
+        candidate_data = {
+            "name": parsed_data['name'],
+            "email": parsed_data['email'],
+            "phone": parsed_data['phone'],
+            "location": parsed_data.get('location', 'Location not specified'),
+            "experience_years": parsed_data['experience'],
+            "education": parsed_data['education'],
+            "skills": parsed_data['skills'],
+            "profile": parsed_data['summary'],
+            "work_experience": parsed_data['work_experience'],
+            "cultural_attributes": parsed_data['cultural_attributes'],
+            "growth_metrics": parsed_data.get('growth_metrics', {}),
+            "career_metrics": parsed_data.get('career_metrics', {}),
+            "learning_velocity": parsed_data.get('learning_velocity', 0.0),
+            "quality_assessment": parsed_data.get('quality_assessment', {}),
+            "extraction_method": parsed_data.get('extraction_method_used', 'unknown'),
+            # CRITICAL: Ensure original_resume_text is included
+            "original_resume_text": parsed_data.get('original_text', resume_text)
+        }
+        
+        return jsonify({'success': True, 'candidate_data': candidate_data})
+        
+    except Exception as e:
+        print(f"❌ Resume parsing error: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/create-candidate', methods=['POST'])
+def create_candidate():
+    """
+    API endpoint for creating new candidates in Chroma DB
+    Handles both parsed and manually entered candidate data
+    Integrates with vector database for semantic matching
+    """
+    try:
+        data = request.json
+        candidate_data = data.get('candidate_data', {})
+        
+        # Validate required fields
+        if not candidate_data.get('name') or not candidate_data.get('email'):
+            return jsonify({'success': False, 'error': 'Name and email are required'}), 400
+        
+        print(f"👥 Creating new candidate: {candidate_data['name']} ({candidate_data['email']})")
+        
+        # Ensure original_resume_text is present
+        if 'original_resume_text' not in candidate_data:
+            candidate_data['original_resume_text'] = ''
+            print("⚠️  original_resume_text not provided - setting empty string")
+        else:
+            print(f"📄 Original resume text length: {len(candidate_data['original_resume_text'])} characters")
+        
+        # Add candidate to Chroma DB
+        candidate_id = db.add_candidate(candidate_data)
+        
+        if candidate_id:
+            print(f"✅ Candidate created successfully with ID: {candidate_id}")
+            
+            # Add to vector database for semantic search
+            try:
+                vector_db.add_candidates_batch([candidate_data])
+                print(f"✅ Candidate added to vector database")
+            except Exception as e:
+                print(f"⚠️ Failed to add candidate to vector database: {e}")
+            
+            return jsonify({'success': True, 'candidate_id': candidate_id})
+        else:
+            print("❌ Failed to create candidate in database")
+            return jsonify({'success': False, 'error': 'Failed to create candidate'}), 500
+            
+    except Exception as e:
+        print(f"❌ Candidate creation error: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+"""
 JOB MANAGEMENT API ENDPOINTS - NEW
 """
 
@@ -211,7 +312,7 @@ def parse_job_description():
         if not text.strip():
             return jsonify({'success': False, 'error': 'Empty job description'}), 400
             
-        print(f"📄 Parsing job description ({len(text)} characters)...")
+        print(f"📄 Parsing job description with Groq  ({len(text)} characters)...")
         job_data = job_parser.parse_job_description(text)
         print(f"✅ Job parsed: {job_data['title']} at {job_data['company']}")
         
@@ -292,26 +393,6 @@ def parse_resume_file():
         
     except Exception as e:
         print(f"❌ Resume file parse error: {e}")
-        return jsonify({'success': False, 'error': str(e)}), 500
-
-@app.route('/api/parse-resume', methods=['POST'])
-def parse_resume():
-    """Parse resume text and extract candidate data WITH GROWTH DATA"""
-    try:
-        resume_text = request.json.get('resume_text', '')
-        print(f"📄 Parsing resume text with growth data ({len(resume_text)} characters)...")
-        
-        # ENHANCED: Use enhanced parser with growth data
-        parser = ResumeParser()
-        candidate_data = parser.parse_resume_to_candidate(
-            resume_text,
-            include_extensions=['core', 'career_timeline', 'skill_progression', 'growth_metrics']
-        )
-        print(f"✅ Resume parsed with growth data: {candidate_data['name']}")
-        
-        return jsonify({'success': True, 'candidate_data': candidate_data})
-    except Exception as e:
-        print(f"❌ Resume parse error: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
 
 """
@@ -422,13 +503,6 @@ def run_matching():
                 candidate = top_match['candidate']
                 
                 # ENHANCED: Include growth data in match results
-#                growth_score = candidate.get('growth_metrics', {}).get('growth_potential_score', 0)
-
-               # DEBUG: Check if growth data exists
-                print(f"🔍 DEBUG Candidate: {candidate.get('name')}")
-                print(f"🔍 DEBUG Growth Metrics: {candidate.get('growth_metrics')}")
-
-                # ENHANCED: Include detailed growth data for display
                 growth_metrics = candidate.get('growth_metrics', {})
                 growth_score = growth_metrics.get('growth_potential_score', 0)
                 growth_dimensions = growth_metrics.get('growth_dimensions', {})
@@ -456,9 +530,8 @@ def run_matching():
                     'common_skills': top_match.get('common_skills', [])[:5],
                     'score_breakdown': top_match.get('score_breakdown', {}),
                     'cultural_breakdown': top_match.get('cultural_breakdown', {}),
-                    'growth_potential_score': growth_score,  # Main growth score
-                    'growth_breakdown': growth_breakdown,    # Detailed growth data for display
-#                    'growth_potential_score': growth_score,  # NEW: Growth score
+                    'growth_potential_score': growth_score,
+                    'growth_breakdown': growth_breakdown,
                     'match_grade': top_match.get('match_grade', 'A')
                 })
         

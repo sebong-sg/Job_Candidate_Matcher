@@ -15,6 +15,7 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/components/candidates.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/components/jobs.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/components/modals.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/components/quality-assessment.css') }}">
 {% endblock %}
 
 {% block content %}
@@ -97,7 +98,7 @@
                 </div>
                 <div class="upload-tips">
                     <p><strong>Tip:</strong> Upload existing job descriptions from your company. 
-                    Our AI will extract key details automatically.</p>
+                    Our AI will extract key details automatically and assess quality.</p>
                 </div>
             </div>
 
@@ -110,6 +111,7 @@
 • Job Title & Company
 • Required Skills & Experience  
 • Location & Employment Type
+• Career Stage & Growth Requirements
 • And more...
 
 Example:
@@ -179,6 +181,16 @@ Location: Remote | Full-time position"></textarea>
                 </div>
             </div>
 
+            <!-- Quality Assessment Section -->
+            <div class="quality-indicator" id="qualityIndicator" style="display: none;">
+                <!-- Dynamically populated with quality assessment -->
+            </div>
+
+            <!-- Quality Warnings -->
+            <div class="quality-warnings" id="qualityWarnings" style="display: none;">
+                <!-- Dynamically populated with quality warnings -->
+            </div>
+
             <!-- Parsed Data Review Section -->
             <div class="parsed-review" id="parsedReview">
                 <h4>
@@ -211,6 +223,132 @@ Location: Remote | Full-time position"></textarea>
                     <polyline points="7 3 7 8 15 8"></polyline>
                 </svg>
                 Save Job
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Job Detail Modal -->
+<div class="modal" id="jobDetailModal">
+    <div class="modal__overlay"></div>
+    <div class="modal__content modal__content--large">
+        <div class="modal__header">
+            <h3 id="jobDetailTitle">Job Details</h3>
+            <button class="modal__close" id="closeJobDetailModal">&times;</button>
+        </div>
+        
+        <div class="modal__body">
+            <div class="job-detail-container">
+                <!-- Job Header -->
+                <div class="job-detail-header">
+                    <div class="job-detail-main">
+                        <h2 id="detailJobTitle"></h2>
+                        <div class="job-detail-company" id="detailCompany"></div>
+                    </div>
+                    <div class="job-detail-meta">
+                        <span class="job-quality-badge" id="detailQualityBadge"></span>
+                    </div>
+                </div>
+
+                <!-- Job Meta Information -->
+                <div class="job-detail-meta-grid">
+                    <div class="meta-item">
+                        <svg class="icon" width="16" height="16" fill="none" stroke="currentColor">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                            <circle cx="12" cy="10" r="3"></circle>
+                        </svg>
+                        <span id="detailLocation"></span>
+                    </div>
+                    <div class="meta-item">
+                        <svg class="icon" width="16" height="16" fill="none" stroke="currentColor">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                        <span id="detailExperience"></span>
+                    </div>
+                    <div class="meta-item">
+                        <svg class="icon" width="16" height="16" fill="none" stroke="currentColor">
+                            <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                            <path d="M16 3v4M8 3v4M3 11h18"></path>
+                        </svg>
+                        <span id="detailJobType"></span>
+                    </div>
+                    <div class="meta-item">
+                        <svg class="icon" width="16" height="16" fill="none" stroke="currentColor">
+                            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                            <path d="M19 10v1a7 7 0 0 1-14 0v-1"></path>
+                            <line x1="12" y1="19" x2="12" y2="23"></line>
+                            <line x1="8" y1="23" x2="16" y2="23"></line>
+                        </svg>
+                        <span id="detailSalary"></span>
+                    </div>
+                </div>
+
+                <!-- NEW: AI Job Profile Section -->
+                <div class="job-detail-section" id="aiJobProfileSection" style="display: none;">
+                    <h4>
+                        <svg class="icon" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 20h9"></path>
+                            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                        </svg>
+                        AI Job Profile
+                    </h4>
+                    <div class="professional-summary-section">
+                        <div class="ai-profile-content" id="aiJobProfileContent">
+                            <!-- Dynamically populated with AI Job Profile data -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Enhanced Data Section -->
+                <div class="job-detail-enhanced" id="detailEnhancedData" style="display: none;">
+                    <h4>Career & Growth Requirements</h4>
+                    <div class="enhanced-data-grid" id="enhancedDataGrid"></div>
+                </div>
+
+                <!-- Quality Assessment -->
+                <div class="job-detail-quality" id="detailQuality" style="display: none;">
+                    <h4>Quality Assessment</h4>
+                    <div id="qualityDetailContent"></div>
+                </div>
+
+                <!-- Job Requirements Section -->
+                <div class="job-detail-section" id="jobRequirementsSection">
+                    <h4>Job Requirements</h4>
+                    <div class="requirements-grid" id="jobRequirementsGrid">
+                        <!-- Dynamically populated with job requirements -->
+                    </div>
+                </div>
+
+                <!-- Skills Section -->
+                <div class="job-detail-section">
+                    <h4>Required Skills</h4>
+                    <div class="skills-container" id="detailRequiredSkills"></div>
+                </div>
+
+                <div class="job-detail-section" id="preferredSkillsSection" style="display: none;">
+                    <h4>Preferred Skills</h4>
+                    <div class="skills-container" id="detailPreferredSkills"></div>
+                </div>
+
+                <!-- Job Description -->
+                <div class="job-detail-section">
+                    <h4>Job Description</h4>
+                    <div class="job-description-content" id="detailDescription"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal__footer">
+            <button class="btn btn--secondary" id="closeDetailModal">Close</button>
+            <button class="btn btn--primary" id="matchCandidatesBtn">
+                <svg class="icon btn__icon" width="16" height="16" fill="none" stroke="currentColor">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="8.5" cy="7" r="4"></circle>
+                    <line x1="20" y1="8" x2="20" y2="14"></line>
+                    <line x1="23" y1="11" x2="17" y2="11"></line>
+                </svg>
+                Find Matching Candidates
             </button>
         </div>
     </div>

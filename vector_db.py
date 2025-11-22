@@ -74,7 +74,9 @@ class ChromaVectorDB:
                     'career_metrics': json.dumps(candidate.get('career_metrics', {})),
                     'skill_timeline': json.dumps(candidate.get('skill_timeline', [])),
                     'growth_metrics': json.dumps(candidate.get('growth_metrics', {})),
-                    'learning_velocity': candidate.get('learning_velocity', 0.0)
+                    'learning_velocity': candidate.get('learning_velocity', 0.0),
+                    # CRITICAL: Store original resume text
+                    'original_resume_text': candidate.get('original_resume_text', '')
                 }]
             )
             print(f"✅ Candidate added to vector DB with growth data: {candidate.get('name', 'Unknown')}")
@@ -118,7 +120,9 @@ class ChromaVectorDB:
                         'career_metrics': json.dumps(candidate.get('career_metrics', {})),
                         'skill_timeline': json.dumps(candidate.get('skill_timeline', [])),
                         'growth_metrics': json.dumps(candidate.get('growth_metrics', {})),
-                        'learning_velocity': candidate.get('learning_velocity', 0.0)
+                        'learning_velocity': candidate.get('learning_velocity', 0.0),
+                        # CRITICAL: Store original resume text
+                        'original_resume_text': candidate.get('original_resume_text', '')
                     })
             
             if ids:
@@ -171,10 +175,14 @@ class ChromaVectorDB:
                     'skill_requirements': json.dumps(job.get('skill_requirements', {})),
                     'career_progression': json.dumps(job.get('career_progression', {})),
                     'quality_assessment': json.dumps(job.get('quality_assessment', {})),
-                    'confidence_scores': json.dumps(job.get('confidence_scores', {}))
+                    'confidence_scores': json.dumps(job.get('confidence_scores', {})),
+                    'original_job_text': job.get('original_job_text', ''),
+                    # NEW: AI Job Profile - CRITICAL MISSING FIELD
+                    'ai_job_profile': json.dumps(job.get('ai_job_profile', {}))
                 }]
             )
             print(f"✅ Job added to vector DB with enhanced data: {job.get('title', 'Unknown')}")
+            print(f"   AI Job Profile stored: {'ai_job_profile' in job and bool(job['ai_job_profile'])}")
             return True
         except Exception as e:
             print(f"❌ Error adding job to vector DB: {e}")
@@ -216,7 +224,10 @@ class ChromaVectorDB:
                         'skill_requirements': json.dumps(job.get('skill_requirements', {})),
                         'career_progression': json.dumps(job.get('career_progression', {})),
                         'quality_assessment': json.dumps(job.get('quality_assessment', {})),
-                        'confidence_scores': json.dumps(job.get('confidence_scores', {}))
+                        'confidence_scores': json.dumps(job.get('confidence_scores', {})),
+                        'original_job_text': job.get('original_job_text', ''),
+                        # NEW: AI Job Profile - CRITICAL MISSING FIELD
+                        'ai_job_profile': json.dumps(job.get('ai_job_profile', {}))
                     })
             
             if ids:
@@ -349,7 +360,9 @@ class ChromaVectorDB:
                     'career_metrics': json.loads(metadata.get('career_metrics', '{}')),
                     'skill_timeline': json.loads(metadata.get('skill_timeline', '[]')),
                     'growth_metrics': json.loads(metadata.get('growth_metrics', '{}')),
-                    'learning_velocity': metadata.get('learning_velocity', 0.0)
+                    'learning_velocity': metadata.get('learning_velocity', 0.0),
+                    # CRITICAL: Include original resume text
+                    'original_resume_text': metadata.get('original_resume_text', '')
                 })
             
             print(f"✅ Retrieved {len(candidates)} candidates from Chroma DB with growth data")
@@ -387,7 +400,10 @@ class ChromaVectorDB:
                     'skill_requirements': json.loads(metadata.get('skill_requirements', '{}')),
                     'career_progression': json.loads(metadata.get('career_progression', '{}')),
                     'quality_assessment': json.loads(metadata.get('quality_assessment', '{}')),
-                    'confidence_scores': json.loads(metadata.get('confidence_scores', '{}'))
+                    'confidence_scores': json.loads(metadata.get('confidence_scores', '{}')),
+                    'original_job_text': metadata.get('original_job_text', ''),
+                    # NEW: AI Job Profile - CRITICAL MISSING FIELD
+                    'ai_job_profile': json.loads(metadata.get('ai_job_profile', '{}'))
                 })
             
             print(f"✅ Retrieved {len(jobs)} jobs from Chroma DB with enhanced data")
@@ -424,6 +440,14 @@ if __name__ == "__main__":
         'quality_assessment': {
             'quality_level': 'high',
             'quality_score': 0.85
+        },
+        'ai_job_profile': {
+            'role_overview': 'Test AI profile content',
+            'ideal_candidate': 'Test ideal candidate',
+            'success_factors': 'Test success factors',
+            'growth_potential': 'Test growth potential',
+            'cultural_fit': 'Test cultural fit',
+            'recruiting_insights': 'Test recruiting insights'
         }
     }
     

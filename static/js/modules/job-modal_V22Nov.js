@@ -281,7 +281,6 @@ class JobModal {
         
         const confidence = this.parsedData.confidence_scores || {};
         const quality = this.parsedData.quality_assessment || {};
-        const aiProfile = this.parsedData.ai_job_profile || {};
         
         return `
             <div class="form-grid">
@@ -365,33 +364,14 @@ class JobModal {
                     </span>
                 </div>
 
-                <!-- NEW: AI Job Profile Display -->
-                ${aiProfile.role_overview ? `
                 <div class="form-group full-width">
-                    <label>AI Job Profile Preview</label>
-                    <div class="ai-profile-preview">
-                        <div class="ai-profile-section">
-                            <h5>Role Overview</h5>
-                            <p>${aiProfile.role_overview}</p>
-                        </div>
-                        <div class="ai-profile-section">
-                            <h5>Ideal Candidate</h5>
-                            <p>${aiProfile.ideal_candidate}</p>
-                        </div>
-                        <div class="ai-profile-section">
-                            <h5>Success Factors</h5>
-                            <p>${aiProfile.success_factors}</p>
-                        </div>
-                    </div>
-                    <span class="confidence-indicator confidence-high">
-                        🤖 AI Generated Profile
-                    </span>
+                    <label>Job Profile</label>
+                    <textarea class="form-textarea" rows="4" data-field="summary">${this.parsedData.summary || ''}</textarea>
                 </div>
-                ` : ''}
 
                 <div class="form-group full-width">
                     <label>Job Description</label>
-                    <textarea class="form-textarea" rows="4" data-field="description">${this.parsedData.original_job_text || ''}</textarea>
+                    <textarea class="form-textarea" rows="4" data-field="description">${this.parsedData.description || ''}</textarea>
                 </div>
             </div>
         `;
@@ -572,16 +552,13 @@ class JobModal {
                     job_type: employmentSelect ? employmentSelect.value : this.parsedData.employment_type || 'Full-time',
                     required_skills: this.parsedData.required_skills || [],
                     description: descriptionTextarea ? descriptionTextarea.value.trim() : this.parsedData.description || '',
-                    original_job_text: this.parsedData.original_job_text || text || '',
                     cultural_attributes: this.parsedData.cultural_attributes || {},
                     // NEW: Enhanced data
                     growth_requirements: this.parsedData.growth_requirements || {},
                     skill_requirements: this.parsedData.skill_requirements || {},
                     career_progression: this.parsedData.career_progression || {},
                     quality_assessment: this.parsedData.quality_assessment || {},
-                    confidence_scores: this.parsedData.confidence_scores || {},
-                    // NEW: AI Job Profile - CRITICAL: Include this data
-                    ai_job_profile: this.parsedData.ai_job_profile || {}
+                    confidence_scores: this.parsedData.confidence_scores || {}
                 };
             } else if (this.currentMethod === 'form') {
                 // Use quick form data
@@ -606,9 +583,7 @@ class JobModal {
                         missing_required_fields: [],
                         missing_recommended_fields: [],
                         suggestions_for_improvement: []
-                    },
-                    // NEW: Default AI Job Profile for manual entries
-                    ai_job_profile: this._getDefaultAIJobProfile()
+                    }
                 };
             } else {
                 throw new Error('No job data to save - please parse or enter job information first');
@@ -626,8 +601,7 @@ class JobModal {
             
             if (response.success) {
                 const qualityLevel = jobData.quality_assessment?.quality_level || 'unknown';
-                const hasAIProfile = jobData.ai_job_profile && Object.keys(jobData.ai_job_profile).length > 0;
-                UIUtils.showNotification(`Job "${jobData.title}" created successfully! (Quality: ${qualityLevel}, AI Profile: ${hasAIProfile ? 'Yes' : 'No'})`, 'success');
+                UIUtils.showNotification(`Job "${jobData.title}" created successfully! (Quality: ${qualityLevel})`, 'success');
                 this.close();
                 
                 // Refresh jobs list
@@ -672,17 +646,6 @@ class JobModal {
             strategic_mobility_preferred: 0.5,
             impact_scale_required: 0.5,
             confidence: 0.3
-        };
-    }
-
-    _getDefaultAIJobProfile() {
-        return {
-            "role_overview": "This position requires a skilled professional with relevant experience and technical capabilities.",
-            "ideal_candidate": "A qualified candidate with appropriate background and skills for this role.",
-            "success_factors": "Technical competence, teamwork, and results-oriented approach.",
-            "growth_potential": "Opportunities for professional development and career advancement.",
-            "cultural_fit": "Collaborative environment that values contribution and growth.",
-            "recruiting_insights": "Look for candidates with relevant experience and demonstrated capabilities."
         };
     }
 

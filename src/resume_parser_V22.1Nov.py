@@ -1,4 +1,4 @@
-# 📄 RESUME PARSER - ENHANCED VERSION WITH GROQ AI PARSING ONLY
+# 📄 RESUME PARSER - ENHANCED VERSION WITH AI CAREER ASSESSMENT & GROQ PARSING
 import re
 import nltk
 from nltk.corpus import stopwords
@@ -41,6 +41,24 @@ class ResumeParser:
         
         print("✅ Resume parser initialized with Groq AI method")
         
+        # Skill keywords for cultural attribute extraction only
+        self.skill_keywords = {
+            'programming': ['python', 'java', 'javascript', 'c++', 'c#', 'ruby', 'php', 'swift', 'kotlin', 'go', 'rust'],
+            'web': ['html', 'css', 'react', 'angular', 'vue', 'django', 'flask', 'node.js', 'express', 'spring'],
+            'database': ['sql', 'mysql', 'postgresql', 'mongodb', 'redis', 'oracle', 'sqlite'],
+            'cloud': ['aws', 'azure', 'gcp', 'docker', 'kubernetes', 'terraform', 'jenkins', 'ci/cd'],
+            'data_science': ['machine learning', 'deep learning', 'tensorflow', 'pytorch', 'pandas', 'numpy', 'statistics'],
+            'soft_skills': ['leadership', 'communication', 'teamwork', 'problem solving', 'analytical', 'agile', 'scrum']
+        }
+        
+        self.cultural_keywords = {
+            'teamwork': ['team', 'collaborat', 'partner', 'work together', 'group project', 'cross-functional'],
+            'innovation': ['innovati', 'creativ', 'initiative', 'think outside', 'new ideas', 'problem solv'],
+            'work_environment': ['remote', 'work from home', 'wfh', 'office', 'on-site', 'hybrid', 'flexible work'],
+            'work_pace': ['fast-paced', 'dynamic', 'rapid', 'startup', 'agile', 'stable', 'methodical', 'structured'],
+            'customer_focus': ['customer', 'client focus', 'user experience', 'stakeholder', 'end user']
+        }
+
         if ENHANCED_CULTURAL_AVAILABLE:
             self.enhanced_extractor = EnhancedCulturalExtractor()
         else:
@@ -76,7 +94,7 @@ class ResumeParser:
                 parsed_data['extraction_method_used'] = 'groq'
                 
                 # VALIDATE REQUIRED FIELDS - throw error if missing
-                required_fields = ['name', 'email', 'experience_years', 'education', 'skills', 'summary', 'work_experience']
+                required_fields = ['name', 'email', 'experience_years', 'education', 'skills', 'summary']
                 missing_fields = [field for field in required_fields if field not in parsed_data]
                 
                 if missing_fields:
@@ -86,16 +104,15 @@ class ResumeParser:
                 # Ensure consistent field naming
                 parsed_data['experience'] = parsed_data.get('experience_years', 0)
                 
-                # ENHANCED: Use AI-calculated growth metrics with proper work experience
-                parsed_data['growth_metrics'] = self._calculate_growth_metrics(parsed_data['work_experience'])
-                parsed_data['career_metrics'] = self._calculate_career_metrics(parsed_data['work_experience'])
-                parsed_data['learning_velocity'] = self._calculate_learning_velocity(parsed_data)
+                # Add enhanced data
+                work_experience = self.extract_work_experience(text)
+                parsed_data['work_experience'] = work_experience
+                parsed_data['cultural_attributes'] = self.extract_cultural_attributes(text)
                 
-                # Use AI-extracted cultural attributes or fallback
-                if 'cultural_attributes' in parsed_data:
-                    print("✅ Using AI-extracted cultural attributes")
-                else:
-                    parsed_data['cultural_attributes'] = self.extract_cultural_attributes(text)
+                # ENHANCED: Use actual growth metrics calculation instead of hardcoded
+                parsed_data['growth_metrics'] = self._calculate_growth_metrics(work_experience)
+                parsed_data['career_metrics'] = self._calculate_career_metrics(work_experience)
+                parsed_data['learning_velocity'] = self._calculate_learning_velocity(parsed_data)
                 
                 quality_assessment = self._assess_quality(text, parsed_data)
                 parsed_data['quality_assessment'] = quality_assessment
@@ -114,7 +131,7 @@ class ResumeParser:
 
     def _create_resume_parsing_prompt(self, text):
         return f"""
-        Analyze this resume and extract ALL required fields with high accuracy. Return COMPLETE structured data.
+        Analyze this resume and extract ALL required fields. If any field cannot be extracted, provide a reasonable default value.
 
         RESUME TEXT:
         {text}
@@ -124,26 +141,17 @@ class ResumeParser:
         - email: Email address (string) 
         - phone: Phone number (string)
         - location: Location/City (string)
-        - experience_years: Number of years experience (integer, estimate from work history)
+        - experience_years: Number of years experience (integer, 0 if not found)
         - education: Highest education degree (string)
-        - skills: Array of technical and soft skills (array of strings, at least 5 items)
+        - skills: Array of technical and soft skills (array of strings, at least 3 items)
         - summary: Professional summary (string, 2-3 sentences)
         - career_stage: "early_career", "mid_career", or "executive" (string)
-        - work_experience: Array of work experience objects with: role_title, company, duration, role_level (1-4), scope
-        - cultural_attributes: Object with scores (0.0-1.0) for: teamwork, innovation, work_environment, work_pace, customer_focus
-        
-        ROLE LEVELS:
-        - 1: individual_contributor (Junior, Associate)
-        - 2: team_lead (Senior, Lead, Manager)  
-        - 3: department_head (Director, Head of)
-        - 4: organization_lead (CTO, CEO, VP, Chief)
         
         IMPORTANT: 
-        - Extract REAL work experience from career history with accurate role levels
-        - For executive roles (CTO, CEO, VP, Director) use role_level 3 or 4
-        - Estimate experience_years from work history dates
-        - Include 5+ specific skills from the resume
-        - Cultural attributes should reflect work preferences and style
+        - ALL fields must be present in the response
+        - For experience_years: Extract from phrases like "X years", "X+ years", or estimate from work history
+        - For skills: Include at least 5 skills from the resume content
+        - For summary: Create a 2-3 sentence professional summary
         
         Return ONLY valid JSON in this exact format:
         {{
@@ -151,27 +159,11 @@ class ResumeParser:
             "email": "extracted@email.com",
             "phone": "extracted phone",
             "location": "Extracted Location",
-            "experience_years": 5,
+            "experience_years": 0,
             "education": "Extracted Education",
-            "skills": ["skill1", "skill2", "skill3", "skill4", "skill5"],
+            "skills": ["skill1", "skill2", "skill3"],
             "summary": "Professional summary...",
-            "career_stage": "mid_career",
-            "work_experience": [
-                {{
-                    "role_title": "Job Title",
-                    "company": "Company Name", 
-                    "duration": "2018-Present",
-                    "role_level": 2,
-                    "scope": "team_leadership"
-                }}
-            ],
-            "cultural_attributes": {{
-                "teamwork": 0.8,
-                "innovation": 0.7,
-                "work_environment": 0.6,
-                "work_pace": 0.9,
-                "customer_focus": 0.5
-            }}
+            "career_stage": "mid_career"
         }}
         """
 
@@ -188,7 +180,7 @@ class ResumeParser:
             "messages": [{"role": "user", "content": prompt}],
             "model": "llama-3.3-70b-versatile",
             "temperature": 0.1,
-            "max_tokens": 4000,
+            "max_tokens": 2000,
             "response_format": {"type": "json_object"}
         }
         
@@ -202,36 +194,47 @@ class ResumeParser:
             return None
 
     def extract_work_experience(self, text):
-        """Fallback method - should not be used with updated Groq parsing"""
-        print("⚠️ Using fallback work experience extraction")
-        return [{
+        # Simple work experience extraction for cultural attributes
+        results = []
+        lines = text.split('\n')
+        
+        for i, line in enumerate(lines):
+            line = line.strip()
+            # Look for patterns that might indicate work experience
+            if any(keyword in line.lower() for keyword in [' at ', ' - ', ' | ', ' company', ' corp', ' inc']):
+                if len(line) > 10 and len(line) < 100:  # Reasonable length for a job title
+                    results.append({
+                        'role_title': line,
+                        'company': 'Extracted Company',
+                        'duration': 'Present',
+                        'role_level': 2,
+                        'scope': 'individual_contributor'
+                    })
+        
+        return results if results else [{
             'role_title': 'Extracted role',
             'company': 'Extracted company', 
-            'duration': 'Present',
+            'duration': 'Extracted duration',
             'role_level': 2,
             'scope': 'individual_contributor'
         }]
 
     def extract_cultural_attributes(self, text):
-        """Fallback cultural extraction - enhanced extractor or basic"""
         if self.enhanced_extractor and self.enhanced_extractor.semantic_enabled:
-            enhanced_result = self.enhanced_extractor.extract_cultural_attributes_enhanced(text)
-            # Convert enhanced format to simple scores
-            cultural_attributes = {}
-            for attr, (score, confidence) in enhanced_result.items():
-                cultural_attributes[attr] = score
-            return cultural_attributes
+            return self.enhanced_extractor.extract_cultural_attributes_enhanced(text)
     
-        # Basic fallback
         text_lower = text.lower()
-        cultural_attributes = {
-            'teamwork': 0.5,
-            'innovation': 0.5,
-            'work_environment': 0.5,
-            'work_pace': 0.5,
-            'customer_focus': 0.5
-        }
+        cultural_attributes = {}
+    
+        for attribute, keywords in self.cultural_keywords.items():
+            matches = []
+            for keyword in keywords:
+                if keyword in text_lower:
+                    matches.append(keyword)
         
+            score = len(matches) / len(keywords) if matches else 0.0
+            cultural_attributes[attribute] = score
+   
         return cultural_attributes
 
     # =========================================================================
@@ -244,7 +247,7 @@ class ResumeParser:
             print("   ⚠️  No work experience for growth calculation")
             return self._get_empty_growth_metrics()
 
-        # Calculate actual experience years from AI-extracted data
+        # Calculate actual experience years
         estimated_years = self._estimate_experience_from_career(work_experience)
 
         # Use experience years for sufficiency check
@@ -494,17 +497,6 @@ class ResumeParser:
         except Exception as e:
             print(f"⚠️ AI career analysis failed: {e}, using fallback")
             return self._get_fallback_assessment(work_experience)
-
-    def _parse_ai_response(self, response):
-        """Parse AI career assessment response"""
-        if not response:
-            return self._get_default_ai_assessment()
-            
-        try:
-            return json.loads(response)
-        except json.JSONDecodeError as e:
-            print(f"❌ Failed to parse AI career assessment: {e}")
-            return self._get_default_ai_assessment()
 
     def _create_career_analysis_prompt(self, work_experience):
         """Create structured prompt for career analysis"""
